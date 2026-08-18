@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grayscale PDF | Lite PDF Suite</title>
+<meta name="description" content="Convert a color PDF to black and white online for free — reduce printing costs and prep documents for clean photocopying.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://litepdfsuite.com/grayscale-pdf.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Grayscale PDF | Lite PDF Suite">
+<meta property="og:description" content="Convert a color PDF to black and white online for free — reduce printing costs and prep documents for clean photocopying.">
+<meta property="og:url" content="https://litepdfsuite.com/grayscale-pdf.html">
+<link rel="icon" type="image/svg+xml" href="favicon/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon/icon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="tools-menu.js"></script>
+<script src="tool-info.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<style>
+  :root {
+    --bg: #f7f7f8; --bg-2: #ffffff; --card: #ffffff; --card-2: #f2f2f4;
+    --border: rgba(0, 0, 0, 0.08); --border-strong: rgba(0, 0, 0, 0.16);
+    --fg: #333333; --muted: #666666;
+    --accent: #78716c; --accent-2: #57534e; --accent-3: #2d6a4f;
+    --danger: #dc2626; --danger-bg: #fee2e2;
+    --shadow: rgba(0,0,0,0.05); --slider-track: #e0e0e0;
+  }
+  [data-theme="dark"] {
+    --bg: #07080a; --bg-2: #0c0d10; --card: #14161a; --card-2: #1c1f24;
+    --border: rgba(255, 255, 255, 0.08); --border-strong: rgba(255, 255, 255, 0.2);
+    --fg: #e8eaed; --muted: #8a8f96;
+    --accent: #a8a29e; --accent-2: #d6d3d1; --accent-3: #4ecca3;
+    --danger: #ef4444; --danger-bg: rgba(239, 68, 68, 0.1);
+    --shadow: rgba(0,0,0,0.4); --slider-track: #2c2f36;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    background: var(--bg); color: var(--fg);
+    overflow: hidden; -webkit-font-smoothing: antialiased;
+    transition: background 0.4s, color 0.4s;
+  }
+  button { font-family: inherit; }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+  html { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+
+  .app-container { display: flex; flex-direction: column; height: 100vh; }
+  header.topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px; border-bottom: 1px solid var(--border);
+    background: var(--bg-2); z-index: 10;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+  .logo-mark {
+    width: 38px; height: 38px; border-radius: 10px; background: var(--fg); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 900; font-size: 20px;
+  }
+  .brand-name { font-family: 'Fraunces', serif; font-weight: 900; font-size: 20px; }
+  .brand-tag { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: -2px; }
+  .top-actions { display: flex; align-items: center; gap: 16px; }
+  .btn {
+    padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    border: 1px solid var(--border); background: var(--card); color: var(--fg);
+    cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;
+    white-space: nowrap; text-decoration: none;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-danger { color: var(--danger); border-color: var(--border); }
+  .btn-danger:hover { background: var(--danger-bg); border-color: var(--danger); }
+
+  .theme-toggle {
+    width: 80px; height: 32px; border-radius: 16px;
+    background: var(--bg); border: 1px solid var(--border);
+    display: flex; align-items: center; padding: 3px; cursor: pointer; position: relative;
+  }
+  .theme-toggle .knob {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--fg); color: var(--bg);
+    display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 2;
+  }
+  [data-theme="dark"] .theme-toggle .knob { transform: translateX(46px); }
+  .theme-toggle .label { position: absolute; font-size: 10px; font-weight: 600; color: var(--muted); z-index: 1; text-transform: uppercase; }
+  .theme-toggle .label-light { left: 12px; }
+  .theme-toggle .label-dark { right: 12px; }
+  [data-theme="light"] .theme-toggle .label-light { opacity: 0; }
+  [data-theme="dark"] .theme-toggle .label-dark { opacity: 0; }
+
+  main.workspace { flex: 1; display: flex; overflow: hidden; position: relative; }
+  .canvas-area { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 24px 40px 24px 24px; position: relative; }
+  .canvas-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px; position: sticky; top: -24px; z-index: 5;
+    background: linear-gradient(to bottom, var(--bg) 70%, transparent);
+    padding: 24px 0 12px;
+  }
+  .canvas-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; }
+  .canvas-info { color: var(--muted); font-size: 13px; margin-top: 2px; }
+
+  .page-grid {
+    display: grid; gap: 14px;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-auto-rows: minmax(80px, auto);
+    align-items: start;
+  }
+  .thumb-card {
+    background: var(--card); border: 2px solid var(--border); border-radius: 8px;
+    overflow: hidden; position: relative;
+    display: flex; flex-direction: column;
+  }
+  .thumb-canvas-wrap { flex: 1; display: flex; align-items: center; justify-content: center; background: #fff; overflow: hidden; min-height: 100px; }
+  .thumb-canvas-wrap canvas { width: 100%; height: auto; object-fit: contain; transition: filter 0.2s; }
+  .thumb-canvas-wrap canvas.gray-preview { filter: grayscale(100%); }
+  .thumb-placeholder { color: #ccc; font-size: 24px; }
+  .thumb-footer { padding: 5px 8px; background: var(--card-2); border-top: 1px solid var(--border); font-size: 11px; text-align: center; color: var(--muted); }
+
+  .empty-state {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; pointer-events: none;
+  }
+  .empty-icon { width: 80px; height: 80px; border-radius: 20px; background: var(--card); display: flex; align-items: center; justify-content: center; font-size: 32px; color: var(--muted); margin-bottom: 16px; }
+  .empty-title { font-family: 'Fraunces', serif; font-size: 24px; margin-bottom: 8px; }
+  .empty-sub { color: var(--muted); font-size: 14px; max-width: 400px; }
+
+  aside.sidebar {
+    width: 340px; background: var(--bg-2); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0; z-index: 5;
+  }
+  .sidebar-section { padding: 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; }
+  .sidebar-scroll { flex: 1; overflow-y: auto; }
+  .sidebar-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+  .upload-zone {
+    border: 2px dashed var(--border-strong); border-radius: 12px; padding: 24px;
+    text-align: center; cursor: pointer; transition: all 0.2s; background: var(--card);
+  }
+  .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: rgba(120, 113, 108, 0.08); }
+  .upload-zone i { font-size: 24px; color: var(--accent); margin-bottom: 8px; display: block; }
+  .upload-zone p { margin: 0; font-size: 13px; font-weight: 500; }
+  .upload-zone span { font-size: 11px; color: var(--muted); }
+
+  .file-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+  }
+  .file-item-info { flex: 1; overflow: hidden; }
+  .file-item-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-item-meta { font-size: 11px; color: var(--muted); }
+
+  .preset-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .preset-btn { padding: 12px 6px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; color: var(--fg); cursor: pointer; font-size: 11px; text-align: center; transition: all 0.2s; }
+  .preset-btn strong { display: block; font-size: 12px; margin-bottom: 2px; }
+  .preset-btn:hover { border-color: var(--accent); }
+  .preset-btn.active { border-color: var(--accent); background: rgba(120, 113, 108, 0.12); color: var(--accent-2); }
+  [data-theme="dark"] .preset-btn.active { color: var(--accent); }
+
+  .caveat-note { display: flex; align-items: flex-start; gap: 8px; font-size: 11px; color: var(--muted); line-height: 1.5; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; }
+  .caveat-note i { color: #d97706; margin-top: 2px; flex-shrink: 0; }
+
+  .result-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 14px; display: none; }
+  .result-box.active { display: block; }
+  .result-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 6px; }
+  .result-row:last-child { margin-bottom: 0; }
+
+  .generate-btn {
+    width: 100%; padding: 14px; background: var(--accent); color: #fff; border: none;
+    border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.2s;
+  }
+  .generate-btn:hover { background: var(--accent-2); }
+  .generate-btn:disabled { background: var(--muted); cursor: not-allowed; }
+
+  .toast-container { position: fixed; top: 78px; right: 24px; z-index: 1000; display: flex; flex-direction: column-reverse; gap: 10px; pointer-events: none; }
+  .toast-container .toast { pointer-events: auto; }
+  .toast { background: var(--card); border: 1px solid var(--border); padding: 12px 18px; border-radius: 8px; display: flex; align-items: center; gap: 12px; min-width: 260px; box-shadow: 0 10px 30px var(--shadow); animation: tIn 0.4s; font-size: 13px; }
+  .toast.success { border-left: 3px solid var(--accent-3); }
+  .toast.error { border-left: 3px solid var(--danger); }
+  .toast.info { border-left: 3px solid var(--accent); }
+  @keyframes tIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  .processing { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
+  .processing.active { display: flex; }
+  .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .proc-text { color: #fff; font-family: 'Fraunces', serif; font-size: 18px; }
+
+  .privacy-note { display: flex; align-items: flex-start; gap: 8px; font-size: 11px; color: var(--muted); line-height: 1.4; padding: 12px 20px; }
+  .privacy-note i { color: var(--accent-3); margin-top: 2px; }
+  .logo-icon, .logo-mark { background: transparent !important; }
+  .logo-icon::after, .logo-mark::after { display: none !important; }
+  .logo-icon img, .logo-mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
+</style>
+</head>
+<body data-theme="light">
+
+<div class="app-container">
+  <header class="topbar">
+    <a href="index.html" class="brand">
+      <div class="logo-mark"><img src="favicon/favicon.svg" alt="Lite PDF Suite"></div>
+      <div>
+        <div class="brand-name">Lite PDF Suite</div>
+        <div class="brand-tag">Grayscale PDF</div>
+      </div>
+    </a>
+    <div class="top-actions">
+      <div class="tm-mount" data-tools-menu></div>
+            <div data-tool-info>
+        <button class="ti-trigger" type="button"><i class="fa-solid fa-circle-info"></i> <span>Tool Info</span></button>
+        <div class="ti-overlay">
+          <div class="ti-modal" role="dialog" aria-modal="true" aria-labelledby="tiTitle">
+            <div class="ti-modal-header">
+              <h2 id="tiTitle">Grayscale PDF Guide</h2>
+              <button class="ti-close" type="button" aria-label="Close">&times;</button>
+            </div>
+            <div class="ti-modal-body">
+              <p>Converting a PDF to grayscale means removing all color from the document so every page prints or displays in shades of black, white, and gray. Lite PDF Suite's grayscale tool processes the conversion entirely inside your browser, which is useful when a colorful document needs to be printed cheaply, since color printing typically costs significantly more per page than black and white. The tool preserves the layout, text, and image detail of the original file while only stripping out color information, so nothing about the structure of the document changes, only how it looks. This works well for reports, presentations, and scanned documents alike, regardless of how much color the original file contained. It is a small change that can meaningfully reduce printing costs across a large office or classroom.</p>
+
+              <h3>Key Features</h3>
+              <p>The grayscale converter focuses purely on color removal without touching anything else about the document.</p>
+              <ul>
+                <li><strong>Full document conversion:</strong> every page in the PDF is converted to grayscale at once.</li>
+                <li><strong>Preserved layout:</strong> text, images, and page structure remain exactly the same.</li>
+                <li><strong>Print cost savings:</strong> grayscale documents are cheaper to print on most office and home printers.</li>
+                <li><strong>Instant preview:</strong> see the converted pages before downloading the final file.</li>
+                <li><strong>No quality loss in text:</strong> text stays sharp and fully readable after conversion.</li>
+                <li><strong>Works on image heavy files:</strong> even documents full of photos or charts convert cleanly.</li>
+              </ul>
+
+              <h3>How to Use It</h3>
+              <p>Converting a document to grayscale takes only a moment, with no settings to configure beyond starting the process.</p>
+              <ol>
+                <li>Upload the color PDF you want to convert.</li>
+                <li>Let the tool process every page inside your browser.</li>
+                <li>Preview the grayscale result across the document.</li>
+                <li>Confirm the pages look correct before downloading.</li>
+                <li>Click <strong>Download</strong> to save the grayscale PDF.</li>
+              </ol>
+              <p>Even documents with many colorful images convert in just a few seconds since everything runs locally. You can compare the grayscale version against the original before deciding to keep it.</p>
+
+              <h3>Common Use Cases</h3>
+              <p>Grayscale conversion is mostly about saving money and simplifying printing, especially for documents that will be printed in bulk.</p>
+              <ul>
+                <li>Preparing a colorful report for cheap black and white office printing.</li>
+                <li>Converting a presentation deck before printing handouts for a large group.</li>
+                <li>Simplifying a scanned document that only needs to be read, not viewed in color.</li>
+                <li>Reducing ink usage when printing long documents at home.</li>
+                <li>Creating a plain, distraction free version of a colorful marketing document.</li>
+                <li>Preparing lecture notes for students to print cheaply at a copy shop.</li>
+              </ul>
+
+              <h3>Frequently Asked Questions</h3>
+              <p><strong>Is grayscale conversion free?</strong> Yes, converting a PDF to grayscale on Lite PDF Suite is completely free.</p>
+              <p><strong>Will grayscale reduce the file size too?</strong> Often yes, since color image data is simplified, though the main purpose is appearance rather than compression.</p>
+              <p><strong>Is my document uploaded to a server?</strong> No, the entire conversion happens locally inside your browser.</p>
+              <p><strong>Can I convert it back to color afterward?</strong> No, grayscale conversion permanently removes color data from the exported file, so keep your original if you may need color again.</p>
+              <p><strong>Does grayscale affect how sharp the text looks?</strong> No, text remains just as sharp since grayscale only changes color values, not resolution.</p>
+              <p>Color printing adds up quickly, especially for schools, offices, and anyone printing long documents on a regular basis, where a stack of colorful pages can cost several times more than the same pages in black and white. Lite PDF Suite's grayscale tool offers a simple way to cut that cost without changing anything about the actual content of the document. Because the conversion happens instantly and locally, you can prepare a grayscale version right before printing without needing to plan ahead, keeping the original color file untouched for situations where color still matters, such as sharing the document on a screen.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <span class="label label-light">Light</span>
+        <span class="label label-dark">Dark</span>
+        <div class="knob">L</div>
+      </div>
+      <button class="btn btn-danger" id="newProjectBtn"><i class="fa-solid fa-trash"></i> New Project</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <div class="canvas-area" id="canvasArea">
+      <div class="canvas-header">
+        <div>
+          <div class="canvas-title">Pages</div>
+          <div class="canvas-info" id="canvasInfo">Upload a PDF to get started</div>
+        </div>
+      </div>
+      <div class="page-grid" id="pageGrid"></div>
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon"><i class="fa-solid fa-droplet-slash"></i></div>
+        <div class="empty-title">No PDF loaded</div>
+        <div class="empty-sub">Upload a PDF to preview it in grayscale before converting — handy for print-cost-saving and black &amp; white photocopier-friendly documents.</div>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title"><i class="fa-solid fa-cloud-arrow-up"></i> Upload PDF</div>
+        <div class="upload-zone" id="uploadZone">
+          <i class="fa-solid fa-file-pdf"></i>
+          <p>Drop a PDF here or click to browse</p>
+          <span>One file at a time</span>
+        </div>
+        <input type="file" id="fileInput" accept="application/pdf" style="display:none">
+        <div id="fileInfoWrap" style="margin-top: 10px; display:none;">
+          <div class="file-item">
+            <i class="fa-solid fa-file-pdf" style="color: var(--accent);"></i>
+            <div class="file-item-info">
+              <div class="file-item-name" id="fileName"></div>
+              <div class="file-item-meta" id="fileMeta"></div>
+            </div>
+            <button class="btn" id="removeFileBtn" style="padding: 4px 8px; border: none; color: var(--muted);" title="Remove"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section sidebar-scroll">
+        <div class="sidebar-title"><i class="fa-solid fa-sliders"></i> Output Quality</div>
+        <div class="caveat-note"><i class="fa-solid fa-triangle-exclamation"></i> Like Compress PDF, this rebuilds your document from page images to guarantee every page is truly grayscale (including any colored images). Text will no longer be selectable in the output.</div>
+        <div class="preset-grid">
+          <div class="preset-btn" data-preset="low"><strong>Small</strong>Smallest file</div>
+          <div class="preset-btn active" data-preset="medium"><strong>Balanced</strong>Recommended</div>
+          <div class="preset-btn" data-preset="high"><strong>High</strong>Best quality</div>
+        </div>
+
+        <div class="result-box" id="resultBox">
+          <div class="result-row"><span>Original</span><strong id="resOriginal">-</strong></div>
+          <div class="result-row"><span>Grayscale</span><strong id="resNew">-</strong></div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <button class="generate-btn" id="convertBtn" disabled><i class="fa-solid fa-droplet-slash"></i> Convert & Download</button>
+      </div>
+      <div class="privacy-note"><i class="fa-solid fa-shield-halved"></i> Your PDF is converted entirely in your browser. Nothing is uploaded to a server.</div>
+    </aside>
+  </main>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<div class="processing" id="processing"><div class="spinner"></div><div class="proc-text" id="procText">Processing...</div></div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+let state = { file: null, arrayBuffer: null, pdfDoc: null, numPages: 0, preset: 'medium' };
+let renderedThumbnails = new Set();
+
+const PRESETS = {
+  low:    { scale: 1.0, quality: 0.55 },
+  medium: { scale: 1.4, quality: 0.75 },
+  high:   { scale: 1.9, quality: 0.88 },
+};
+
+function toast(msg, type = 'info', duration = 3000) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icons = { success: 'check-circle', error: 'circle-exclamation', info: 'circle-info' };
+  t.innerHTML = `<i class="fa-solid fa-${icons[type]}"></i><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, duration);
+}
+function showProcessing(text) { document.getElementById('procText').textContent = text; document.getElementById('processing').classList.add('active'); }
+function hideProcessing() { document.getElementById('processing').classList.remove('active'); }
+function fmtBytes(n) { if (n < 1024) return n + ' B'; if (n < 1024*1024) return (n/1024).toFixed(1)+' KB'; return (n/(1024*1024)).toFixed(2)+' MB'; }
+
+// ---------- File Handling ----------
+const uploadZone = document.getElementById('uploadZone');
+uploadZone.addEventListener('click', () => document.getElementById('fileInput').click());
+document.getElementById('fileInput').addEventListener('change', (e) => handleFile(e.target.files[0]));
+['dragenter', 'dragover'].forEach(ev => uploadZone.addEventListener(ev, (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); }));
+['dragleave', 'drop'].forEach(ev => uploadZone.addEventListener(ev, (e) => { e.preventDefault(); uploadZone.classList.remove('dragover'); }));
+uploadZone.addEventListener('drop', (e) => handleFile(e.dataTransfer.files[0]));
+
+async function handleFile(file) {
+  if (!file || file.type !== 'application/pdf') { toast('Please upload a PDF file.', 'error'); return; }
+  showProcessing('Reading PDF...');
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer.slice(0) }).promise;
+    state.file = file; state.arrayBuffer = arrayBuffer; state.pdfDoc = pdfDoc; state.numPages = pdfDoc.numPages;
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileMeta').textContent = `${pdfDoc.numPages} pages • ${fmtBytes(file.size)}`;
+    document.getElementById('fileInfoWrap').style.display = 'block';
+    document.getElementById('convertBtn').disabled = false;
+    document.getElementById('resultBox').classList.remove('active');
+    toast(`Loaded "${file.name}" (${fmtBytes(file.size)})`, 'success');
+    renderAll();
+  } catch (err) {
+    console.error(err); toast('Failed to read this PDF. It may be corrupted or encrypted.', 'error');
+  }
+  hideProcessing();
+}
+
+document.getElementById('removeFileBtn').addEventListener('click', resetAll);
+function resetAll() {
+  state = { file: null, arrayBuffer: null, pdfDoc: null, numPages: 0, preset: 'medium' };
+  renderedThumbnails.clear();
+  document.getElementById('fileInfoWrap').style.display = 'none';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('convertBtn').disabled = true;
+  document.getElementById('resultBox').classList.remove('active');
+  renderAll();
+}
+
+// ---------- Thumbnails (rendered in grayscale via CSS filter, matching the eventual output) ----------
+function renderAll() { renderGrid(); }
+
+function renderGrid() {
+  const grid = document.getElementById('pageGrid');
+  const emptyState = document.getElementById('emptyState');
+  if (!state.pdfDoc) {
+    grid.innerHTML = ''; emptyState.style.display = 'flex';
+    document.getElementById('canvasInfo').textContent = 'Upload a PDF to get started';
+    return;
+  }
+  emptyState.style.display = 'none';
+  document.getElementById('canvasInfo').textContent = `${state.numPages} pages • grayscale preview`;
+
+  grid.innerHTML = Array.from({ length: state.numPages }, (_, i) => i).map(idx => `
+    <div class="thumb-card" data-idx="${idx}">
+      <div class="thumb-canvas-wrap" id="thumb-canvas-${idx}">
+        <div class="thumb-placeholder"><i class="fa-solid fa-spin fa-circle-notch"></i></div>
+      </div>
+      <div class="thumb-footer">${idx + 1}</div>
+    </div>
+  `).join('');
+  observeThumbs();
+}
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const idx = entry.target.dataset.idx;
+      if (!renderedThumbnails.has(idx)) { renderedThumbnails.add(idx); renderThumbnail(idx); }
+    }
+  });
+}, { rootMargin: '200px' });
+function observeThumbs() { renderedThumbnails.clear(); document.querySelectorAll('.thumb-card').forEach(c => observer.observe(c)); }
+
+async function renderThumbnail(idx) {
+  if (!state.pdfDoc) return;
+  try {
+    const pdfPage = await state.pdfDoc.getPage(parseInt(idx) + 1);
+    const viewport = pdfPage.getViewport({ scale: 0.3 });
+    const canvas = document.createElement('canvas');
+    canvas.className = 'gray-preview';
+    canvas.width = viewport.width; canvas.height = viewport.height;
+    const wrap = document.getElementById(`thumb-canvas-${idx}`);
+    if (!wrap) return;
+    wrap.innerHTML = ''; wrap.appendChild(canvas);
+    await pdfPage.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+  } catch (e) { console.error('Render thumb failed', e); }
+}
+
+// ---------- Preset selection ----------
+document.querySelectorAll('.preset-btn').forEach(btn => btn.addEventListener('click', () => {
+  state.preset = btn.dataset.preset;
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', b === btn));
+}));
+
+// ---------- Grayscale conversion core ----------
+function toGrayscale(ctx, width, height) {
+  const imgData = ctx.getImageData(0, 0, width, height);
+  const d = imgData.data;
+  for (let i = 0; i < d.length; i += 4) {
+    const gray = 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+    d[i] = d[i + 1] = d[i + 2] = gray;
+  }
+  ctx.putImageData(imgData, 0, 0);
+}
+
+function dataUrlToUint8Array(dataUrl) {
+  const base64 = dataUrl.split(',')[1];
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+document.getElementById('convertBtn').addEventListener('click', async () => {
+  if (!state.pdfDoc) return;
+  try {
+    const { scale, quality } = PRESETS[state.preset];
+    const outDoc = await PDFLib.PDFDocument.create();
+    for (let i = 1; i <= state.numPages; i++) {
+      showProcessing(`Converting page ${i} of ${state.numPages}...`);
+      const page = await state.pdfDoc.getPage(i);
+      const baseViewport = page.getViewport({ scale: 1 });
+      const viewport = page.getViewport({ scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width; canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d');
+      await page.render({ canvasContext: ctx, viewport }).promise;
+      toGrayscale(ctx, canvas.width, canvas.height);
+
+      const jpegBytes = dataUrlToUint8Array(canvas.toDataURL('image/jpeg', quality));
+      const img = await outDoc.embedJpg(jpegBytes);
+      const outPage = outDoc.addPage([baseViewport.width, baseViewport.height]);
+      outPage.drawImage(img, { x: 0, y: 0, width: baseViewport.width, height: baseViewport.height });
+      if (i % 3 === 0) await new Promise(r => setTimeout(r, 0));
+    }
+
+    showProcessing('Saving file...');
+    const bytes = await outDoc.save();
+    const baseName = state.file.name.replace(/\.pdf$/i, '');
+    downloadBlob(new Blob([bytes], { type: 'application/pdf' }), `${baseName} - grayscale (${state.preset}).pdf`);
+    hideProcessing();
+
+    document.getElementById('resOriginal').textContent = fmtBytes(state.file.size);
+    document.getElementById('resNew').textContent = fmtBytes(bytes.length);
+    document.getElementById('resultBox').classList.add('active');
+    toast('Grayscale PDF downloaded.', 'success');
+  } catch (err) {
+    console.error(err); hideProcessing();
+    toast(err.message || 'Failed to convert PDF.', 'error');
+  }
+});
+
+function downloadBlob(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+// ---------- Theme ----------
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.querySelector('.theme-toggle .knob').textContent = isDark ? 'L' : 'D';
+  localStorage.setItem('pp_theme', isDark ? 'light' : 'dark');
+});
+const savedTheme = localStorage.getItem('pp_theme') || 'light';
+document.body.setAttribute('data-theme', savedTheme);
+document.querySelector('.theme-toggle .knob').textContent = savedTheme === 'dark' ? 'D' : 'L';
+
+document.getElementById('newProjectBtn').addEventListener('click', () => {
+  if (!state.pdfDoc || confirm('Clear the current PDF and start over?')) resetAll();
+});
+
+window.addEventListener('beforeunload', e => { if (state.pdfDoc) { e.preventDefault(); e.returnValue = ''; } });
+
+renderAll();
+</script>
+</body>
+</html>

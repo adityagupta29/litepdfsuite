@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Compare PDFs | Lite PDF Suite</title>
+<meta name="description" content="Compare two PDF files online for free and see exactly what changed, line by line, with additions and deletions highlighted.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://litepdfsuite.com/compare-pdf.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Compare PDFs | Lite PDF Suite">
+<meta property="og:description" content="Compare two PDF files online for free and see exactly what changed, line by line, with additions and deletions highlighted.">
+<meta property="og:url" content="https://litepdfsuite.com/compare-pdf.html">
+<link rel="icon" type="image/svg+xml" href="favicon/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon/icon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="tools-menu.js"></script>
+<script src="tool-info.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<style>
+  :root {
+    --bg: #f7f7f8; --bg-2: #ffffff; --card: #ffffff; --card-2: #f2f2f4;
+    --border: rgba(0, 0, 0, 0.08); --border-strong: rgba(0, 0, 0, 0.16);
+    --fg: #333333; --muted: #666666;
+    --accent: #ca8a04; --accent-2: #a16207; --accent-3: #2d6a4f;
+    --danger: #dc2626; --danger-bg: #fee2e2;
+    --add-bg: #dcfce7; --add-fg: #166534; --add-border: #86efac;
+    --del-bg: #fee2e2; --del-fg: #991b1b; --del-border: #fca5a5;
+    --shadow: rgba(0,0,0,0.05); --slider-track: #e0e0e0;
+  }
+  [data-theme="dark"] {
+    --bg: #07080a; --bg-2: #0c0d10; --card: #14161a; --card-2: #1c1f24;
+    --border: rgba(255, 255, 255, 0.08); --border-strong: rgba(255, 255, 255, 0.2);
+    --fg: #e8eaed; --muted: #8a8f96;
+    --accent: #facc15; --accent-2: #eab308; --accent-3: #4ecca3;
+    --danger: #ef4444; --danger-bg: rgba(239, 68, 68, 0.1);
+    --add-bg: rgba(34, 197, 94, 0.15); --add-fg: #86efac; --add-border: rgba(34, 197, 94, 0.35);
+    --del-bg: rgba(239, 68, 68, 0.15); --del-fg: #fca5a5; --del-border: rgba(239, 68, 68, 0.35);
+    --shadow: rgba(0,0,0,0.4); --slider-track: #2c2f36;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    background: var(--bg); color: var(--fg);
+    overflow: hidden; -webkit-font-smoothing: antialiased;
+    transition: background 0.4s, color 0.4s;
+  }
+  button { font-family: inherit; }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+  html { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+
+  .app-container { display: flex; flex-direction: column; height: 100vh; }
+  header.topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px; border-bottom: 1px solid var(--border);
+    background: var(--bg-2); z-index: 10;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+  .logo-mark {
+    width: 38px; height: 38px; border-radius: 10px; background: var(--fg); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 900; font-size: 20px;
+  }
+  .brand-name { font-family: 'Fraunces', serif; font-weight: 900; font-size: 20px; }
+  .brand-tag { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: -2px; }
+  .top-actions { display: flex; align-items: center; gap: 16px; }
+  .btn {
+    padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    border: 1px solid var(--border); background: var(--card); color: var(--fg);
+    cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;
+    white-space: nowrap; text-decoration: none;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-danger { color: var(--danger); border-color: var(--border); }
+  .btn-danger:hover { background: var(--danger-bg); border-color: var(--danger); }
+
+  .theme-toggle {
+    width: 80px; height: 32px; border-radius: 16px;
+    background: var(--bg); border: 1px solid var(--border);
+    display: flex; align-items: center; padding: 3px; cursor: pointer; position: relative;
+  }
+  .theme-toggle .knob {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--fg); color: var(--bg);
+    display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 2;
+  }
+  [data-theme="dark"] .theme-toggle .knob { transform: translateX(46px); }
+  .theme-toggle .label { position: absolute; font-size: 10px; font-weight: 600; color: var(--muted); z-index: 1; text-transform: uppercase; }
+  .theme-toggle .label-light { left: 12px; }
+  .theme-toggle .label-dark { right: 12px; }
+  [data-theme="light"] .theme-toggle .label-light { opacity: 0; }
+  [data-theme="dark"] .theme-toggle .label-dark { opacity: 0; }
+
+  main.workspace { flex: 1; display: flex; overflow: hidden; position: relative; }
+  .canvas-area { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 24px 32px; position: relative; }
+
+  .empty-state {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; text-align: center; pointer-events: none;
+  }
+  .empty-icon { width: 80px; height: 80px; border-radius: 20px; background: var(--card); display: flex; align-items: center; justify-content: center; font-size: 32px; color: var(--muted); margin-bottom: 16px; }
+  .empty-title { font-family: 'Fraunces', serif; font-size: 24px; margin-bottom: 8px; }
+  .empty-sub { color: var(--muted); font-size: 14px; max-width: 400px; }
+
+  .diff-wrap { display: none; }
+  .diff-wrap.active { display: block; }
+  .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+  .panel-title { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 600; }
+  .panel-info { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .diff-legend { display: flex; gap: 16px; font-size: 12px; color: var(--muted); }
+  .diff-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend-swatch { width: 12px; height: 12px; border-radius: 3px; }
+
+  .diff-view {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    font-family: 'Space Grotesk', monospace; font-size: 13px; line-height: 1.7;
+    overflow: hidden;
+  }
+  .diff-line { display: flex; white-space: pre-wrap; word-break: break-word; border-left: 3px solid transparent; }
+  .diff-line .gutter { width: 28px; flex-shrink: 0; text-align: center; user-select: none; opacity: 0.6; }
+  .diff-line .content { flex: 1; padding: 2px 12px 2px 4px; }
+  .diff-line.add { background: var(--add-bg); color: var(--add-fg); border-left-color: var(--add-border); }
+  .diff-line.remove { background: var(--del-bg); color: var(--del-fg); border-left-color: var(--del-border); }
+  .diff-line.equal { color: var(--fg); }
+  .diff-line.equal.collapsed-hint { color: var(--muted); font-style: italic; justify-content: center; padding: 6px; cursor: pointer; }
+
+  aside.sidebar {
+    width: 340px; background: var(--bg-2); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0; z-index: 5;
+  }
+  .sidebar-section { padding: 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; }
+  .sidebar-scroll { flex: 1; overflow-y: auto; }
+  .sidebar-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+  .upload-zone {
+    border: 2px dashed var(--border-strong); border-radius: 12px; padding: 18px;
+    text-align: center; cursor: pointer; transition: all 0.2s; background: var(--card);
+  }
+  .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: rgba(202, 138, 4, 0.06); }
+  .upload-zone i { font-size: 20px; color: var(--accent); margin-bottom: 6px; display: block; }
+  .upload-zone p { margin: 0; font-size: 12px; font-weight: 500; }
+
+  .file-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+  }
+  .file-item-info { flex: 1; overflow: hidden; }
+  .file-item-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-item-meta { font-size: 11px; color: var(--muted); }
+  .slot-label { font-size: 11px; font-weight: 700; margin-bottom: 6px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .slot-label.a { color: #b91c1c; }
+  .slot-label.b { color: #15803d; }
+  [data-theme="dark"] .slot-label.a { color: #fca5a5; }
+  [data-theme="dark"] .slot-label.b { color: #86efac; }
+
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; margin-top: 14px; }
+  .toggle-row span { font-size: 13px; }
+  .switch { width: 40px; height: 22px; background: var(--slider-track); border-radius: 11px; position: relative; cursor: pointer; flex-shrink: 0; }
+  .switch .knob { position: absolute; top: 2px; left: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+  .switch.on { background: var(--accent); }
+  .switch.on .knob { transform: translateX(18px); }
+
+  .stat-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 14px; }
+  .stat-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
+  .stat-row:last-child { margin-bottom: 0; }
+  .stat-row .add-count { color: var(--add-fg); font-weight: 700; }
+  .stat-row .del-count { color: var(--del-fg); font-weight: 700; }
+
+  .form-hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+
+  .generate-btn {
+    width: 100%; padding: 14px; background: var(--accent); color: #1a1a1a; border: none;
+    border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.2s;
+  }
+  .generate-btn:hover { background: var(--accent-2); }
+  .generate-btn:disabled { background: var(--muted); color: #fff; cursor: not-allowed; }
+
+  .toast-container { position: fixed; top: 78px; right: 24px; z-index: 1000; display: flex; flex-direction: column-reverse; gap: 10px; pointer-events: none; }
+  .toast-container .toast { pointer-events: auto; }
+  .toast { background: var(--card); border: 1px solid var(--border); padding: 12px 18px; border-radius: 8px; display: flex; align-items: center; gap: 12px; min-width: 260px; box-shadow: 0 10px 30px var(--shadow); animation: tIn 0.4s; font-size: 13px; }
+  .toast.success { border-left: 3px solid var(--accent-3); }
+  .toast.error { border-left: 3px solid var(--danger); }
+  .toast.info { border-left: 3px solid var(--accent); }
+  @keyframes tIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  .processing { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
+  .processing.active { display: flex; }
+  .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .proc-text { color: #fff; font-family: 'Fraunces', serif; font-size: 18px; }
+
+  .privacy-note { display: flex; align-items: flex-start; gap: 8px; font-size: 11px; color: var(--muted); line-height: 1.4; padding: 12px 20px; }
+  .privacy-note i { color: var(--accent-3); margin-top: 2px; }
+  .logo-icon, .logo-mark { background: transparent !important; }
+  .logo-icon::after, .logo-mark::after { display: none !important; }
+  .logo-icon img, .logo-mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
+</style>
+</head>
+<body data-theme="light">
+
+<div class="app-container">
+  <header class="topbar">
+    <a href="index.html" class="brand">
+      <div class="logo-mark"><img src="favicon/favicon.svg" alt="Lite PDF Suite"></div>
+      <div>
+        <div class="brand-name">Lite PDF Suite</div>
+        <div class="brand-tag">Compare PDFs</div>
+      </div>
+    </a>
+    <div class="top-actions">
+      <div class="tm-mount" data-tools-menu></div>
+            <div data-tool-info>
+        <button class="ti-trigger" type="button"><i class="fa-solid fa-circle-info"></i> <span>Tool Info</span></button>
+        <div class="ti-overlay">
+          <div class="ti-modal" role="dialog" aria-modal="true" aria-labelledby="tiTitle">
+            <div class="ti-modal-header">
+              <h2 id="tiTitle">Compare PDFs Guide</h2>
+              <button class="ti-close" type="button" aria-label="Close">&times;</button>
+            </div>
+            <div class="ti-modal-body">
+              <p>Comparing two PDFs means finding exactly what changed between an original version and a revised one, down to the line or word level, instead of reading both documents side by side and hoping nothing was missed. Lite PDF Suite's compare tool lines up both files and highlights additions, deletions, and changes directly on the page, all processed inside your browser. This is especially useful for contracts that have gone through several rounds of edits, reports with new drafts, or any document where a small change could easily be overlooked. Because nothing is uploaded to a server, you can compare confidential agreements or financial documents without exposing them to an outside service. Catching a single altered clause or number by eye across dozens of pages is genuinely difficult, which is exactly the problem this tool is built to solve.</p>
+
+              <h3>Key Features</h3>
+              <p>The comparison tool focuses on making differences immediately visible instead of leaving you to spot them manually.</p>
+              <ul>
+                <li><strong>Side by side view:</strong> see both document versions lined up next to each other.</li>
+                <li><strong>Highlighted changes:</strong> additions, deletions, and edits are marked directly on the page.</li>
+                <li><strong>Page by page comparison:</strong> scroll through the entire document to review every change.</li>
+                <li><strong>Works with reordered content:</strong> the tool still catches changes even if pages shifted slightly.</li>
+                <li><strong>No file upload:</strong> both documents stay on your device throughout the comparison.</li>
+                <li><strong>Clear visual markers:</strong> additions and removals use distinct colors so nothing blends together.</li>
+              </ul>
+
+              <h3>How to Use It</h3>
+              <p>Comparing two versions of a document takes just two uploads, and the results appear automatically once both files are loaded.</p>
+              <ol>
+                <li>Upload the original PDF file.</li>
+                <li>Upload the revised version you want to compare it against.</li>
+                <li>Let the tool process both documents inside your browser.</li>
+                <li>Review the highlighted differences page by page.</li>
+                <li>Download a summary or the marked up comparison if needed.</li>
+              </ol>
+              <p>Because the comparison runs locally, even lengthy contracts finish processing in just a few seconds. You can rerun the comparison as many times as needed if a newer draft arrives.</p>
+
+              <h3>Common Use Cases</h3>
+              <p>Comparing documents matters whenever accuracy across versions is important, particularly in legal, financial, or academic contexts.</p>
+              <ul>
+                <li>Checking a revised contract against the original before signing.</li>
+                <li>Reviewing a new draft of a report to confirm only the intended sections changed.</li>
+                <li>Verifying that a vendor did not quietly alter terms in a renewed agreement.</li>
+                <li>Tracking changes across multiple rounds of a legal or academic document.</li>
+                <li>Confirming a scanned reprint matches the original approved version exactly.</li>
+                <li>Checking that a colleague's edits did not accidentally remove important content.</li>
+              </ul>
+
+              <h3>Frequently Asked Questions</h3>
+              <p><strong>Is comparing PDFs free?</strong> Yes, the compare tool on Lite PDF Suite is completely free to use.</p>
+              <p><strong>Are both files uploaded to a server?</strong> No, both documents are processed locally inside your browser and never leave your device.</p>
+              <p><strong>Can it catch small wording changes, not just big edits?</strong> Yes, the tool is built to highlight small differences down to individual words and lines.</p>
+              <p><strong>Does it work if the two files have a different number of pages?</strong> Yes, the tool still aligns and compares content even when page counts differ slightly.</p>
+              <p><strong>Can I compare two scanned documents?</strong> Yes, though comparison accuracy is generally best when the underlying text can be read clearly on both versions.</p>
+              <p>Reading two long documents side by side to spot every change is slow and genuinely easy to get wrong, especially when a contract or report has gone through several rounds of edits. Lite PDF Suite's compare tool exists to remove that manual effort, surfacing every addition, deletion, and edit automatically so nothing important slips through unnoticed. Because both files are processed locally, this works just as well for a confidential agreement as it does for a routine internal report, without either document ever leaving your device.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <span class="label label-light">Light</span>
+        <span class="label label-dark">Dark</span>
+        <div class="knob">L</div>
+      </div>
+      <button class="btn btn-danger" id="newProjectBtn"><i class="fa-solid fa-trash"></i> New Project</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <div class="canvas-area" id="canvasArea">
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon"><i class="fa-solid fa-code-compare"></i></div>
+        <div class="empty-title">No PDFs loaded</div>
+        <div class="empty-sub">Upload two versions of a document to see exactly what text changed between them.</div>
+      </div>
+
+      <div class="diff-wrap" id="diffWrap">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Text Differences</div>
+            <div class="panel-info" id="diffInfo"></div>
+          </div>
+          <div class="diff-legend">
+            <span><span class="legend-swatch" style="background:var(--del-bg); border:1px solid var(--del-border);"></span> Removed (A)</span>
+            <span><span class="legend-swatch" style="background:var(--add-bg); border:1px solid var(--add-border);"></span> Added (B)</span>
+          </div>
+        </div>
+        <div class="diff-view" id="diffView"></div>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title"><i class="fa-solid fa-cloud-arrow-up"></i> Upload PDFs</div>
+        <div class="slot-label a">A — Original</div>
+        <div class="upload-zone" id="uploadZoneA">
+          <i class="fa-solid fa-file-pdf"></i>
+          <p>Drop or click to browse</p>
+        </div>
+        <input type="file" id="fileInputA" accept="application/pdf" style="display:none">
+        <div id="fileInfoWrapA" style="margin-top: 8px; margin-bottom: 14px; display:none;">
+          <div class="file-item">
+            <i class="fa-solid fa-file-pdf" style="color: #b91c1c;"></i>
+            <div class="file-item-info">
+              <div class="file-item-name" id="fileNameA"></div>
+              <div class="file-item-meta" id="fileMetaA"></div>
+            </div>
+            <button class="btn" id="removeFileBtnA" style="padding: 4px 8px; border: none; color: var(--muted);"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        </div>
+
+        <div class="slot-label b">B — Revised</div>
+        <div class="upload-zone" id="uploadZoneB">
+          <i class="fa-solid fa-file-pdf"></i>
+          <p>Drop or click to browse</p>
+        </div>
+        <input type="file" id="fileInputB" accept="application/pdf" style="display:none">
+        <div id="fileInfoWrapB" style="margin-top: 8px; display:none;">
+          <div class="file-item">
+            <i class="fa-solid fa-file-pdf" style="color: #15803d;"></i>
+            <div class="file-item-info">
+              <div class="file-item-name" id="fileNameB"></div>
+              <div class="file-item-meta" id="fileMetaB"></div>
+            </div>
+            <button class="btn" id="removeFileBtnB" style="padding: 4px 8px; border: none; color: var(--muted);"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section sidebar-scroll">
+        <div class="sidebar-title"><i class="fa-solid fa-sliders"></i> Options</div>
+        <div class="toggle-row" style="margin-top:0;">
+          <span>Ignore whitespace</span>
+          <div class="switch on" id="ignoreWsSwitch"><div class="knob"></div></div>
+        </div>
+        <div class="toggle-row">
+          <span>Collapse unchanged lines</span>
+          <div class="switch on" id="collapseSwitch"><div class="knob"></div></div>
+        </div>
+        <div class="stat-box" id="statBox" style="display:none;">
+          <div class="stat-row"><span>Lines added</span><span class="add-count" id="statAdd">0</span></div>
+          <div class="stat-row"><span>Lines removed</span><span class="del-count" id="statDel">0</span></div>
+          <div class="stat-row"><span>Lines unchanged</span><strong id="statSame">0</strong></div>
+        </div>
+        <div class="form-hint">Comparison is text-only (like a document redline) — layout, images, and formatting differences aren't detected. Best for contracts, essays, and other text-heavy PDFs.</div>
+      </div>
+
+      <div class="sidebar-section">
+        <button class="generate-btn" id="downloadBtn" disabled><i class="fa-solid fa-download"></i> Download Diff Report</button>
+      </div>
+      <div class="privacy-note"><i class="fa-solid fa-shield-halved"></i> Both PDFs are compared entirely in your browser. Nothing is uploaded to a server.</div>
+    </aside>
+  </main>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<div class="processing" id="processing"><div class="spinner"></div><div class="proc-text" id="procText">Processing...</div></div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+let state = {
+  fileA: null, fileB: null, textA: null, textB: null,
+  ignoreWs: true, collapse: true, diffOps: null,
+};
+
+function toast(msg, type = 'info', duration = 3000) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icons = { success: 'check-circle', error: 'circle-exclamation', info: 'circle-info' };
+  t.innerHTML = `<i class="fa-solid fa-${icons[type]}"></i><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, duration);
+}
+function showProcessing(text) { document.getElementById('procText').textContent = text; document.getElementById('processing').classList.add('active'); }
+function hideProcessing() { document.getElementById('processing').classList.remove('active'); }
+function fmtBytes(n) { if (n < 1024) return n + ' B'; if (n < 1024*1024) return (n/1024).toFixed(1)+' KB'; return (n/(1024*1024)).toFixed(2)+' MB'; }
+
+// ---------- Text extraction (same heuristic as Extract Text & Images) ----------
+async function extractFullText(arrayBuffer) {
+  const pdfDoc = await pdfjsLib.getDocument({ data: arrayBuffer.slice(0) }).promise;
+  const lines = [];
+  for (let i = 1; i <= pdfDoc.numPages; i++) {
+    const page = await pdfDoc.getPage(i);
+    const content = await page.getTextContent();
+    let text = '', lastY = null;
+    for (const item of content.items) {
+      if (item.str === undefined) continue;
+      const y = item.transform ? item.transform[5] : null;
+      if (lastY !== null && y !== null && Math.abs(y - lastY) > 2) text += '\n';
+      text += item.str;
+      if (item.hasEOL) text += '\n';
+      if (y !== null) lastY = y;
+    }
+    text.split('\n').forEach(l => { const t = l.trim(); if (t) lines.push(t); });
+  }
+  return lines;
+}
+
+// ---------- File Handling (two independent upload slots) ----------
+function wireUpload(zoneId, inputId, onFile) {
+  const zone = document.getElementById(zoneId);
+  const input = document.getElementById(inputId);
+  zone.addEventListener('click', () => input.click());
+  input.addEventListener('change', (e) => onFile(e.target.files[0]));
+  ['dragenter', 'dragover'].forEach(ev => zone.addEventListener(ev, (e) => { e.preventDefault(); zone.classList.add('dragover'); }));
+  ['dragleave', 'drop'].forEach(ev => zone.addEventListener(ev, (e) => { e.preventDefault(); zone.classList.remove('dragover'); }));
+  zone.addEventListener('drop', (e) => onFile(e.dataTransfer.files[0]));
+}
+wireUpload('uploadZoneA', 'fileInputA', (f) => handleFile('A', f));
+wireUpload('uploadZoneB', 'fileInputB', (f) => handleFile('B', f));
+
+async function handleFile(slot, file) {
+  if (!file || file.type !== 'application/pdf') { toast('Please upload a PDF file.', 'error'); return; }
+  showProcessing(`Reading document ${slot}...`);
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const lines = await extractFullText(arrayBuffer);
+    if (slot === 'A') { state.fileA = file; state.textA = lines; }
+    else { state.fileB = file; state.textB = lines; }
+    document.getElementById(`fileName${slot}`).textContent = file.name;
+    document.getElementById(`fileMeta${slot}`).textContent = `${fmtBytes(file.size)} • ${lines.length} lines`;
+    document.getElementById(`fileInfoWrap${slot}`).style.display = 'block';
+    toast(`Loaded document ${slot}: "${file.name}"`, 'success');
+    if (state.textA && state.textB) await runCompare();
+  } catch (err) {
+    console.error(err); toast(`Failed to read document ${slot}. It may be corrupted or encrypted.`, 'error');
+  }
+  hideProcessing();
+}
+
+document.getElementById('removeFileBtnA').addEventListener('click', () => resetSlot('A'));
+document.getElementById('removeFileBtnB').addEventListener('click', () => resetSlot('B'));
+function resetSlot(slot) {
+  if (slot === 'A') { state.fileA = null; state.textA = null; } else { state.fileB = null; state.textB = null; }
+  document.getElementById(`fileInfoWrap${slot}`).style.display = 'none';
+  document.getElementById(`fileInput${slot}`).value = '';
+  showEmptyOrDiff();
+}
+function resetAll() {
+  state = { fileA: null, fileB: null, textA: null, textB: null, ignoreWs: true, collapse: true, diffOps: null };
+  ['A','B'].forEach(s => { document.getElementById(`fileInfoWrap${s}`).style.display = 'none'; document.getElementById(`fileInput${s}`).value = ''; });
+  document.getElementById('downloadBtn').disabled = true;
+  document.getElementById('statBox').style.display = 'none';
+  showEmptyOrDiff();
+}
+function showEmptyOrDiff() {
+  const has = state.diffOps !== null;
+  document.getElementById('emptyState').style.display = has ? 'none' : 'flex';
+  document.getElementById('diffWrap').classList.toggle('active', has);
+}
+
+// ---------- Diff (LCS-based line diff) ----------
+function diffLines(a, b) {
+  const n = a.length, m = b.length;
+  const SIZE_GUARD = 3000;
+  let aa = a, bb = b, truncated = false;
+  if (n > SIZE_GUARD || m > SIZE_GUARD) { aa = a.slice(0, SIZE_GUARD); bb = b.slice(0, SIZE_GUARD); truncated = true; }
+  const N = aa.length, M = bb.length;
+  const dp = new Array(N + 1);
+  for (let i = 0; i <= N; i++) dp[i] = new Int32Array(M + 1);
+  for (let i = N - 1; i >= 0; i--) {
+    for (let j = M - 1; j >= 0; j--) {
+      dp[i][j] = aa[i] === bb[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1]);
+    }
+  }
+  const ops = [];
+  let i = 0, j = 0;
+  while (i < N && j < M) {
+    if (aa[i] === bb[j]) { ops.push({ type: 'equal', line: aa[i] }); i++; j++; }
+    else if (dp[i + 1][j] >= dp[i][j + 1]) { ops.push({ type: 'remove', line: aa[i] }); i++; }
+    else { ops.push({ type: 'add', line: bb[j] }); j++; }
+  }
+  while (i < N) { ops.push({ type: 'remove', line: aa[i] }); i++; }
+  while (j < M) { ops.push({ type: 'add', line: bb[j] }); j++; }
+  return { ops, truncated };
+}
+
+function normLine(l) { return state.ignoreWs ? l.replace(/\s+/g, ' ').trim() : l; }
+
+async function runCompare() {
+  showProcessing('Comparing documents...');
+  await new Promise(r => setTimeout(r, 30));
+  const a = state.textA.map(normLine);
+  const b = state.textB.map(normLine);
+  const { ops, truncated } = diffLines(a, b);
+  state.diffOps = ops;
+  if (truncated) toast('Documents are very large — comparison was limited to the first 3000 lines of each.', 'info', 5000);
+  renderDiff();
+  hideProcessing();
+}
+
+function renderDiff() {
+  showEmptyOrDiff();
+  const view = document.getElementById('diffView');
+  const ops = state.diffOps;
+  let addCount = 0, delCount = 0, sameCount = 0;
+  ops.forEach(o => { if (o.type === 'add') addCount++; else if (o.type === 'remove') delCount++; else sameCount++; });
+
+  document.getElementById('diffInfo').textContent = `${state.fileA.name}  →  ${state.fileB.name}`;
+  document.getElementById('statAdd').textContent = '+' + addCount;
+  document.getElementById('statDel').textContent = '-' + delCount;
+  document.getElementById('statSame').textContent = sameCount;
+  document.getElementById('statBox').style.display = 'block';
+  document.getElementById('downloadBtn').disabled = false;
+
+  const html = [];
+  const CONTEXT = 2;
+  let i = 0;
+  while (i < ops.length) {
+    if (ops[i].type === 'equal' && state.collapse) {
+      let j = i;
+      while (j < ops.length && ops[j].type === 'equal') j++;
+      const runLen = j - i;
+      if (runLen > CONTEXT * 2 + 1) {
+        for (let k = i; k < i + CONTEXT; k++) html.push(lineHtml(ops[k]));
+        const hidden = runLen - CONTEXT * 2;
+        html.push(`<div class="diff-line equal collapsed-hint">⋯ ${hidden} unchanged line${hidden !== 1 ? 's' : ''} ⋯</div>`);
+        for (let k = j - CONTEXT; k < j; k++) html.push(lineHtml(ops[k]));
+      } else {
+        for (let k = i; k < j; k++) html.push(lineHtml(ops[k]));
+      }
+      i = j;
+    } else {
+      html.push(lineHtml(ops[i]));
+      i++;
+    }
+  }
+  view.innerHTML = html.join('') || '<div style="padding:20px; color:var(--muted); text-align:center;">The documents are identical.</div>';
+}
+
+function escapeHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function lineHtml(op) {
+  const gutter = op.type === 'add' ? '+' : op.type === 'remove' ? '−' : '';
+  return `<div class="diff-line ${op.type}"><div class="gutter">${gutter}</div><div class="content">${escapeHtml(op.line)}</div></div>`;
+}
+
+document.getElementById('ignoreWsSwitch').addEventListener('click', async () => {
+  state.ignoreWs = !state.ignoreWs;
+  document.getElementById('ignoreWsSwitch').classList.toggle('on', state.ignoreWs);
+  if (state.textA && state.textB) await runCompare();
+});
+document.getElementById('collapseSwitch').addEventListener('click', () => {
+  state.collapse = !state.collapse;
+  document.getElementById('collapseSwitch').classList.toggle('on', state.collapse);
+  if (state.diffOps) renderDiff();
+});
+
+// ---------- Download ----------
+document.getElementById('downloadBtn').addEventListener('click', () => {
+  if (!state.diffOps) return;
+  const lines = state.diffOps.map(o => (o.type === 'add' ? '+ ' : o.type === 'remove' ? '- ' : '  ') + o.line);
+  const header = `Diff report\nA (original): ${state.fileA.name}\nB (revised):  ${state.fileB.name}\n${'='.repeat(50)}\n\n`;
+  const blob = new Blob([header + lines.join('\n')], { type: 'text/plain;charset=utf-8' });
+  const baseName = state.fileA.name.replace(/\.pdf$/i, '');
+  downloadBlob(blob, `${baseName} - diff report.txt`);
+  toast('Diff report downloaded.', 'success');
+});
+
+function downloadBlob(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+// ---------- Theme ----------
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.querySelector('.theme-toggle .knob').textContent = isDark ? 'L' : 'D';
+  localStorage.setItem('pp_theme', isDark ? 'light' : 'dark');
+});
+const savedTheme = localStorage.getItem('pp_theme') || 'light';
+document.body.setAttribute('data-theme', savedTheme);
+document.querySelector('.theme-toggle .knob').textContent = savedTheme === 'dark' ? 'D' : 'L';
+
+document.getElementById('newProjectBtn').addEventListener('click', () => {
+  if (!(state.fileA || state.fileB) || confirm('Clear both documents and start over?')) resetAll();
+});
+
+window.addEventListener('beforeunload', e => { if (state.fileA || state.fileB) { e.preventDefault(); e.returnValue = ''; } });
+</script>
+</body>
+</html>

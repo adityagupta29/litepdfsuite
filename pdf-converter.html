@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF Converter - Word, Excel, PowerPoint & Images | Lite PDF Suite</title>
+<meta name="description" content="Convert PDF to Word, Excel, PowerPoint, or images — and images back to PDF — free, online, and entirely in your browser.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://litepdfsuite.com/pdf-converter.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="PDF Converter - Word, Excel, PowerPoint & Images | Lite PDF Suite">
+<meta property="og:description" content="Convert PDF to Word, Excel, PowerPoint, or images — and images back to PDF — free, online, and entirely in your browser.">
+<meta property="og:url" content="https://litepdfsuite.com/pdf-converter.html">
+<link rel="icon" type="image/svg+xml" href="favicon/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon/icon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="tools-menu.js"></script>
+<script src="tool-info.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/docx@8.5.0/build/index.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script>
+  // pptxgenjs's browser bundle has a packaging bug: its outer UMD wrapper assigns the whole
+  // bundle to `window.JSZip` instead of `window.PptxGenJS` (confirmed present in both 3.12.0
+  // and the latest 4.0.1). The real PptxGenJS class is still exposed correctly at
+  // window.PptxGenJS, but loading it clobbers our real JSZip global — so we stash a reference
+  // to the genuine JSZip first and restore it right after pptxgenjs finishes loading.
+  window.__RealJSZip = window.JSZip;
+</script>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<script>
+  window.JSZip = window.__RealJSZip;
+  delete window.__RealJSZip;
+</script>
+<style>
+  :root {
+    --bg: #f7f7f8; --bg-2: #ffffff; --card: #ffffff; --card-2: #f2f2f4;
+    --border: rgba(0, 0, 0, 0.08); --border-strong: rgba(0, 0, 0, 0.16);
+    --fg: #333333; --muted: #666666;
+    --accent: #8b5cf6; --accent-2: #6d28d9; --accent-3: #2d6a4f;
+    --danger: #dc2626; --danger-bg: #fee2e2;
+    --shadow: rgba(0,0,0,0.05); --slider-track: #e0e0e0;
+  }
+  [data-theme="dark"] {
+    --bg: #07080a; --bg-2: #0c0d10; --card: #14161a; --card-2: #1c1f24;
+    --border: rgba(255, 255, 255, 0.08); --border-strong: rgba(255, 255, 255, 0.2);
+    --fg: #e8eaed; --muted: #8a8f96;
+    --accent: #a78bfa; --accent-2: #8b5cf6; --accent-3: #4ecca3;
+    --danger: #ef4444; --danger-bg: rgba(239, 68, 68, 0.1);
+    --shadow: rgba(0,0,0,0.4); --slider-track: #2c2f36;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; min-height: 100%; }
+  body {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    background: var(--bg); color: var(--fg);
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.4s, color 0.4s;
+  }
+  button, select, input { font-family: inherit; }
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+  html { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+
+  .app-container { display: flex; flex-direction: column; min-height: 100vh; }
+  header.topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px; border-bottom: 1px solid var(--border);
+    background: var(--bg-2); z-index: 30; flex-shrink: 0;
+    position: sticky; top: 0;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .logo-mark {
+    width: 38px; height: 38px; border-radius: 10px; background: var(--fg); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 900; font-size: 20px;
+  }
+  [data-theme="dark"] .logo-mark { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
+  .brand-name { font-family: 'Fraunces', serif; font-weight: 900; font-size: 20px; }
+  .brand-tag { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: -2px; }
+  .top-actions { display: flex; align-items: center; gap: 10px; }
+  .btn {
+    padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    border: 1px solid var(--border); background: var(--card); color: var(--fg);
+    cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-danger { color: var(--danger); border-color: var(--border); }
+  .btn-danger:hover:not(:disabled) { background: var(--danger-bg); border-color: var(--danger); color: var(--danger); }
+  .btn-primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn-primary:hover:not(:disabled) { background: var(--accent-2); color: #fff; }
+  .btn-block { width: 100%; justify-content: center; }
+  .btn-lg { padding: 15px 24px; font-size: 15px; font-weight: 700; border-radius: 12px; }
+
+  .theme-toggle {
+    width: 74px; height: 32px; border-radius: 16px;
+    background: var(--bg); border: 1px solid var(--border);
+    display: flex; align-items: center; padding: 3px; cursor: pointer; position: relative; flex-shrink: 0;
+  }
+  .theme-toggle .knob {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--fg); color: var(--bg);
+    display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 2;
+  }
+  [data-theme="dark"] .theme-toggle .knob { transform: translateX(40px); background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
+  .theme-toggle .label { position: absolute; font-size: 10px; font-weight: 600; color: var(--muted); z-index: 1; text-transform: uppercase; }
+  .theme-toggle .label-light { left: 11px; }
+  .theme-toggle .label-dark { right: 11px; }
+  [data-theme="light"] .theme-toggle .label-light { opacity: 0; }
+  [data-theme="dark"] .theme-toggle .label-dark { opacity: 0; }
+
+  main.workspace { flex: 1; max-width: 1080px; margin: 0 auto; width: 100%; padding: 40px 24px 80px; }
+
+  .page-heading { text-align: center; margin-bottom: 32px; }
+  .page-heading h1 { font-family: 'Fraunces', serif; font-weight: 900; font-size: 2.1rem; letter-spacing: -0.02em; margin: 0 0 10px; }
+  .page-heading h1 .accent { color: var(--accent); font-style: italic; }
+  .page-heading p { color: var(--muted); font-size: 1.02rem; max-width: 560px; margin: 0 auto; }
+
+  .mode-tabs {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    margin-bottom: 28px;
+  }
+  .mode-tabs-sub { font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin: 0 0 10px 2px; }
+  .mode-tabs-sub:not(:first-child) { margin-top: 6px; }
+  .mode-tab {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 16px 10px; cursor: pointer; text-align: center; transition: all 0.2s;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .mode-tab:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .mode-tab.active { border-color: var(--accent); background: var(--card-2); box-shadow: 0 8px 20px var(--shadow); }
+  .mode-tab .mode-icon {
+    width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 15px; background: var(--bg-2); color: var(--muted); transition: all 0.2s;
+  }
+  .mode-tab.active .mode-icon { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
+  .mode-tab .mode-label { font-size: 12.5px; font-weight: 600; line-height: 1.3; }
+  .mode-tab .mode-sub { font-size: 10.5px; color: var(--muted); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 20px;
+    padding: 28px; box-shadow: 0 10px 40px var(--shadow);
+  }
+  .panel-title { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+  .panel-sub { color: var(--muted); font-size: 13.5px; margin-bottom: 22px; line-height: 1.5; }
+  .panel-note {
+    display: flex; gap: 10px; align-items: flex-start; font-size: 12.5px; line-height: 1.55;
+    background: var(--bg-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px;
+    margin-top: 18px; color: var(--muted);
+  }
+  .panel-note i { color: var(--accent); margin-top: 1px; }
+  .panel-note strong { color: var(--fg); font-weight: 600; }
+
+  .upload-zone {
+    border: 2px dashed var(--border-strong); border-radius: 16px; padding: 42px 24px;
+    text-align: center; cursor: pointer; transition: all 0.2s; background: var(--bg-2);
+  }
+  .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: var(--card-2); }
+  .upload-zone .upload-icon {
+    width: 64px; height: 64px; border-radius: 16px; margin: 0 auto 16px;
+    background: var(--fg); color: var(--bg); display: flex; align-items: center; justify-content: center; font-size: 26px;
+    animation: uploadBob 3s ease-in-out infinite;
+  }
+  [data-theme="dark"] .upload-zone .upload-icon { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
+  @keyframes uploadBob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-6px) rotate(2deg); } }
+  .upload-zone .upload-title { font-family: 'Fraunces', serif; font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+  .upload-zone .upload-sub { color: var(--muted); font-size: 13px; }
+
+  .file-summary {
+    display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+    background: var(--bg-2); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 20px;
+  }
+  .file-summary .f-icon {
+    width: 42px; height: 42px; border-radius: 10px; background: var(--card-2); color: var(--accent);
+    display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0;
+  }
+  .file-summary .f-info { flex: 1; min-width: 0; }
+  .file-summary .f-name { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-summary .f-meta { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .file-summary .f-remove {
+    background: transparent; border: none; color: var(--muted); cursor: pointer; font-size: 15px;
+    width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .file-summary .f-remove:hover { background: var(--danger-bg); color: var(--danger); }
+
+  .thumb-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 10px;
+    margin-bottom: 20px; max-height: 340px; overflow-y: auto; padding: 4px;
+  }
+  .thumb-card {
+    position: relative; border-radius: 8px; overflow: hidden; border: 2px solid var(--border);
+    background: #fff; cursor: default; transition: all 0.2s; aspect-ratio: 3/4;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .thumb-card.excluded { opacity: 0.35; }
+  .thumb-card canvas, .thumb-card img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .thumb-num {
+    position: absolute; bottom: 4px; left: 4px; background: rgba(0,0,0,0.65); color: #fff;
+    font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600;
+  }
+  .thumb-toggle {
+    position: absolute; top: 4px; right: 4px; width: 22px; height: 22px; border-radius: 6px;
+    background: rgba(0,0,0,0.55); color: #fff; border: none; cursor: pointer; font-size: 11px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .thumb-toggle.on { background: var(--accent); }
+  .thumb-card.draggable { cursor: grab; }
+  .thumb-card.dragging { opacity: 0.3; }
+  .thumb-remove {
+    position: absolute; top: 4px; left: 4px; width: 22px; height: 22px; border-radius: 6px;
+    background: rgba(0,0,0,0.55); color: #fff; border: none; cursor: pointer; font-size: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .thumb-remove:hover { background: var(--danger); }
+
+  .field { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+  .field-label { font-size: 12.5px; color: var(--muted); font-weight: 500; }
+  .field-row { display: flex; gap: 12px; }
+  .field-row .field { flex: 1; }
+  .select, .input {
+    background: var(--bg-2); border: 1px solid var(--border); color: var(--fg);
+    padding: 10px 14px; border-radius: 10px; font-size: 14px; width: 100%;
+  }
+  .select:focus, .input:focus { outline: none; border-color: var(--accent); }
+
+  .seg { display: grid; gap: 4px; background: var(--bg-2); padding: 4px; border-radius: 10px; border: 1px solid var(--border); }
+  .seg.cols-2 { grid-template-columns: 1fr 1fr; }
+  .seg.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .seg-item { padding: 9px 8px; border-radius: 7px; text-align: center; font-size: 13px; color: var(--muted); cursor: pointer; transition: all 0.2s; border: none; background: transparent; font-family: inherit; }
+  .seg-item.active { background: var(--card); color: var(--fg); font-weight: 600; box-shadow: 0 2px 6px var(--shadow); }
+
+  .range { -webkit-appearance: none; appearance: none; width: 100%; height: 6px; background: var(--slider-track); border-radius: 3px; outline: none; cursor: pointer; }
+  .range::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 2px solid var(--bg); }
+  .range::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 2px solid var(--bg); }
+  .range-val { color: var(--fg); font-weight: 600; }
+
+  #pdfInput, #imgInput, #docxInput, #xlsxInput, #pptxInput { display: none; }
+
+  /* Toast */
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
+  .toast { background: var(--card); border: 1px solid var(--border); padding: 12px 18px; border-radius: 8px; display: flex; align-items: center; gap: 12px; min-width: 260px; max-width: 360px; box-shadow: 0 10px 30px var(--shadow); animation: tIn 0.4s; font-size: 13px; }
+  .toast.success { border-left: 3px solid var(--accent-3); }
+  .toast.error { border-left: 3px solid var(--danger); }
+  .toast.info { border-left: 3px solid var(--accent); }
+  @keyframes tIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .toast.out { animation: tOut 0.3s forwards; }
+  @keyframes tOut { to { transform: translateX(20px); opacity: 0; } }
+
+  /* Processing */
+  .processing { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
+  .processing.show { display: flex; }
+  .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .proc-text { color: #fff; font-family: 'Fraunces', serif; font-size: 18px; }
+  .proc-sub { color: rgba(255,255,255,0.6); font-size: 13px; }
+
+  @media (max-width: 720px) {
+    .mode-tabs { grid-template-columns: repeat(3, 1fr); }
+    .panel { padding: 20px; }
+  }
+  .logo-icon, .logo-mark { background: transparent !important; }
+  .logo-icon::after, .logo-mark::after { display: none !important; }
+  .logo-icon img, .logo-mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
+</style>
+</head>
+<body data-theme="light">
+
+<div class="app-container">
+  <header class="topbar">
+    <a href="index.html" class="brand" style="text-decoration:none;color:inherit">
+      <div class="logo-mark"><img src="favicon/favicon.svg" alt="Lite PDF Suite"></div>
+      <div>
+        <div class="brand-name">Lite PDF Suite</div>
+        <div class="brand-tag">PDF Converter</div>
+      </div>
+    </a>
+    <div class="top-actions">
+      <div class="tm-mount" data-tools-menu></div>
+            <div data-tool-info>
+        <button class="ti-trigger" type="button"><i class="fa-solid fa-circle-info"></i> <span>Tool Info</span></button>
+        <div class="ti-overlay">
+          <div class="ti-modal" role="dialog" aria-modal="true" aria-labelledby="tiTitle">
+            <div class="ti-modal-header">
+              <h2 id="tiTitle">PDF Converter Guide</h2>
+              <button class="ti-close" type="button" aria-label="Close">&times;</button>
+            </div>
+            <div class="ti-modal-body">
+              <p>Converting a PDF means turning it into another file format, such as Word, Excel, PowerPoint, or plain images, or going the other direction and turning those file types into a PDF. Lite PDF Suite's converter handles both directions inside your browser, reading the structure of your document and rebuilding it in the new format without sending the file to an outside server. This matters for documents you would rather not upload anywhere, such as financial records, personal identification, or unpublished writing. Because everything runs on your own device, there is no queue to wait in and no daily conversion limit, so you can convert one file or a whole batch of documents back to back. The same tool works whether you are moving content out of a PDF for editing, or packaging finished files into a PDF for sharing.</p>
+
+              <h3>Key Features</h3>
+              <p>The converter supports the file types people actually need day to day, covering both directions of the conversion process in one place.</p>
+              <ul>
+                <li><strong>PDF to Word:</strong> turn a PDF into an editable Word document.</li>
+                <li><strong>PDF to Excel and PowerPoint:</strong> extract tables or slides into their native formats.</li>
+                <li><strong>PDF to images:</strong> export every page as a high quality PNG or JPG.</li>
+                <li><strong>Images to PDF:</strong> combine several photos or scans into a single PDF file.</li>
+                <li><strong>Batch conversion:</strong> convert multiple files without repeating the process one at a time.</li>
+                <li><strong>Layout preservation:</strong> the converter works to keep fonts, spacing, and tables close to the original.</li>
+              </ul>
+
+              <h3>How to Use It</h3>
+              <p>Converting a file only takes a few steps, whichever direction you are going, and the interface stays the same regardless of the format you choose.</p>
+              <ol>
+                <li>Upload the file you want to convert.</li>
+                <li>Choose the output format you need, such as Word, Excel, or image.</li>
+                <li>Let the tool process the file locally in your browser.</li>
+                <li>Preview the result before downloading it.</li>
+                <li>Click <strong>Download</strong> to save the converted file to your device.</li>
+              </ol>
+              <p>Larger files may take a few extra seconds to process, but everything still happens without leaving your browser tab. You can start another conversion immediately after the first one finishes.</p>
+
+              <h3>Common Use Cases</h3>
+              <p>Converting file formats comes up constantly in everyday work and study, often at the exact moment a document needs to be in a different format than it currently is.</p>
+              <ul>
+                <li>Turning a scanned PDF into an editable Word document for further changes.</li>
+                <li>Extracting a table from a PDF report into Excel for calculations.</li>
+                <li>Building a PowerPoint deck from PDF slides shared by a client or teacher.</li>
+                <li>Combining a batch of scanned photos into a single PDF to submit online.</li>
+                <li>Exporting pages from a PDF as images to use in a presentation or website.</li>
+                <li>Preparing a Word draft from a finished PDF so edits can be tracked later.</li>
+              </ul>
+
+              <h3>Frequently Asked Questions</h3>
+              <p><strong>Is the converter free to use?</strong> Yes, converting files on Lite PDF Suite is free with no hidden limits.</p>
+              <p><strong>Are my files uploaded to a server during conversion?</strong> No, conversion runs locally inside your browser, so files are never transmitted anywhere.</p>
+              <p><strong>Will formatting stay accurate after conversion?</strong> The tool works hard to preserve layout, fonts, and tables, though very complex designs may need minor manual fixes afterward.</p>
+              <p><strong>Can I convert more than one file at a time?</strong> Yes, batch conversion lets you process several files without repeating the steps for each one.</p>
+              <p><strong>Does it work for scanned PDFs, not just typed ones?</strong> Yes, though a scanned page will convert as an image unless it has already been made searchable through OCR.</p>
+              <p>Lite PDF Suite's converter is built for people who need a reliable, private way to move between file formats without subscribing to software or trusting a stranger's website with sensitive documents. Because every conversion happens on your own device, you can use it as often as you like, for personal files, client work, or school assignments, with the same speed and privacy every single time.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <span class="label label-light">Light</span>
+        <span class="label label-dark">Dark</span>
+        <div class="knob">L</div>
+      </div>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <div class="page-heading">
+      <h1>Convert PDFs to <span class="accent">anything</span>, and back</h1>
+      <p>Word, Excel, PowerPoint, and images — all converted entirely in your browser. Your files are never uploaded anywhere.</p>
+    </div>
+
+    <div class="mode-tabs-sub">Convert from PDF</div>
+    <div class="mode-tabs" id="modeTabsFrom">
+      <button class="mode-tab" data-mode="pdf2img">
+        <div class="mode-icon"><i class="fa-regular fa-images"></i></div>
+        <div class="mode-label">PDF → Images</div>
+        <div class="mode-sub">PNG / JPG</div>
+      </button>
+      <button class="mode-tab" data-mode="pdf2word">
+        <div class="mode-icon"><i class="fa-solid fa-file-word"></i></div>
+        <div class="mode-label">PDF → Word</div>
+        <div class="mode-sub">.docx</div>
+      </button>
+      <button class="mode-tab" data-mode="pdf2excel">
+        <div class="mode-icon"><i class="fa-solid fa-table-cells"></i></div>
+        <div class="mode-label">PDF → Excel</div>
+        <div class="mode-sub">.xlsx</div>
+      </button>
+      <button class="mode-tab" data-mode="pdf2ppt">
+        <div class="mode-icon"><i class="fa-solid fa-display"></i></div>
+        <div class="mode-label">PDF → PowerPoint</div>
+        <div class="mode-sub">.pptx</div>
+      </button>
+    </div>
+
+    <div class="mode-tabs-sub">Convert to PDF</div>
+    <div class="mode-tabs" id="modeTabsTo">
+      <button class="mode-tab" data-mode="img2pdf">
+        <div class="mode-icon"><i class="fa-regular fa-images"></i></div>
+        <div class="mode-label">Images → PDF</div>
+        <div class="mode-sub">JPG / PNG</div>
+      </button>
+      <button class="mode-tab" data-mode="word2pdf">
+        <div class="mode-icon"><i class="fa-solid fa-file-word"></i></div>
+        <div class="mode-label">Word → PDF</div>
+        <div class="mode-sub">.docx</div>
+      </button>
+      <button class="mode-tab" data-mode="excel2pdf">
+        <div class="mode-icon"><i class="fa-solid fa-table-cells"></i></div>
+        <div class="mode-label">Excel → PDF</div>
+        <div class="mode-sub">.xlsx</div>
+      </button>
+      <button class="mode-tab" data-mode="ppt2pdf">
+        <div class="mode-icon"><i class="fa-solid fa-display"></i></div>
+        <div class="mode-label">PowerPoint → PDF</div>
+        <div class="mode-sub">.pptx</div>
+      </button>
+    </div>
+
+    <div class="panel" id="panel"></div>
+  </main>
+</div>
+
+<input type="file" id="pdfInput" accept="application/pdf">
+<input type="file" id="imgInput" accept="image/png,image/jpeg" multiple>
+<input type="file" id="docxInput" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+<input type="file" id="xlsxInput" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+<input type="file" id="pptxInput" accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation">
+
+<div class="toast-container" id="toastContainer"></div>
+<div class="processing" id="processing">
+  <div class="spinner"></div>
+  <div class="proc-text" id="procText">Converting...</div>
+  <div class="proc-sub" id="procSub"></div>
+</div>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+const $ = id => document.getElementById(id);
+
+/* ---------- Theme ---------- */
+const savedTheme = localStorage.getItem('pp_theme') || 'light';
+document.body.setAttribute('data-theme', savedTheme);
+updateThemeKnob(savedTheme);
+$('themeToggle').addEventListener('click', () => {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  const t = isDark ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', t);
+  localStorage.setItem('pp_theme', t);
+  updateThemeKnob(t);
+});
+function updateThemeKnob(t) { document.querySelector('.theme-toggle .knob').textContent = t === 'dark' ? 'D' : 'L'; }
+
+/* ---------- Toast / Processing ---------- */
+function toast(msg, type = 'info', duration = 3400) {
+  const c = $('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icons = { success: 'circle-check', error: 'circle-exclamation', info: 'circle-info' };
+  t.innerHTML = `<i class="fa-solid fa-${icons[type] || 'circle-info'}"></i><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, duration);
+}
+function showProcessing(text, sub) { $('procText').textContent = text; $('procSub').textContent = sub || ''; $('processing').classList.add('show'); }
+function hideProcessing() { $('processing').classList.remove('show'); }
+function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; }
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/* ---------- Mode switching ---------- */
+const PDF_MODES = ['pdf2img', 'pdf2ppt', 'pdf2word', 'pdf2excel'];
+let currentMode = 'pdf2img';
+document.querySelectorAll('.mode-tab').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+function setMode(m) {
+  currentMode = m;
+  document.querySelectorAll('.mode-tab').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+  renderPanel();
+}
+function renderPanel() {
+  if (currentMode === 'pdf2img') renderPdf2Img();
+  else if (currentMode === 'img2pdf') renderImg2Pdf();
+  else if (currentMode === 'pdf2ppt') renderPdf2Ppt();
+  else if (currentMode === 'pdf2word') renderPdf2Word();
+  else if (currentMode === 'pdf2excel') renderPdf2Excel();
+  else if (currentMode === 'word2pdf') renderWord2Pdf();
+  else if (currentMode === 'excel2pdf') renderExcel2Pdf();
+  else if (currentMode === 'ppt2pdf') renderPpt2Pdf();
+}
+
+/* ---------- Shared PDF upload (used by every PDF-input mode) ---------- */
+let pdfState = null; // { file, bytes, pdfLibDoc, pdfJsDoc, numPages, pageSizes, excluded:Set }
+
+async function loadPdfFile(file) {
+  showProcessing('Reading PDF...', '');
+  try {
+    const buf = await file.arrayBuffer();
+    const pdfLibDoc = await PDFLib.PDFDocument.load(buf.slice(0), { ignoreEncryption: true });
+    const numPages = pdfLibDoc.getPageCount();
+    const pageSizes = pdfLibDoc.getPages().map(p => { const { width, height } = p.getSize(); return { w: width, h: height }; });
+    const pdfJsDoc = await pdfjsLib.getDocument({ data: buf.slice(0) }).promise;
+    pdfState = { file, pdfLibDoc, pdfJsDoc, numPages, pageSizes, excluded: new Set() };
+    hideProcessing();
+    toast(`Loaded ${numPages}-page PDF.`, 'success');
+    renderPanel();
+  } catch (err) {
+    console.error(err); hideProcessing();
+    toast('Could not read that PDF. It might be corrupted or password-protected.', 'error');
+  }
+}
+function removePdf() { pdfState = null; renderPanel(); }
+function includedPages() {
+  if (!pdfState) return [];
+  return Array.from({ length: pdfState.numPages }, (_, i) => i + 1).filter(p => !pdfState.excluded.has(p));
+}
+
+$('pdfInput').addEventListener('change', e => { if (e.target.files[0]) loadPdfFile(e.target.files[0]); e.target.value = ''; });
+const OFFICE_MODES = {
+  word2pdf: { ext: /\.docx$/i, loader: file => loadDocxFile(file), label: '.docx' },
+  excel2pdf: { ext: /\.xlsx$/i, loader: file => loadXlsxFile(file), label: '.xlsx' },
+  ppt2pdf: { ext: /\.pptx$/i, loader: file => loadPptxFile(file), label: '.pptx' },
+};
+document.addEventListener('dragover', e => { if (PDF_MODES.includes(currentMode) || currentMode === 'img2pdf' || OFFICE_MODES[currentMode]) e.preventDefault(); });
+document.addEventListener('drop', e => {
+  e.preventDefault();
+  if (currentMode === 'img2pdf') {
+    if (e.dataTransfer.files.length) handleImageFiles(e.dataTransfer.files);
+    return;
+  }
+  if (OFFICE_MODES[currentMode]) {
+    const cfg = OFFICE_MODES[currentMode];
+    const f = e.dataTransfer.files[0];
+    if (f && cfg.ext.test(f.name)) cfg.loader(f);
+    else if (f) toast(`That does not look like a ${cfg.label} file.`, 'error');
+    return;
+  }
+  if (!PDF_MODES.includes(currentMode) || pdfState) return;
+  const f = e.dataTransfer.files[0];
+  if (f && f.type === 'application/pdf') loadPdfFile(f);
+  else if (f) toast('That does not look like a PDF.', 'error');
+});
+
+function pdfUploadBlockHTML() {
+  if (!pdfState) {
+    return `<div class="upload-zone" id="pdfUploadZone">
+      <div class="upload-icon"><i class="fa-solid fa-file-pdf"></i></div>
+      <div class="upload-title">Drop a PDF here</div>
+      <div class="upload-sub">or click to browse — up to 500MB</div>
+    </div>`;
+  }
+  return `<div class="file-summary">
+      <div class="f-icon"><i class="fa-regular fa-file-pdf"></i></div>
+      <div class="f-info">
+        <div class="f-name">${escapeHtml(pdfState.file.name)}</div>
+        <div class="f-meta">${pdfState.numPages} page${pdfState.numPages > 1 ? 's' : ''} · ${(pdfState.file.size / 1024 / 1024).toFixed(2)} MB</div>
+      </div>
+      <button class="f-remove" id="pdfRemoveBtn" title="Remove"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="thumb-grid" id="pdfThumbGrid"></div>
+    <div class="panel-note" style="margin-top:0;margin-bottom:20px"><i class="fa-solid fa-circle-info"></i> Click the checkmark on any page to exclude it from the conversion.</div>`;
+}
+function wirePdfUploadZone() {
+  const zone = $('pdfUploadZone');
+  if (zone) zone.addEventListener('click', () => $('pdfInput').click());
+  const removeBtn = $('pdfRemoveBtn');
+  if (removeBtn) removeBtn.addEventListener('click', removePdf);
+  if (pdfState) renderPdfThumbs();
+}
+function renderPdfThumbs() {
+  const grid = $('pdfThumbGrid');
+  if (!grid || !pdfState) return;
+  grid.innerHTML = '';
+  for (let i = 1; i <= pdfState.numPages; i++) {
+    const card = document.createElement('div');
+    card.className = 'thumb-card' + (pdfState.excluded.has(i) ? ' excluded' : '');
+    card.dataset.page = i;
+    card.innerHTML = `<div class="thumb-placeholder" style="color:var(--muted)"><i class="fa-solid fa-spinner fa-spin"></i></div>
+      <div class="thumb-num">${i}</div>
+      <button class="thumb-toggle ${pdfState.excluded.has(i) ? '' : 'on'}" title="Include/exclude this page"><i class="fa-solid fa-check"></i></button>`;
+    card.querySelector('.thumb-toggle').addEventListener('click', e => {
+      e.stopPropagation();
+      if (pdfState.excluded.has(i)) pdfState.excluded.delete(i); else pdfState.excluded.add(i);
+      card.classList.toggle('excluded');
+      e.currentTarget.classList.toggle('on');
+    });
+    grid.appendChild(card);
+  }
+  grid.querySelectorAll('.thumb-card').forEach(c => thumbObserver.observe(c));
+}
+const thumbObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    thumbObserver.unobserve(entry.target);
+    const pageNum = parseInt(entry.target.dataset.page);
+    renderOneThumb(pageNum, entry.target);
+  });
+}, { rootMargin: '150px' });
+async function renderOneThumb(pageNum, cardEl) {
+  try {
+    const page = await pdfState.pdfJsDoc.getPage(pageNum);
+    const viewport = page.getViewport({ scale: 0.3 });
+    const canvas = document.createElement('canvas');
+    canvas.width = viewport.width; canvas.height = viewport.height;
+    await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+    const placeholder = cardEl.querySelector('.thumb-placeholder');
+    if (placeholder) placeholder.replaceWith(canvas);
+  } catch (e) { console.error('thumb render failed', e); }
+}
+
+/* ================= PDF -> Images ================= */
+const pdf2imgOptions = { format: 'png', scale: 2 };
+function renderPdf2Img() {
+  $('panel').innerHTML = `
+    <div class="panel-title">PDF → <span style="color:var(--accent)">Images</span></div>
+    <div class="panel-sub">Every page becomes a separate high-resolution image. A single page downloads directly; multiple pages download together as a ZIP.</div>
+    ${pdfUploadBlockHTML()}
+    ${pdfState ? `
+      <div class="field-row">
+        <div class="field">
+          <div class="field-label">Format</div>
+          <div class="seg cols-2" id="imgFormatSeg">
+            <button type="button" class="seg-item ${pdf2imgOptions.format === 'png' ? 'active' : ''}" data-val="png">PNG</button>
+            <button type="button" class="seg-item ${pdf2imgOptions.format === 'jpeg' ? 'active' : ''}" data-val="jpeg">JPG</button>
+          </div>
+        </div>
+        <div class="field">
+          <div class="field-label">Resolution <span class="range-val" id="scaleLabel">${pdf2imgOptions.scale}x</span></div>
+          <input type="range" class="range" id="scaleRange" min="1" max="4" step="0.5" value="${pdf2imgOptions.scale}">
+        </div>
+      </div>
+      <button class="btn btn-primary btn-lg btn-block" id="convertBtn"><i class="fa-solid fa-download"></i> Convert &amp; Download</button>
+    ` : ''}
+  `;
+  wirePdfUploadZone();
+  if (!pdfState) return;
+  $('imgFormatSeg').querySelectorAll('.seg-item').forEach(b => b.addEventListener('click', () => {
+    pdf2imgOptions.format = b.dataset.val;
+    $('imgFormatSeg').querySelectorAll('.seg-item').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+  }));
+  $('scaleRange').addEventListener('input', e => { pdf2imgOptions.scale = parseFloat(e.target.value); $('scaleLabel').textContent = pdf2imgOptions.scale + 'x'; });
+  $('convertBtn').addEventListener('click', convertPdfToImages);
+}
+async function convertPdfToImages() {
+  const pages = includedPages();
+  if (!pages.length) { toast('All pages are excluded — include at least one.', 'error'); return; }
+  showProcessing('Rendering pages...', '');
+  try {
+    const files = [];
+    for (let idx = 0; idx < pages.length; idx++) {
+      const pn = pages[idx];
+      showProcessing(`Rendering page ${idx + 1} of ${pages.length}...`, pdfState.file.name);
+      const page = await pdfState.pdfJsDoc.getPage(pn);
+      const viewport = page.getViewport({ scale: pdf2imgOptions.scale });
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width; canvas.height = viewport.height;
+      const ctx = canvas.getContext('2d');
+      if (pdf2imgOptions.format === 'jpeg') { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, canvas.width, canvas.height); }
+      await page.render({ canvasContext: ctx, viewport }).promise;
+      const mime = pdf2imgOptions.format === 'jpeg' ? 'image/jpeg' : 'image/png';
+      const ext = pdf2imgOptions.format === 'jpeg' ? 'jpg' : 'png';
+      const blob = await new Promise(res => canvas.toBlob(res, mime, 0.92));
+      files.push({ name: `page-${String(pn).padStart(3, '0')}.${ext}`, blob });
+    }
+    const baseName = pdfState.file.name.replace(/\.pdf$/i, '');
+    if (files.length === 1) {
+      downloadBlob(files[0].blob, `${baseName}.${pdf2imgOptions.format === 'jpeg' ? 'jpg' : 'png'}`);
+    } else {
+      showProcessing('Zipping images...', '');
+      const zip = new JSZip();
+      files.forEach(f => zip.file(f.name, f.blob));
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      downloadBlob(zipBlob, `${baseName} - Images.zip`);
+    }
+    hideProcessing();
+    toast(`Converted ${files.length} page${files.length > 1 ? 's' : ''} to image${files.length > 1 ? 's' : ''}.`, 'success');
+  } catch (err) {
+    console.error(err); hideProcessing();
+    toast('Something went wrong converting to images.', 'error');
+  }
+}
+
+/* ================= Images -> PDF ================= */
+let imgState = { items: [] };
+function renderImg2Pdf() {
+  $('panel').innerHTML = `
+    <div class="panel-title">Images → <span style="color:var(--accent)">PDF</span></div>
+    <div class="panel-sub">Combine JPG or PNG images into a single PDF, one image per page, in the order shown below. Drag thumbnails to reorder.</div>
+    ${imgState.items.length ? '' : `
+      <div class="upload-zone" id="imgUploadZone">
+        <div class="upload-icon"><i class="fa-regular fa-images"></i></div>
+        <div class="upload-title">Drop images here</div>
+        <div class="upload-sub">or click to browse — JPG or PNG, multiple allowed</div>
+      </div>`}
+    ${imgState.items.length ? `
+      <div class="thumb-grid" id="imgThumbGrid"></div>
+      <button class="btn" id="addMoreImgBtn" style="margin-bottom:16px"><i class="fa-solid fa-plus"></i> Add more images</button>
+      <button class="btn btn-primary btn-lg btn-block" id="convertImgBtn"><i class="fa-solid fa-file-pdf"></i> Convert &amp; Download PDF</button>
+    ` : ''}
+  `;
+  const zone = $('imgUploadZone');
+  if (zone) zone.addEventListener('click', () => $('imgInput').click());
+  const addMore = $('addMoreImgBtn');
+  if (addMore) addMore.addEventListener('click', () => $('imgInput').click());
+  if (imgState.items.length) {
+    renderImgThumbs();
+    $('convertImgBtn').addEventListener('click', convertImagesToPdf);
+  }
+}
+function renderImgThumbs() {
+  const grid = $('imgThumbGrid');
+  grid.innerHTML = imgState.items.map((it, idx) => `
+    <div class="thumb-card draggable" draggable="true" data-idx="${idx}">
+      <img src="${it.dataUrl}" alt="">
+      <div class="thumb-num">${idx + 1}</div>
+      <button class="thumb-remove" data-idx="${idx}" title="Remove"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.thumb-remove').forEach(b => b.addEventListener('click', e => {
+    e.stopPropagation();
+    imgState.items.splice(parseInt(b.dataset.idx), 1);
+    renderPanel();
+  }));
+  let dragSrc = null;
+  grid.querySelectorAll('.thumb-card').forEach(card => {
+    card.addEventListener('dragstart', () => { dragSrc = parseInt(card.dataset.idx); card.classList.add('dragging'); });
+    card.addEventListener('dragend', () => card.classList.remove('dragging'));
+    card.addEventListener('dragover', e => e.preventDefault());
+    card.addEventListener('drop', e => {
+      e.preventDefault(); e.stopPropagation();
+      const destIdx = parseInt(card.dataset.idx);
+      if (dragSrc === null || dragSrc === destIdx) return;
+      const [moved] = imgState.items.splice(dragSrc, 1);
+      imgState.items.splice(destIdx, 0, moved);
+      dragSrc = null;
+      renderPanel();
+    });
+  });
+}
+async function handleImageFiles(fileList) {
+  const files = Array.from(fileList).filter(f => f.type === 'image/png' || f.type === 'image/jpeg');
+  if (!files.length) { toast('Please choose JPG or PNG images.', 'error'); return; }
+  showProcessing('Reading images...', '');
+  for (const file of files) {
+    try {
+      const dataUrl = await new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(file); });
+      const dims = await new Promise((res, rej) => { const img = new Image(); img.onload = () => res({ w: img.naturalWidth, h: img.naturalHeight }); img.onerror = rej; img.src = dataUrl; });
+      imgState.items.push({ id: 'img_' + Date.now() + Math.random().toString(36).slice(2, 7), dataUrl, mime: file.type, w: dims.w, h: dims.h });
+    } catch (e) { console.error(e); toast(`Could not read ${file.name}.`, 'error'); }
+  }
+  hideProcessing();
+  toast(`Added ${files.length} image${files.length > 1 ? 's' : ''}.`, 'success');
+  renderPanel();
+}
+$('imgInput').addEventListener('change', e => { if (e.target.files.length) handleImageFiles(e.target.files); e.target.value = ''; });
+
+async function convertImagesToPdf() {
+  if (!imgState.items.length) return;
+  showProcessing('Building PDF...', '');
+  try {
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    for (let i = 0; i < imgState.items.length; i++) {
+      const it = imgState.items[i];
+      showProcessing(`Adding image ${i + 1} of ${imgState.items.length}...`, '');
+      const bytes = await (await fetch(it.dataUrl)).arrayBuffer();
+      const img = it.mime === 'image/png' ? await pdfDoc.embedPng(bytes) : await pdfDoc.embedJpg(bytes);
+      const maxEdge = 792; // ~11in at 72pt/in — sane default print size
+      let pw, ph;
+      if (it.w >= it.h) { pw = maxEdge; ph = maxEdge * (it.h / it.w); }
+      else { ph = maxEdge; pw = maxEdge * (it.w / it.h); }
+      const page = pdfDoc.addPage([pw, ph]);
+      page.drawImage(img, { x: 0, y: 0, width: pw, height: ph });
+    }
+    showProcessing('Saving file...', '');
+    const out = await pdfDoc.save();
+    downloadBlob(new Blob([out], { type: 'application/pdf' }), 'Images - Lite PDF Suite.pdf');
+    hideProcessing();
+    toast('PDF created and downloaded!', 'success');
+  } catch (err) {
+    console.error(err); hideProcessing();
+    toast('Something went wrong building the PDF.', 'error');
+  }
+}
+
+/* ================= PDF -> PowerPoint ================= */
+function renderPdf2Ppt() {
+  $('panel').innerHTML = `
+    <div class="panel-title">PDF → <span style="color:var(--accent)">PowerPoint</span></div>
+    <div class="panel-sub">Each page becomes a full-slide, high-resolution image — the safest way to carry your exact layout, fonts and images into a deck without a server-side conversion engine reflowing them.</div>
+    ${pdfUploadBlockHTML()}
+    ${pdfState ? `<button class="btn btn-primary btn-lg btn-block" id="convertBtn"><i class="fa-solid fa-download"></i> Convert &amp; Download</button>
+    <div class="panel-note"><i class="fa-solid fa-circle-info"></i> <strong>Slides are images, not editable text or shapes</strong> — this keeps your original design pixel-perfect. If you need to edit the words afterward, use PDF → Word instead.</div>` : ''}
+  `;
+  wirePdfUploadZone();
+  if (!pdfState) return;
+  $('convertBtn').addEventListener('click', convertPdfToPptx);
+}
+async function convertPdfToPptx() {
+  const pages = includedPages();
+  if (!pages.length) { toast('All pages are excluded — include at least one.', 'error'); return; }
+  showProcessing('Building PowerPoint...', '');
+  try {
+    const pptx = new window.PptxGenJS();
+    const firstSize = pdfState.pageSizes[pages[0] - 1];
+    pptx.defineLayout({ name: 'PDFPRESS_LAYOUT', width: firstSize.w / 72, height: firstSize.h / 72 });
+    pptx.layout = 'PDFPRESS_LAYOUT';
+    for (let i = 0; i < pages.length; i++) {
+      const pn = pages[i];
+      showProcessing(`Rendering slide ${i + 1} of ${pages.length}...`, pdfState.file.name);
+      const page = await pdfState.pdfJsDoc.getPage(pn);
+      const viewport = page.getViewport({ scale: 2 });
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width; canvas.height = viewport.height;
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+      const sz = pdfState.pageSizes[pn - 1];
+      const slide = pptx.addSlide();
+      slide.addImage({ data: dataUrl, x: 0, y: 0, w: sz.w / 72, h: sz.h / 72 });
+    }
+    showProcessing('Saving file...', '');
+    const blob = await pptx.write({ outputType: 'blob' });
+    const baseName = pdfState.file.name.replace(/\.pdf$/i, '');
+    downloadBlob(blob, `${baseName} - Lite PDF Suite.pptx`);
+    hideProcessing();
+    toast(`Converted ${pages.length} page${pages.length > 1 ? 's' : ''} to PowerPoint.`, 'success');
+  } catch (err) {
+    console.error(err); hideProcessing();
+    toast('Something went wrong converting to PowerPoint.', 'error');
+  }
+}
+
+/* ================= Text/layout extraction shared by Word + Excel ================= */
+async function extractPageLines(pdfJsDoc, pageNum) {
+  const page = await pdfJsDoc.getPage(pageNum);
+  const content = await page.getTextContent();
+  const items = content.items
+    .filter(it => it.str && it.str.trim())
+    .map(it => {
+      const tx = it.transform;
+      return { x: tx[4], y: tx[5], w: it.width || 0, size: Math.hypot(tx[2], tx[3]) || it.height || 10, str: it.str };
+    })
+    .sort((a, b) => (b.y - a.y) || (a.x - b.x));
+  const lines = [];
+  const TOL = 0.45;
+  items.forEach(it => {
+    let ln = lines.find(l => Math.abs(l.y - it.y) <= Math.max(l.size, it.size) * TOL);
+    if (!ln) { ln = { y: it.y, size: it.size, items: [] }; lines.push(ln); }
+    else { ln.y = (ln.y * ln.items.length + it.y) / (ln.items.length + 1); ln.size = Math.max(ln.size, it.size); }
+    ln.items.push(it);
+  });
+  lines.forEach(l => l.items.sort((a, b) => a.x - b.x));
+  return lines;
+}
+
+/* ================= PDF -> Word ================= */
+function renderPdf2Word() {
+  $('panel').innerHTML = `
+    <div class="panel-title">PDF → <span style="color:var(--accent)">Word</span></div>
+    <div class="panel-sub">Extracts real, editable text from your PDF and rebuilds it as a .docx — paragraphs and larger-type headings are detected automatically.</div>
+    ${pdfUploadBlockHTML()}
+    ${pdfState ? `<button class="btn btn-primary btn-lg btn-block" id="convertBtn"><i class="fa-solid fa-download"></i> Convert &amp; Download</button>
+    <div class="panel-note"><i class="fa-solid fa-circle-info"></i> <strong>Best-effort text reconstruction</strong> — this runs entirely in your browser without a layout engine, so multi-column pages, tables, and inline images won't carry over, and exact spacing may shift. For a pixel-perfect copy of the original design, use PDF → PowerPoint or PDF → Images instead.</div>` : ''}
+  `;
+  wirePdfUploadZone();
+  if (!pdfState) return;
+  $('convertBtn').addEventListener('click', convertPdfToWord);
+}
+async function convertPdfToWord() {
+  const pages = includedPages();
+  if (!pages.length) { toast('All pages are excluded — include at least one.', 'error'); return; }
+  showProcessing('Extracting text...', '');
+  try {
+    const { Document, Packer, Paragraph, HeadingLevel, TextRun, PageBreak } = window.docx;
+    const children = [];
+    for (let idx = 0; idx < pages.length; idx++) {
+      const pn = pages[idx];
+      showProcessing(`Reading page ${idx + 1} of ${pages.length}...`, pdfState.file.name);
+      const lines = await extractPageLines(pdfState.pdfJsDoc, pn);
+      const lineTexts = lines
+        .map(l => ({ text: l.items.map(p => p.str).join(' ').replace(/\s+/g, ' ').trim(), y: l.y, size: l.size }))
+        .filter(l => l.text);
+      const sizes = lineTexts.map(l => l.size).sort((a, b) => a - b);
+      const median = sizes.length ? sizes[Math.floor(sizes.length / 2)] : 12;
+      let curPara = null, prevY = null, prevSize = null;
+      lineTexts.forEach(l => {
+        const isHeading = l.size >= median * 1.25 && l.text.length < 120;
+        const gap = prevY === null ? 0 : (prevY - l.y);
+        const startsNew = isHeading || !curPara || curPara.heading || gap > (prevSize || l.size) * 1.7;
+        if (startsNew) {
+          curPara = { heading: isHeading, text: l.text };
+          children.push(curPara);
+        } else {
+          curPara.text += ' ' + l.text;
+        }
+        prevY = l.y; prevSize = l.size;
+      });
+      if (!lineTexts.length) children.push({ heading: false, text: '' });
+      if (idx < pages.length - 1) children.push({ pageBreak: true });
+    }
+    const docChildren = children.map(c => {
+      if (c.pageBreak) return new Paragraph({ children: [new PageBreak()] });
+      if (c.heading) return new Paragraph({ text: c.text, heading: HeadingLevel.HEADING_2, spacing: { before: 240, after: 120 } });
+      return new Paragraph({ children: [new TextRun(c.text)], spacing: { after: 160 } });
+    });
+    const doc = new Document({ sections: [{ children: docChildren }] });
+    showProcessing('Saving file...', '');
+    const blob = await Packer.toBlob(doc);
+    const baseName = pdfState.file.name.replace(/\.pdf$/i, '');
+    downloadBlob(blob, `${baseName} - Lite PDF Suite.docx`);
+    hideProcessing();
+    toast(`Converted ${pages.length} page${pages.length > 1 ? 's' : ''} to Word.`, 'success');
+  } catch (err) {
+    console.error(err); hideProcessing();
+    toast('Something went wrong converting to Word.', 'error');
+  }
+}
+
+/* ================= PDF -> Excel ================= */
+function renderPdf2Excel() {
+  $('panel').innerHTML = `
+    <div class="panel-title">PDF → <span style="color:var(--accent)">Excel</span></div>
+    <div class="panel-sub">Detects rows and columns from text positions and lays them out as a grid — one sheet per page.</div>
+    ${pdfUploadBlockHTML()}
+    ${pdfState ? `<button class="btn btn-primary btn-lg btn-block" id="convertBtn"><i class="fa-solid fa-download"></i> Convert &amp; Download</button>
+    <div class="panel-note"><i class="fa-solid fa-circle-info"></i> <strong>Works best on simple, grid-like tables.</strong> PDFs don't store real table structure, so columns are inferred from the gaps between text — dense or merged-cell tables may not split perfectly. Free-flowing paragraph text lands one line per row.</div>` : ''}
+  `;
+  wirePdfUploadZone();
+  if (!pdfState) return;
+  $('convertBtn').addEventListener('click', convertPdfToExcel);
+}
+async function convertPdfToExcel() {
+  const pages = includedPages();
+  if (!pages.length) { toast('All pages are excluded — include at least one.', 'error'); return; }
+  showProcessing('Analyzing layout...', '');
+  try {
+    const wb = window.XLSX.utils.book_new();
+    const usedNames = new Set();
+    for (let idx = 0; idx < pages.length; idx++) {
+      const pn = pages[idx];
+      showProcessing(`Reading page ${idx + 1} of ${pages.length}...`, pdfState.file.name);
+      const lines = await extractPageLines(pdfState.pdfJsDoc, pn);
+      const grid = lines.map(line => {
+        const cells = [];
+        let cur = '', lastEnd = null;
+        line.items.forEach(it => {
+          const gap = lastEnd === null ? 0 : (it.x - lastEnd);
+          const threshold = Math.max(9, it.size * 0.9);
+          if (lastEnd !== null && gap > threshold) { cells.push(cur.trim()); cur = it.str; }
+          else { cur = cur ? cur + ' ' + it.str : it.str; }
+          lastEnd = it.x + it.w;
+        });
+        if (cur) cells.push(cur.trim());
+        return cells;
+      });
+      const ws = window.XLSX.utils.aoa_to_sheet(grid.length ? grid : [['(no text found on this page)']]);
+      let name = `Page ${pn}`.slice(0, 31);
+      let n = 1; while (usedNames.has(name)) { name = `Page ${pn} (${++n})`.slice(0, 31); }
+      usedNames.add(name);
+      window.XLSX.utils.book_append_sheet(wb, ws, name);
+    }
+    showProcessing('Saving file...', '');
+    const out = window.XLSX.write(wb, { type: 'array', bookType: 'xlsx' });
+    const baseName = pdfState.file.name.replace(/\.pdf$/i, '');
+    downloadBlob(new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), `${baseName} - Lite PDF Suite.xlsx`);
+    hideProcessing();
+    toast(`Converted ${pages.length} page${pages.length > 1 ? 's' : ''} to Excel.`, 'success');
+  } catch (err) {
+    console.error(err); hideProcessing();
+    toast('Something went wrong converting to Excel.', 'error');
+  }
+}
+
+/* ================= Shared: generic single-file upload (Word/Excel/PowerPoint -> PDF) ================= */
+function genericUploadBlockHTML(state, inputId, iconClass, title, sub) {
+  if (!state.file) {
+    return `<div class="upload-zone" id="genUploadZone">
+      <div class="upload-icon"><i class="${iconClass}"></i></div>
+      <div class="upload-title">${title}</div>
+      <div class="upload-sub">${sub}</div>
+    </div>`;
+  }
+  return `<div class="file-summary">
+    <div class="f-icon"><i class="${iconClass}"></i></div>
+    <div class="f-info">
+      <div class="f-name">${escapeHtml(state.file.name)}</div>
+      <div class="f-meta">${(state.file.size / 1024 / 1024).toFixed(2)} MB</div>
+    </div>
+    <button class="f-remove" id="genRemoveBtn" title="Remove"><i class="fa-solid fa-xmark"></i></button>
+  </div>`;
+}
+function wireGenericUploadZone(inputId, state, onRemove) {
+  const zone = $('genUploadZone');
+  if (zone) zone.addEventListener('click', () => $(inputId).click());
+  const removeBtn = $('genRemoveBtn');
+  if (removeBtn) removeBtn.addEventListener('click', onRemove);
+}
+
+/* ================= Word -> PDF ================= */
+let wordState = { file: null, parsed: null };
+function renderWord2Pdf() {
+  $('panel').innerHTML = `
+    <div class="panel-title">Word → <span style="color:var(--accent)">PDF</span></div>
+    <div class="panel-sub">Turns your .docx paragraphs and headings into a clean, real PDF — not a screenshot.</div>
+    ${genericUploadBlockHTML(wordState, 'docxInput', 'fa-solid fa-file-word', 'Drop a Word document here', 'or click to browse — .docx files only')}
+    ${wordState.file ? `<button class="btn btn-primary btn-lg btn-block" id="convertBtn" style="margin-top:20px"><i class="fa-solid fa-download"></i> Convert &amp; Download</button>
+    <div class="panel-note"><i class="fa-solid fa-circle-info"></i> <strong>Text and basic formatting only</strong> — headings, paragraphs, bold/italic/underline carry over. Images, tables, columns, and complex layouts are not yet supported and will be skipped.</div>` : ''}
+  `;
+  wireGenericUploadZone('docxInput', wordState, () => { wordState = { file: null, parsed: null }; renderPanel(); });
+  if (!wordState.file) return;
+  $('convertBtn').addEventListener('click', convertDocxToPdf);
+}
+$('docxInput').addEventListener('change', e => { if (e.target.files[0]) loadDocxFile(e.target.files[0]); e.target.value = ''; });
+async function loadDocxFile(file) {
+  if (!/\.docx$/i.test(file.name)) { toast('Please choose a .docx file.', 'error'); return; }
+  wordState = { file, parsed: null };
+  toast(`Loaded ${file.name}.`, 'success');
+  renderPanel();
+}
+async function parseDocxStructure(file) {
+  const buf = await file.arrayBuffer();
+  const zip = await JSZip.loadAsync(buf);
+  const docFile = zip.file('word/document.xml');
+  if (!docFile) throw new Error('This does not look like a valid .docx file.');
+  const xml = await docFile.async('string');
+  const dom = new DOMParser().parseFromString(xml, 'application/xml');
+  const ns = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main';
+  const pgSzEl = dom.getElementsByTagNameNS(ns, 'pgSz')[0];
+  const pageW = pgSzEl ? parseInt(pgSzEl.getAttribute('w:w')) / 20 : 612;
+  const pageH = pgSzEl ? parseInt(pgSzEl.getAttribute('w:h')) / 20 : 792;
+
+  const paragraphs = [];
+  const pEls = dom.getElementsByTagNameNS(ns, 'p');
+  for (let i = 0; i < pEls.length; i++) {
+    const p = pEls[i];
+    const pStyleEl = p.getElementsByTagNameNS(ns, 'pStyle')[0];
+    const styleVal = pStyleEl ? pStyleEl.getAttribute('w:val') : null;
+    const isHeading = !!(styleVal && /^Heading/i.test(styleVal));
+    let hasPageBreak = false;
+    const brEls = p.getElementsByTagNameNS(ns, 'br');
+    for (let k = 0; k < brEls.length; k++) { if (brEls[k].getAttribute('w:type') === 'page') hasPageBreak = true; }
+    const runs = [];
+    const rEls = p.getElementsByTagNameNS(ns, 'r');
+    for (let j = 0; j < rEls.length; j++) {
+      const r = rEls[j];
+      const tEls = r.getElementsByTagNameNS(ns, 't');
+      let text = '';
+      for (let k = 0; k < tEls.length; k++) text += tEls[k].textContent;
+      if (!text) continue;
+      const rPr = r.getElementsByTagNameNS(ns, 'rPr')[0];
+      const bold = !!(rPr && rPr.getElementsByTagNameNS(ns, 'b').length);
+      const italic = !!(rPr && rPr.getElementsByTagNameNS(ns, 'i').length);
+      const underline = !!(rPr && rPr.getElementsByTagNameNS(ns, 'u').length);
+      const szEl = rPr && rPr.getElementsByTagNameNS(ns, 'sz')[0];
+      const size = szEl ? parseInt(szEl.getAttribute('w:val')) / 2 : (isHeading ? 16 : 11);
+      runs.push({ text, bold: bold || isHeading, italic, underline, size: isHeading ? Math.max(size, 16) : size });
+    }
+    if (runs.length || hasPageBreak) paragraphs.push({ isHeading, runs, pageBreakAfter: hasPageBreak });
+  }
+  return { pageW, pageH, paragraphs };
+}
+function pickStdFont(fonts, bold, italic) {
+  if (bold && italic) return fonts.boldItalic;
+  if (bold) return fonts.bold;
+  if (italic) return fonts.italic;
+  return fonts.reg;
+}
+function wrapRichRuns(runs, fonts, maxWidth) {
+  const words = [];
+  runs.forEach(r => {
+    const font = pickStdFont(fonts, r.bold, r.italic);
+    const parts = r.text.split(/(\s+)/).filter(t => t !== '');
+    parts.forEach(tok => words.push({ text: tok, font, size: r.size, underline: r.underline }));
+  });
+  const lines = [];
+  let cur = [], curWidth = 0;
+  words.forEach(w => {
+    if (w.text.trim() === '' && cur.length === 0) return; // skip leading whitespace on a fresh line
+    const wWidth = w.font.widthOfTextAtSize(w.text, w.size);
+    if (curWidth + wWidth > maxWidth && cur.length) { lines.push(cur); cur = []; curWidth = 0; if (w.text.trim() === '') return; }
+    cur.push(w); curWidth += wWidth;
+  });
+  if (cur.length) lines.push(cur);
+  return lines;
+}
+async function convertDocxToPdf() {
+  showProcessing('Reading document...', wordState.file.name);
+  try {
+    const structure = await parseDocxStructure(wordState.file);
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    const fonts = {
+      reg: await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica),
+      bold: await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold),
+      italic: await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaOblique),
+      boldItalic: await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBoldOblique),
+    };
+    const margin = 72;
+    const pageW = structure.pageW, pageH = structure.pageH;
+    const maxWidth = pageW - margin * 2;
+    let page = pdfDoc.addPage([pageW, pageH]);
+    let y = pageH - margin;
+    const newPage = () => { page = pdfDoc.addPage([pageW, pageH]); y = pageH - margin; };
+
+    showProcessing('Laying out pages...', wordState.file.name);
+    structure.paragraphs.forEach(para => {
+      if (!para.runs.length) {
+        y -= 14;
+        if (y < margin) newPage();
+      } else {
+        const lines = wrapRichRuns(para.runs, fonts, maxWidth);
+        const maxSize = Math.max(...para.runs.map(r => r.size));
+        const lineHeight = maxSize * 1.35;
+        lines.forEach(line => {
+          if (y - lineHeight < margin) newPage();
+          let x = margin;
+          const asc = line[0].font.heightAtSize(maxSize, { descender: false });
+          line.forEach(tok => {
+            page.drawText(tok.text, { x, y: y - asc, size: tok.size, font: tok.font, color: PDFLib.rgb(0.05, 0.05, 0.05) });
+            const w = tok.font.widthOfTextAtSize(tok.text, tok.size);
+            if (tok.underline && tok.text.trim()) {
+              page.drawLine({ start: { x, y: y - asc - 1.5 }, end: { x: x + w, y: y - asc - 1.5 }, thickness: Math.max(0.6, tok.size * 0.05), color: PDFLib.rgb(0.05, 0.05, 0.05) });
+            }
+            x += w;
+          });
+          y -= lineHeight;
+        });
+        y -= maxSize * (para.isHeading ? 0.6 : 0.5);
+      }
+      if (para.pageBreakAfter) newPage();
+    });
+
+    showProcessing('Saving file...', '');
+    const out = await pdfDoc.save();
+    const baseName = wordState.file.name.replace(/\.docx$/i, '');
+    downloadBlob(new Blob([out], { type: 'application/pdf' }), `${baseName} - Lite PDF Suite.pdf`);
+    hideProcessing();
+    toast('Converted to PDF successfully!', 'success');
+  } catch (err) {
+    console.error(err); hideProcessing();
+    toast(err.message || 'Something went wrong converting this document.', 'error');
+  }
+}
+
+/* ================= Excel -> PDF ================= */
+let excelState = { file: null, wb: null };
+function renderExcel2Pdf() {
+  $('panel').innerHTML = `
+    <div class="panel-title">Excel → <span style="color:var(--accent)">PDF</span></div>
+    <div class="panel-sub">Lays out every sheet as a clean, gridded table — one PDF page per block of rows, with the header row repeated for readability.</div>
+    ${genericUploadBlockHTML(excelState, 'xlsxInput', 'fa-solid fa-file-excel', 'Drop an Excel file here', 'or click to browse — .xlsx files only')}
+    ${excelState.file ? `<button class="btn btn-primary btn-lg btn-block" id="convertBtn" style="margin-top:20px"><i class="fa-solid fa-download"></i> Convert &amp; Download</button>
+    <div class="panel-note"><i class="fa-solid fa-circle-info"></i> <strong>Values only</strong> — cell formatting, colors, formulas' computed results, and charts are not preserved, just the text/numbers in a readable grid.</div>` : ''}
+  `;
+  wireGenericUploadZone('xlsxInput', excelState, () => { excelState = { file: null, wb: null }; renderPanel(); });
+  if (!excelState.file) return;
+  $('convertBtn').addEventListener('click', convertExcelToPdf);
+}
+$('xlsxInput').addEventListener('change', e => { if (e.target.files[0]) loadXlsxFile(e.target.files[0]); e.target.value = ''; });
+async function loadXlsxFile(file) {
+  if (!/\.xlsx$/i.test(file.name)) { toast('Please choose an .xlsx file.', 'error'); return; }
+  excelState = { file, wb: null };
+  toast(`Loaded ${file.name}.`, 'success');
+  renderPanel();
+}
+function clipTextToWidth(text, font, size, maxWidth) {
+  if (font.widthOfTextAtSize(text, size) <= maxWidth) return text;
+  let t = text;
+  while (t.length > 1 && font.widthOfTextAtSize(t + '…', size) > maxWidth) t = t.slice(0, -1);
+  return t + '…';
+}
+async function convertExcelToPdf() {
+  showProcessing('Reading spreadsheet...', excelState.file.name);
+  try {
+    const buf = await excelState.file.arrayBuffer();
+    const wb = window.XLSX.read(buf, { type: 'array' });
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    const font = await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica);
+    const boldFont = await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+    const pageW = 792, pageH = 612; // Letter landscape — spreadsheets tend to be wide
+    const margin = 36, titleH = 26, rowH = 20;
+    const usableW = pageW - margin * 2;
+
+    for (let s = 0; s < wb.SheetNames.length; s++) {
+      const sheetName = wb.SheetNames[s];
+      showProcessing(`Rendering sheet ${s + 1} of ${wb.SheetNames.length}...`, sheetName);
+      const data = window.XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { header: 1, defval: '' });
+      if (!data.length) continue;
+      const numCols = Math.max(1, ...data.map(r => r.length));
+      const colW = usableW / numCols;
+      const usableH = pageH - margin * 2 - titleH;
+      const rowsPerPage = Math.max(1, Math.floor(usableH / rowH));
+
+      let rowIdx = 0;
+      while (rowIdx < data.length) {
+        const page = pdfDoc.addPage([pageW, pageH]);
+        page.drawText(sheetName, { x: margin, y: pageH - margin - 14, size: 13, font: boldFont, color: PDFLib.rgb(0.1, 0.1, 0.1) });
+        const gridTop = pageH - margin - titleH;
+        let y = gridTop;
+        const pageRows = data.slice(rowIdx, rowIdx + rowsPerPage);
+        pageRows.forEach((row, ri) => {
+          const isHeaderRow = rowIdx === 0 && ri === 0;
+          let x = margin;
+          for (let c = 0; c < numCols; c++) {
+            const cellText = row[c] != null ? String(row[c]) : '';
+            const clipped = clipTextToWidth(cellText, isHeaderRow ? boldFont : font, 9, colW - 6);
+            page.drawText(clipped, { x: x + 3, y: y - 14, size: 9, font: isHeaderRow ? boldFont : font, color: PDFLib.rgb(0, 0, 0) });
+            x += colW;
+          }
+          y -= rowH;
+        });
+        const gridBottom = y;
+        // grid lines
+        for (let r = 0; r <= pageRows.length; r++) {
+          const ly = gridTop - r * rowH;
+          page.drawLine({ start: { x: margin, y: ly }, end: { x: margin + colW * numCols, y: ly }, thickness: 0.5, color: PDFLib.rgb(0.82, 0.82, 0.82) });
+        }
+        let gx = margin;
+        for (let c = 0; c <= numCols; c++) {
+          page.drawLine({ start: { x: gx, y: gridTop }, end: { x: gx, y: gridBottom }, thickness: 0.5, color: PDFLib.rgb(0.82, 0.82, 0.82) });
+          gx += colW;
+        }
+        rowIdx += rowsPerPage;
+      }
+    }
+
+    showProcessing('Saving file...', '');
+    const out = await pdfDoc.save();
+    const baseName = excelState.file.name.replace(/\.xlsx$/i, '');
+    downloadBlob(new Blob([out], { type: 'application/pdf' }), `${baseName} - Lite PDF Suite.pdf`);
+    hideProcessing();
+    toast('Converted to PDF successfully!', 'success');
+  } catch (err) {
+    console.error(err); hideProcessing();
+    toast(err.message || 'Something went wrong converting this spreadsheet.', 'error');
+  }
+}
+
+/* ================= PowerPoint -> PDF ================= */
+let pptState = { file: null };
+function renderPpt2Pdf() {
+  $('panel').innerHTML = `
+    <div class="panel-title">PowerPoint → <span style="color:var(--accent)">PDF</span></div>
+    <div class="panel-sub">Rebuilds each slide as a PDF page, positioning text and pictures where they appear in the deck.</div>
+    ${genericUploadBlockHTML(pptState, 'pptxInput', 'fa-solid fa-display', 'Drop a PowerPoint file here', 'or click to browse — .pptx files only')}
+    ${pptState.file ? `<button class="btn btn-primary btn-lg btn-block" id="convertBtn" style="margin-top:20px"><i class="fa-solid fa-download"></i> Convert &amp; Download</button>
+    <div class="panel-note"><i class="fa-solid fa-circle-info"></i> <strong>Text boxes and pictures only</strong> — charts, SmartArt, tables, gradients, and animations aren't rebuilt. Fonts are approximated with a standard typeface, and slide background colors/images aren't carried over.</div>` : ''}
+  `;
+  wireGenericUploadZone('pptxInput', pptState, () => { pptState = { file: null }; renderPanel(); });
+  if (!pptState.file) return;
+  $('convertBtn').addEventListener('click', convertPptxToPdf);
+}
+$('pptxInput').addEventListener('change', e => { if (e.target.files[0]) loadPptxFile(e.target.files[0]); e.target.value = ''; });
+async function loadPptxFile(file) {
+  if (!/\.pptx$/i.test(file.name)) { toast('Please choose a .pptx file.', 'error'); return; }
+  pptState = { file };
+  toast(`Loaded ${file.name}.`, 'success');
+  renderPanel();
+}
+async function parsePptxStructure(file) {
+  const buf = await file.arrayBuffer();
+  const zip = await JSZip.loadAsync(buf);
+  const parser = new DOMParser();
+  const presFile = zip.file('ppt/presentation.xml');
+  if (!presFile) throw new Error('This does not look like a valid .pptx file.');
+  const presXml = await presFile.async('string');
+  const presDom = parser.parseFromString(presXml, 'application/xml');
+  const sldSzEl = presDom.getElementsByTagName('p:sldSz')[0];
+  const slideW = sldSzEl ? parseInt(sldSzEl.getAttribute('cx')) : 9144000;
+  const slideH = sldSzEl ? parseInt(sldSzEl.getAttribute('cy')) : 6858000;
+
+  const slideFiles = Object.keys(zip.files)
+    .filter(f => /^ppt\/slides\/slide\d+\.xml$/.test(f))
+    .sort((a, b) => parseInt(a.match(/slide(\d+)\.xml/)[1]) - parseInt(b.match(/slide(\d+)\.xml/)[1]));
+
+  const slides = [];
+  for (const sf of slideFiles) {
+    const xml = await zip.file(sf).async('string');
+    const dom = parser.parseFromString(xml, 'application/xml');
+    const relsPath = sf.replace('ppt/slides/', 'ppt/slides/_rels/') + '.rels';
+    const relsMap = {};
+    if (zip.file(relsPath)) {
+      const relsXml = await zip.file(relsPath).async('string');
+      const relsDom = parser.parseFromString(relsXml, 'application/xml');
+      Array.from(relsDom.getElementsByTagName('Relationship')).forEach(r => { relsMap[r.getAttribute('Id')] = r.getAttribute('Target'); });
+    }
+    const spTree = dom.getElementsByTagName('p:spTree')[0];
+    const shapes = [];
+    if (spTree) {
+      for (const node of Array.from(spTree.childNodes)) {
+        if (node.nodeType !== 1) continue;
+        if (node.tagName === 'p:pic') {
+          const blip = node.getElementsByTagName('a:blip')[0];
+          const off = node.getElementsByTagName('a:off')[0];
+          const ext = node.getElementsByTagName('a:ext')[0];
+          const rId = blip && blip.getAttribute('r:embed');
+          if (!off || !ext || !rId || !relsMap[rId]) continue;
+          const target = relsMap[rId].replace(/^\.\.\//, '');
+          shapes.push({
+            type: 'image', mediaPath: 'ppt/' + target,
+            x: parseInt(off.getAttribute('x')), y: parseInt(off.getAttribute('y')),
+            w: parseInt(ext.getAttribute('cx')), h: parseInt(ext.getAttribute('cy')),
+          });
+        } else if (node.tagName === 'p:sp') {
+          const off = node.getElementsByTagName('a:off')[0];
+          const ext = node.getElementsByTagName('a:ext')[0];
+          const txBody = node.getElementsByTagName('p:txBody')[0];
+          if (!txBody) continue;
+          const paragraphs = Array.from(txBody.getElementsByTagName('a:p')).map(ap => {
+            return Array.from(ap.getElementsByTagName('a:r')).map(ar => {
+              const rPr = ar.getElementsByTagName('a:rPr')[0];
+              const tEl = ar.getElementsByTagName('a:t')[0];
+              const text = tEl ? tEl.textContent : '';
+              const size = rPr && rPr.getAttribute('sz') ? parseInt(rPr.getAttribute('sz')) / 100 : 18;
+              const bold = !!(rPr && rPr.getAttribute('b') === '1');
+              const italic = !!(rPr && rPr.getAttribute('i') === '1');
+              return { text, size, bold, italic };
+            }).filter(r => r.text);
+          }).filter(p => p.length);
+          if (!paragraphs.length) continue;
+          shapes.push({
+            type: 'text', paragraphs,
+            x: off ? parseInt(off.getAttribute('x')) : 0, y: off ? parseInt(off.getAttribute('y')) : 0,
+            w: ext ? parseInt(ext.getAttribute('cx')) : slideW, h: ext ? parseInt(ext.getAttribute('cy')) : 500000,
+          });
+        }
+      }
+    }
+    slides.push({ shapes });
+  }
+  return { slideW, slideH, slides, zip };
+}
+async function convertPptxToPdf() {
+  showProcessing('Reading presentation...', pptState.file.name);
+  try {
+    const EMU_PER_PT = 12700;
+    const structure = await parsePptxStructure(pptState.file);
+    const pdfDoc = await PDFLib.PDFDocument.create();
+    const fonts = {
+      reg: await pdfDoc.embedFont(PDFLib.StandardFonts.Helvetica),
+      bold: await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBold),
+      italic: await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaOblique),
+      boldItalic: await pdfDoc.embedFont(PDFLib.StandardFonts.HelveticaBoldOblique),
+    };
+    const pageW = structure.slideW / EMU_PER_PT, pageH = structure.slideH / EMU_PER_PT;
+    const imgCache = {};
+
+    for (let i = 0; i < structure.slides.length; i++) {
+      showProcessing(`Rendering slide ${i + 1} of ${structure.slides.length}...`, pptState.file.name);
+      const slideData = structure.slides[i];
+      const page = pdfDoc.addPage([pageW, pageH]);
+      for (const shape of slideData.shapes) {
+        const x = shape.x / EMU_PER_PT, w = shape.w / EMU_PER_PT, h = shape.h / EMU_PER_PT;
+        const yTop = shape.y / EMU_PER_PT;
+        if (shape.type === 'image') {
+          try {
+            if (!imgCache[shape.mediaPath]) {
+              const mediaFile = structure.zip.file(shape.mediaPath);
+              if (!mediaFile) continue;
+              const bytes = await mediaFile.async('arraybuffer');
+              const isPng = /\.png$/i.test(shape.mediaPath);
+              imgCache[shape.mediaPath] = isPng ? await pdfDoc.embedPng(bytes) : await pdfDoc.embedJpg(bytes);
+            }
+            page.drawImage(imgCache[shape.mediaPath], { x, y: pageH - yTop - h, width: w, height: h });
+          } catch (e) { console.warn('Skipping unsupported image', shape.mediaPath, e); }
+        } else if (shape.type === 'text') {
+          const runs = shape.paragraphs.flat();
+          if (!runs.length) continue;
+          let y = pageH - yTop;
+          shape.paragraphs.forEach(paraRuns => {
+            const lines = wrapRichRuns(paraRuns, fonts, w);
+            lines.forEach(line => {
+              const maxSize = Math.max(...line.map(t => t.size));
+              const asc = line[0].font.heightAtSize(maxSize, { descender: false });
+              let lx = x;
+              y -= maxSize * 1.2;
+              line.forEach(tok => {
+                page.drawText(tok.text, { x: lx, y: y + (maxSize * 1.2 - asc), size: tok.size, font: tok.font, color: PDFLib.rgb(0.1, 0.1, 0.1) });
+                lx += tok.font.widthOfTextAtSize(tok.text, tok.size);
+              });
+            });
+          });
+        }
+      }
+    }
+
+    showProcessing('Saving file...', '');
+    const out = await pdfDoc.save();
+    const baseName = pptState.file.name.replace(/\.pptx$/i, '');
+    downloadBlob(new Blob([out], { type: 'application/pdf' }), `${baseName} - Lite PDF Suite.pdf`);
+    hideProcessing();
+    toast(`Converted ${structure.slides.length} slide${structure.slides.length > 1 ? 's' : ''} to PDF.`, 'success');
+  } catch (err) {
+    console.error(err); hideProcessing();
+    toast(err.message || 'Something went wrong converting this presentation.', 'error');
+  }
+}
+
+/* ---------- Init ---------- */
+setMode('pdf2img');
+</script>
+</body>
+</html>

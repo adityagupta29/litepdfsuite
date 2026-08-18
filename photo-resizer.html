@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exam Photo & Signature Resizer | Lite PDF Suite</title>
+<meta name="description" content="Resize and compress photos and signatures to exact exam form specs (SSC, UPSC, IBPS, PAN) with a precise KB file-size limit, free online.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://litepdfsuite.com/photo-resizer.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Exam Photo & Signature Resizer | Lite PDF Suite">
+<meta property="og:description" content="Resize and compress photos and signatures to exact exam form specs (SSC, UPSC, IBPS, PAN) with a precise KB file-size limit, free online.">
+<meta property="og:url" content="https://litepdfsuite.com/photo-resizer.html">
+<link rel="icon" type="image/svg+xml" href="favicon/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon/icon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="tools-menu.js"></script>
+<script src="tool-info.js"></script>
+<style>
+  :root {
+    --bg: #f7f7f8; --bg-2: #ffffff; --card: #ffffff; --card-2: #f2f2f4;
+    --border: rgba(0, 0, 0, 0.08); --border-strong: rgba(0, 0, 0, 0.16);
+    --fg: #333333; --muted: #666666;
+    --accent: #c026d3; --accent-2: #a21caf; --accent-3: #2d6a4f;
+    --danger: #dc2626; --danger-bg: #fee2e2;
+    --shadow: rgba(0,0,0,0.05); --slider-track: #e0e0e0;
+  }
+  [data-theme="dark"] {
+    --bg: #07080a; --bg-2: #0c0d10; --card: #14161a; --card-2: #1c1f24;
+    --border: rgba(255, 255, 255, 0.08); --border-strong: rgba(255, 255, 255, 0.2);
+    --fg: #e8eaed; --muted: #8a8f96;
+    --accent: #e879f9; --accent-2: #d946ef; --accent-3: #4ecca3;
+    --danger: #ef4444; --danger-bg: rgba(239, 68, 68, 0.1);
+    --shadow: rgba(0,0,0,0.4); --slider-track: #2c2f36;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    background: var(--bg); color: var(--fg);
+    overflow: hidden; -webkit-font-smoothing: antialiased;
+    transition: background 0.4s, color 0.4s;
+  }
+  button { font-family: inherit; }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+  html { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+
+  .app-container { display: flex; flex-direction: column; height: 100vh; }
+  header.topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px; border-bottom: 1px solid var(--border);
+    background: var(--bg-2); z-index: 10;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+  .logo-mark {
+    width: 38px; height: 38px; border-radius: 10px; background: var(--fg); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 900; font-size: 20px;
+  }
+  .brand-name { font-family: 'Fraunces', serif; font-weight: 900; font-size: 20px; }
+  .brand-tag { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: -2px; }
+  .top-actions { display: flex; align-items: center; gap: 16px; }
+  .btn {
+    padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    border: 1px solid var(--border); background: var(--card); color: var(--fg);
+    cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all 0.2s;
+    white-space: nowrap; text-decoration: none;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn-danger { color: var(--danger); border-color: var(--border); }
+  .btn-danger:hover { background: var(--danger-bg); border-color: var(--danger); }
+
+  .theme-toggle {
+    width: 80px; height: 32px; border-radius: 16px;
+    background: var(--bg); border: 1px solid var(--border);
+    display: flex; align-items: center; padding: 3px; cursor: pointer; position: relative;
+  }
+  .theme-toggle .knob {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--fg); color: var(--bg);
+    display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 2;
+  }
+  [data-theme="dark"] .theme-toggle .knob { transform: translateX(46px); }
+  .theme-toggle .label { position: absolute; font-size: 10px; font-weight: 600; color: var(--muted); z-index: 1; text-transform: uppercase; }
+  .theme-toggle .label-light { left: 12px; }
+  .theme-toggle .label-dark { right: 12px; }
+  [data-theme="light"] .theme-toggle .label-light { opacity: 0; }
+  [data-theme="dark"] .theme-toggle .label-dark { opacity: 0; }
+
+  main.workspace { flex: 1; display: flex; overflow: hidden; position: relative; }
+
+  .canvas-area {
+    flex: 1; overflow-y: auto; overflow-x: hidden; padding: 24px 40px; position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  }
+  .empty-icon { width: 80px; height: 80px; border-radius: 20px; background: var(--card); display: flex; align-items: center; justify-content: center; font-size: 32px; color: var(--muted); margin-bottom: 16px; }
+  .empty-title { font-family: 'Fraunces', serif; font-size: 24px; margin-bottom: 8px; }
+  .empty-sub { color: var(--muted); font-size: 14px; max-width: 400px; }
+
+  .cropper-wrap { display: none; flex-direction: column; align-items: center; gap: 20px; }
+  .cropper-wrap.active { display: flex; }
+  .cropper-frame {
+    position: relative; overflow: hidden; background: #222; border-radius: 6px;
+    box-shadow: 0 20px 50px var(--shadow); cursor: grab; touch-action: none;
+    border: 3px solid var(--card);
+  }
+  .cropper-frame.dragging { cursor: grabbing; }
+  .cropper-frame img { position: absolute; top: 0; left: 0; user-select: none; -webkit-user-drag: none; pointer-events: none; }
+  .cropper-controls { display: flex; align-items: center; gap: 14px; width: 320px; max-width: 90vw; }
+  .cropper-controls i { color: var(--muted); }
+  .cropper-controls .range { flex: 1; }
+  .cropper-dims { font-size: 12px; color: var(--muted); text-align: center; }
+
+  aside.sidebar {
+    width: 360px; background: var(--bg-2); border-left: 1px solid var(--border);
+    display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0; z-index: 5;
+  }
+  .sidebar-section { padding: 20px; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; }
+  .sidebar-scroll { flex: 1; overflow-y: auto; }
+  .sidebar-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+
+  .upload-zone {
+    border: 2px dashed var(--border-strong); border-radius: 12px; padding: 24px;
+    text-align: center; cursor: pointer; transition: all 0.2s; background: var(--card);
+  }
+  .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: rgba(192, 38, 211, 0.05); }
+  .upload-zone i { font-size: 24px; color: var(--accent); margin-bottom: 8px; display: block; }
+  .upload-zone p { margin: 0; font-size: 13px; font-weight: 500; }
+  .upload-zone span { font-size: 11px; color: var(--muted); }
+
+  .file-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 8px;
+  }
+  .file-item-info { flex: 1; overflow: hidden; }
+  .file-item-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-item-meta { font-size: 11px; color: var(--muted); }
+
+  .preset-select { width: 100%; padding: 10px 12px; background: var(--card); border: 1px solid var(--border); border-radius: 8px; color: var(--fg); font-family: inherit; font-size: 13px; margin-bottom: 6px; }
+  .preset-hint { font-size: 11px; color: var(--muted); line-height: 1.4; margin-bottom: 14px; }
+  .preset-hint.warn { color: #d97706; }
+
+  .dim-row { display: flex; gap: 8px; margin-bottom: 14px; }
+  .dim-field { flex: 1; }
+  .dim-field label { font-size: 11px; color: var(--muted); display: block; margin-bottom: 4px; }
+  .form-input { width: 100%; padding: 8px 12px; background: var(--card); border: 1px solid var(--border); border-radius: 6px; color: var(--fg); font-family: inherit; font-size: 14px; }
+  .form-group { margin-bottom: 14px; }
+  .form-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .form-hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.4; }
+
+  .target-row { display: flex; gap: 8px; }
+  .target-row .form-input { flex: 1; }
+  .target-row select { width: 90px; padding: 8px; background: var(--card); border: 1px solid var(--border); border-radius: 6px; color: var(--fg); font-family: inherit; font-size: 13px; }
+
+  .format-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+  .format-tab { flex: 1; padding: 8px; text-align: center; background: var(--card); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; cursor: pointer; }
+  .format-tab.active { border-color: var(--accent); background: rgba(192, 38, 211, 0.08); color: var(--accent); }
+
+  .result-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 14px; display: none; }
+  .result-box.active { display: block; }
+  .result-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 6px; }
+  .result-row:last-child { margin-bottom: 0; }
+  .result-warn { color: var(--danger); font-size: 11px; margin-top: 8px; line-height: 1.4; }
+
+  .generate-btn {
+    width: 100%; padding: 14px; background: var(--accent); color: #fff; border: none;
+    border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: background 0.2s;
+  }
+  .generate-btn:hover { background: var(--accent-2); }
+  .generate-btn:disabled { background: var(--muted); cursor: not-allowed; }
+
+  .range { height: 4px; background: var(--slider-track); border-radius: 2px; -webkit-appearance: none; appearance: none; outline: none; }
+  .range::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 2px solid var(--bg); }
+  .range::-moz-range-thumb { width: 16px; height: 16px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 2px solid var(--bg); }
+
+  .toast-container { position: fixed; top: 78px; right: 24px; z-index: 1000; display: flex; flex-direction: column-reverse; gap: 10px; pointer-events: none; }
+  .toast-container .toast { pointer-events: auto; }
+  .toast { background: var(--card); border: 1px solid var(--border); padding: 12px 18px; border-radius: 8px; display: flex; align-items: center; gap: 12px; min-width: 260px; box-shadow: 0 10px 30px var(--shadow); animation: tIn 0.4s; font-size: 13px; }
+  .toast.success { border-left: 3px solid var(--accent-3); }
+  .toast.error { border-left: 3px solid var(--danger); }
+  .toast.info { border-left: 3px solid var(--accent); }
+  @keyframes tIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  .processing { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 100; flex-direction: column; gap: 16px; }
+  .processing.active { display: flex; }
+  .spinner { width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.2); border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .proc-text { color: #fff; font-family: 'Fraunces', serif; font-size: 18px; }
+
+  .privacy-note { display: flex; align-items: flex-start; gap: 8px; font-size: 11px; color: var(--muted); line-height: 1.4; padding: 12px 20px; }
+  .privacy-note i { color: var(--accent-3); margin-top: 2px; }
+  .logo-icon, .logo-mark { background: transparent !important; }
+  .logo-icon::after, .logo-mark::after { display: none !important; }
+  .logo-icon img, .logo-mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
+</style>
+</head>
+<body data-theme="light">
+
+<div class="app-container">
+  <header class="topbar">
+    <a href="index.html" class="brand">
+      <div class="logo-mark"><img src="favicon/favicon.svg" alt="Lite PDF Suite"></div>
+      <div>
+        <div class="brand-name">Lite PDF Suite</div>
+        <div class="brand-tag">Photo & Signature Resizer</div>
+      </div>
+    </a>
+    <div class="top-actions">
+      <div class="tm-mount" data-tools-menu></div>
+            <div data-tool-info>
+        <button class="ti-trigger" type="button"><i class="fa-solid fa-circle-info"></i> <span>Tool Info</span></button>
+        <div class="ti-overlay">
+          <div class="ti-modal" role="dialog" aria-modal="true" aria-labelledby="tiTitle">
+            <div class="ti-modal-header">
+              <h2 id="tiTitle">Photo and Signature Resizer Guide</h2>
+              <button class="ti-close" type="button" aria-label="Close">&times;</button>
+            </div>
+            <div class="ti-modal-body">
+              <p>Resizing a photo or signature means adjusting its dimensions and file size to match a specific requirement, most often the strict specifications listed on an exam application, government form, or job portal. Lite PDF Suite's resizer lets you crop and resize an image to an exact pixel size and file size cap, all inside your browser, which matters because these portals frequently reject uploads that are even slightly outside their limits. You can crop a photo to a passport style ratio, shrink a scanned signature down to a few kilobytes, or resize both together for a single application, without installing photo editing software or sending your ID photo to an unfamiliar website. The tool is especially useful during exam season, when thousands of applicants run into the exact same upload rejection at the same time.</p>
+
+              <h3>Key Features</h3>
+              <p>The resizer focuses on the exact specs that exam and government forms usually demand, rather than generic percentage based resizing.</p>
+              <ul>
+                <li><strong>Exact pixel dimensions:</strong> resize an image to a precise width and height in pixels.</li>
+                <li><strong>File size targeting:</strong> shrink a photo or signature down to a specific size in kilobytes.</li>
+                <li><strong>Crop tool:</strong> trim a photo to the correct aspect ratio before resizing.</li>
+                <li><strong>Preset templates:</strong> quickly apply common exam and passport photo specifications.</li>
+                <li><strong>Instant preview:</strong> see the final image size and quality before downloading.</li>
+                <li><strong>Works for both photos and signatures:</strong> the same tool handles portrait style photos and scanned signatures alike.</li>
+              </ul>
+
+              <h3>How to Use It</h3>
+              <p>Getting a photo to fit strict specs takes just a few adjustments, and the result can be checked before you ever submit it to a portal.</p>
+              <ol>
+                <li>Upload the photo or signature you need to resize.</li>
+                <li>Crop the image if the aspect ratio needs to change.</li>
+                <li>Enter the required pixel dimensions and target file size.</li>
+                <li>Check the preview to confirm the result matches the requirement.</li>
+                <li>Click <strong>Download</strong> to save the resized image.</li>
+              </ol>
+              <p>Because everything updates live, you can try a few different presets until the file passes the portal's requirements. There is no limit on how many times you can adjust and re-download.</p>
+
+              <h3>Common Use Cases</h3>
+              <p>This tool solves one of the most common frustrations with online applications, where a single oversized photo can hold up an entire form submission.</p>
+              <ul>
+                <li>Meeting exact photo and signature specs for a competitive exam application.</li>
+                <li>Resizing a passport style photo for a visa or government ID form.</li>
+                <li>Shrinking a scanned signature to fit under a job portal's size limit.</li>
+                <li>Preparing a profile photo that meets a specific pixel requirement.</li>
+                <li>Fixing a rejected upload by matching the exact dimensions requested.</li>
+                <li>Resizing a photo for a university admission or scholarship application form.</li>
+              </ul>
+
+              <h3>Frequently Asked Questions</h3>
+              <p><strong>Is the resizer free to use?</strong> Yes, resizing photos and signatures on Lite PDF Suite is completely free.</p>
+              <p><strong>Does it work for passport style photos?</strong> Yes, you can crop to the correct ratio and resize to the exact dimensions most portals request.</p>
+              <p><strong>Is my photo uploaded to a server?</strong> No, resizing happens entirely on your device inside your browser.</p>
+              <p><strong>Can I hit an exact file size in kilobytes?</strong> Yes, you can set a target size and the tool will adjust quality to reach it.</p>
+              <p><strong>Can I use the same tool for both a photo and a signature?</strong> Yes, you can process a photo and a signature separately using the same resizer and its presets.</p>
+              <p>Application portals rarely explain clearly why a photo was rejected, they simply refuse the upload and leave you guessing at the exact requirement. Lite PDF Suite's resizer removes that guesswork by letting you enter the precise dimensions and file size a form is asking for, then showing you the result before you submit it anywhere. This is especially useful during busy exam seasons, when getting a photo or signature right the first time can save real time under a tight application deadline.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="theme-toggle" id="themeToggle" title="Toggle theme">
+        <span class="label label-light">Light</span>
+        <span class="label label-dark">Dark</span>
+        <div class="knob">L</div>
+      </div>
+      <button class="btn btn-danger" id="newProjectBtn"><i class="fa-solid fa-trash"></i> New Project</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <div class="canvas-area" id="canvasArea">
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon"><i class="fa-solid fa-id-card"></i></div>
+        <div class="empty-title">No photo loaded</div>
+        <div class="empty-sub">Upload a passport-style photo or signature scan. Pick an exam preset (or set custom dimensions), position the crop, and export at the exact size required.</div>
+      </div>
+      <div class="cropper-wrap" id="cropperWrap">
+        <div class="cropper-frame" id="cropperFrame">
+          <img id="cropperImg" draggable="false">
+        </div>
+        <div class="cropper-controls">
+          <i class="fa-solid fa-magnifying-glass-minus"></i>
+          <input type="range" class="range" id="zoomRange" min="100" max="400" value="100">
+          <i class="fa-solid fa-magnifying-glass-plus"></i>
+        </div>
+        <div class="cropper-dims" id="cropperDims"></div>
+      </div>
+    </div>
+
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Photo</div>
+        <div class="upload-zone" id="uploadZone">
+          <i class="fa-solid fa-image"></i>
+          <p>Drop a JPG or PNG here or click to browse</p>
+          <span>One file at a time</span>
+        </div>
+        <input type="file" id="fileInput" accept="image/jpeg,image/png,image/webp" style="display:none">
+        <div id="fileInfoWrap" style="margin-top: 10px; display:none;">
+          <div class="file-item">
+            <i class="fa-solid fa-image" style="color: var(--accent);"></i>
+            <div class="file-item-info">
+              <div class="file-item-name" id="fileName"></div>
+              <div class="file-item-meta" id="fileMeta"></div>
+            </div>
+            <button class="btn" id="removeFileBtn" style="padding: 4px 8px; border: none; color: var(--muted);" title="Remove"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="sidebar-section sidebar-scroll">
+        <div class="sidebar-title"><i class="fa-solid fa-ruler-combined"></i> Size Preset</div>
+        <select class="preset-select" id="presetSelect">
+          <option value="ssc-photo">SSC Exams — Photo (200×230px, 20–50KB)</option>
+          <option value="ssc-sign">SSC Exams — Signature (140×60px, 10–20KB)</option>
+          <option value="upsc-photo">UPSC — Photo (200×230px, ≤300KB)</option>
+          <option value="upsc-sign">UPSC — Signature (200×80px, ≤300KB)</option>
+          <option value="ibps-photo">IBPS/Bank Exams — Photo (200×230px, 20–50KB)</option>
+          <option value="ibps-sign">IBPS/Bank Exams — Signature (140×60px, 10–20KB)</option>
+          <option value="pan-photo">PAN Card — Photo (213×213px, ≤50KB)</option>
+          <option value="passport-photo">Passport-style Photo (413×531px, ≤100KB)</option>
+          <option value="custom">Custom dimensions</option>
+        </select>
+        <div class="preset-hint warn" id="presetHint"><i class="fa-solid fa-triangle-exclamation"></i> Exam size rules change often — always double-check the exact spec in your official notification before uploading.</div>
+
+        <div class="dim-row">
+          <div class="dim-field">
+            <label>Width (px)</label>
+            <input type="number" class="form-input" id="widthInput" min="10" value="200">
+          </div>
+          <div class="dim-field">
+            <label>Height (px)</label>
+            <input type="number" class="form-input" id="heightInput" min="10" value="230">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <div class="form-label">Max file size</div>
+          <div class="target-row">
+            <input type="number" class="form-input" id="maxSizeInput" min="1" value="50">
+            <select id="maxSizeUnit">
+              <option value="KB" selected>KB</option>
+              <option value="MB">MB</option>
+            </select>
+          </div>
+          <div class="form-hint">We'll search for the highest quality JPEG that still fits under this limit.</div>
+        </div>
+
+        <div class="format-tabs">
+          <div class="format-tab active" data-fmt="jpeg">JPG</div>
+          <div class="format-tab" data-fmt="png">PNG</div>
+        </div>
+
+        <div class="result-box" id="resultBox">
+          <div class="result-row"><span>Output</span><strong id="resDims">-</strong></div>
+          <div class="result-row"><span>File size</span><strong id="resSize">-</strong></div>
+          <div class="result-warn" id="resWarn" style="display:none;"></div>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <button class="generate-btn" id="exportBtn" disabled><i class="fa-solid fa-download"></i> Export Photo</button>
+      </div>
+      <div class="privacy-note"><i class="fa-solid fa-shield-halved"></i> Your photo is resized entirely in your browser. Nothing is uploaded to a server.</div>
+    </aside>
+  </main>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+<div class="processing" id="processing"><div class="spinner"></div><div class="proc-text" id="procText">Processing...</div></div>
+
+<script>
+const PRESETS = {
+  'ssc-photo':      { w: 200, h: 230, maxKB: 50 },
+  'ssc-sign':       { w: 140, h: 60,  maxKB: 20 },
+  'upsc-photo':     { w: 200, h: 230, maxKB: 300 },
+  'upsc-sign':      { w: 200, h: 80,  maxKB: 300 },
+  'ibps-photo':     { w: 200, h: 230, maxKB: 50 },
+  'ibps-sign':      { w: 140, h: 60,  maxKB: 20 },
+  'pan-photo':      { w: 213, h: 213, maxKB: 50 },
+  'passport-photo': { w: 413, h: 531, maxKB: 100 },
+};
+
+let state = {
+  file: null, imgEl: null, naturalW: 0, naturalH: 0,
+  targetW: 200, targetH: 230, format: 'jpeg',
+  zoom: 1, minZoom: 1, panX: 0, panY: 0,
+  frameW: 260, frameH: 299, // on-screen crop frame size (scaled preview of target aspect ratio)
+};
+
+function toast(msg, type = 'info', duration = 3000) {
+  const c = document.getElementById('toastContainer');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  const icons = { success: 'check-circle', error: 'circle-exclamation', info: 'circle-info' };
+  t.innerHTML = `<i class="fa-solid fa-${icons[type]}"></i><span>${msg}</span>`;
+  c.appendChild(t);
+  setTimeout(() => { t.style.opacity = '0'; setTimeout(() => t.remove(), 300); }, duration);
+}
+function showProcessing(text) { document.getElementById('procText').textContent = text; document.getElementById('processing').classList.add('active'); }
+function hideProcessing() { document.getElementById('processing').classList.remove('active'); }
+function fmtBytes(n) {
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+  return (n / (1024 * 1024)).toFixed(2) + ' MB';
+}
+
+// ---------- File Handling ----------
+const uploadZone = document.getElementById('uploadZone');
+uploadZone.addEventListener('click', () => document.getElementById('fileInput').click());
+document.getElementById('fileInput').addEventListener('change', (e) => handleFile(e.target.files[0]));
+['dragenter', 'dragover'].forEach(ev => uploadZone.addEventListener(ev, (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); }));
+['dragleave', 'drop'].forEach(ev => uploadZone.addEventListener(ev, (e) => { e.preventDefault(); uploadZone.classList.remove('dragover'); }));
+uploadZone.addEventListener('drop', (e) => handleFile(e.dataTransfer.files[0]));
+
+function handleFile(file) {
+  if (!file || !/^image\/(jpeg|png|webp)$/.test(file.type)) { toast('Please upload a JPG, PNG, or WEBP image.', 'error'); return; }
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    state.file = file; state.imgEl = img; state.naturalW = img.width; state.naturalH = img.height;
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileMeta').textContent = `${img.width}×${img.height}px • ${fmtBytes(file.size)}`;
+    document.getElementById('fileInfoWrap').style.display = 'block';
+    document.getElementById('exportBtn').disabled = false;
+    document.getElementById('resultBox').classList.remove('active');
+    document.getElementById('emptyState').style.display = 'none';
+    document.getElementById('cropperWrap').classList.add('active');
+    toast(`Loaded "${file.name}"`, 'success');
+    initCropper();
+  };
+  img.onerror = () => toast('Could not load this image.', 'error');
+  img.src = url;
+}
+
+document.getElementById('removeFileBtn').addEventListener('click', resetAll);
+function resetAll() {
+  state.file = null; state.imgEl = null;
+  document.getElementById('fileInfoWrap').style.display = 'none';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('exportBtn').disabled = true;
+  document.getElementById('resultBox').classList.remove('active');
+  document.getElementById('emptyState').style.display = 'flex';
+  document.getElementById('cropperWrap').classList.remove('active');
+}
+
+// ---------- Preset / dims ----------
+document.getElementById('presetSelect').addEventListener('change', (e) => {
+  const key = e.target.value;
+  const hint = document.getElementById('presetHint');
+  if (key === 'custom') {
+    hint.innerHTML = '<i class="fa-solid fa-circle-info"></i> Set your own width, height, and max file size.';
+    hint.classList.remove('warn');
+  } else {
+    const p = PRESETS[key];
+    document.getElementById('widthInput').value = p.w;
+    document.getElementById('heightInput').value = p.h;
+    document.getElementById('maxSizeInput').value = p.maxKB;
+    document.getElementById('maxSizeUnit').value = 'KB';
+    hint.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Exam size rules change often — always double-check the exact spec in your official notification before uploading.';
+    hint.classList.add('warn');
+    applyDims();
+  }
+});
+document.getElementById('widthInput').addEventListener('change', applyDims);
+document.getElementById('heightInput').addEventListener('change', applyDims);
+
+function applyDims() {
+  const w = Math.max(10, parseInt(document.getElementById('widthInput').value) || 200);
+  const h = Math.max(10, parseInt(document.getElementById('heightInput').value) || 230);
+  state.targetW = w; state.targetH = h;
+  if (state.imgEl) initCropper();
+}
+
+document.querySelectorAll('.format-tab').forEach(tab => tab.addEventListener('click', () => {
+  document.querySelectorAll('.format-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  state.format = tab.dataset.fmt;
+}));
+
+// ---------- Cropper (pan + zoom over a fixed-aspect frame) ----------
+function initCropper() {
+  const aspect = state.targetW / state.targetH;
+  // Fit the on-screen frame within a reasonable box.
+  const maxDim = 320;
+  let frameW, frameH;
+  if (aspect >= 1) { frameW = maxDim; frameH = maxDim / aspect; }
+  else { frameH = maxDim; frameW = maxDim * aspect; }
+  state.frameW = frameW; state.frameH = frameH;
+
+  const frame = document.getElementById('cropperFrame');
+  frame.style.width = frameW + 'px';
+  frame.style.height = frameH + 'px';
+
+  // Minimum zoom = the scale at which the image just covers the frame (cover-fit).
+  const coverScale = Math.max(frameW / state.naturalW, frameH / state.naturalH);
+  state.minZoom = coverScale;
+  state.zoom = coverScale;
+  state.panX = (frameW - state.naturalW * coverScale) / 2;
+  state.panY = (frameH - state.naturalH * coverScale) / 2;
+
+  const img = document.getElementById('cropperImg');
+  img.src = state.imgEl.src;
+  img.style.width = state.naturalW + 'px';
+  img.style.height = state.naturalH + 'px';
+
+  document.getElementById('zoomRange').value = 100;
+  updateCropperTransform();
+  updateDimsLabel();
+}
+
+function updateCropperTransform() {
+  const img = document.getElementById('cropperImg');
+  img.style.transform = `translate(${state.panX}px, ${state.panY}px) scale(${state.zoom})`;
+  img.style.transformOrigin = '0 0';
+}
+function updateDimsLabel() {
+  document.getElementById('cropperDims').textContent = `Output: ${state.targetW}×${state.targetH}px — drag to reposition, use the slider to zoom`;
+}
+
+document.getElementById('zoomRange').addEventListener('input', (e) => {
+  const zoomFactor = parseInt(e.target.value) / 100; // 1.0 to 4.0
+  const oldZoom = state.zoom;
+  const newZoom = state.minZoom * zoomFactor;
+  // Keep the frame center fixed while zooming.
+  const cx = state.frameW / 2, cy = state.frameH / 2;
+  const imgCx = (cx - state.panX) / oldZoom;
+  const imgCy = (cy - state.panY) / oldZoom;
+  state.zoom = newZoom;
+  state.panX = cx - imgCx * newZoom;
+  state.panY = cy - imgCy * newZoom;
+  clampPan();
+  updateCropperTransform();
+});
+
+function clampPan() {
+  const scaledW = state.naturalW * state.zoom;
+  const scaledH = state.naturalH * state.zoom;
+  const minX = state.frameW - scaledW, maxX = 0;
+  const minY = state.frameH - scaledH, maxY = 0;
+  state.panX = Math.min(maxX, Math.max(minX, state.panX));
+  state.panY = Math.min(maxY, Math.max(minY, state.panY));
+}
+
+let dragging = false, dragStartX = 0, dragStartY = 0, panStartX = 0, panStartY = 0;
+const frameEl = document.getElementById('cropperFrame');
+frameEl.addEventListener('pointerdown', (e) => {
+  if (!state.imgEl) return;
+  dragging = true; frameEl.classList.add('dragging');
+  dragStartX = e.clientX; dragStartY = e.clientY;
+  panStartX = state.panX; panStartY = state.panY;
+  frameEl.setPointerCapture(e.pointerId);
+});
+frameEl.addEventListener('pointermove', (e) => {
+  if (!dragging) return;
+  state.panX = panStartX + (e.clientX - dragStartX);
+  state.panY = panStartY + (e.clientY - dragStartY);
+  clampPan();
+  updateCropperTransform();
+});
+frameEl.addEventListener('pointerup', (e) => { dragging = false; frameEl.classList.remove('dragging'); });
+frameEl.addEventListener('pointercancel', () => { dragging = false; frameEl.classList.remove('dragging'); });
+
+// ---------- Export ----------
+function dataUrlToUint8Array(dataUrl) {
+  const base64 = dataUrl.split(',')[1];
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return bytes;
+}
+
+function renderCropToCanvas() {
+  const canvas = document.createElement('canvas');
+  canvas.width = state.targetW; canvas.height = state.targetH;
+  const ctx = canvas.getContext('2d');
+  // Map from on-screen frame coordinates to output pixel coordinates.
+  const outScale = state.targetW / state.frameW;
+  const sx = -state.panX / state.zoom;
+  const sy = -state.panY / state.zoom;
+  const sWidth = state.frameW / state.zoom;
+  const sHeight = state.frameH / state.zoom;
+  ctx.drawImage(state.imgEl, sx, sy, sWidth, sHeight, 0, 0, state.targetW, state.targetH);
+  return canvas;
+}
+
+document.getElementById('exportBtn').addEventListener('click', async () => {
+  if (!state.imgEl) return;
+  try {
+    showProcessing('Rendering crop...');
+    await new Promise(r => setTimeout(r, 30));
+    const canvas = renderCropToCanvas();
+    const unit = document.getElementById('maxSizeUnit').value;
+    const maxVal = parseFloat(document.getElementById('maxSizeInput').value);
+    const maxBytes = (maxVal && maxVal > 0) ? (unit === 'MB' ? maxVal * 1024 * 1024 : maxVal * 1024) : Infinity;
+
+    let finalBytes, mime, warnMsg = null;
+    if (state.format === 'png') {
+      mime = 'image/png';
+      finalBytes = dataUrlToUint8Array(canvas.toDataURL('image/png'));
+      if (finalBytes.length > maxBytes) {
+        warnMsg = `PNG output is ${fmtBytes(finalBytes.length)}, over your ${fmtBytes(maxBytes)} limit. PNG is lossless and can't be shrunk further — switch to JPG to hit a strict size cap.`;
+      }
+    } else {
+      mime = 'image/jpeg';
+      let qLo = 0.15, qHi = 0.95, best = null;
+      for (let iter = 0; iter < 8; iter++) {
+        const qMid = (qLo + qHi) / 2;
+        showProcessing(`Compressing to fit ${fmtBytes(maxBytes)}... (try ${iter + 1}/8)`);
+        const bytes = dataUrlToUint8Array(canvas.toDataURL('image/jpeg', qMid));
+        if (bytes.length <= maxBytes) { best = bytes; qLo = qMid; } else { qHi = qMid; }
+        await new Promise(r => setTimeout(r, 0));
+      }
+      if (best) {
+        finalBytes = best;
+      } else {
+        finalBytes = dataUrlToUint8Array(canvas.toDataURL('image/jpeg', 0.15));
+        warnMsg = `Could not reach ${fmtBytes(maxBytes)} even at minimum quality. This is the smallest we could produce at ${state.targetW}×${state.targetH}px — try smaller pixel dimensions.`;
+      }
+    }
+
+    showProcessing('Saving file...');
+    const ext = state.format === 'png' ? 'png' : 'jpg';
+    const baseName = state.file.name.replace(/\.[^.]+$/, '');
+    downloadBlob(new Blob([finalBytes], { type: mime }), `${baseName} - ${state.targetW}x${state.targetH}.${ext}`);
+    hideProcessing();
+
+    document.getElementById('resDims').textContent = `${state.targetW}×${state.targetH}px`;
+    document.getElementById('resSize').textContent = fmtBytes(finalBytes.length);
+    if (warnMsg) { document.getElementById('resWarn').textContent = warnMsg; document.getElementById('resWarn').style.display = 'block'; }
+    else { document.getElementById('resWarn').style.display = 'none'; }
+    document.getElementById('resultBox').classList.add('active');
+
+    if (warnMsg) toast('Exported, but could not fully meet your size target — see details.', 'error');
+    else toast(`Exported ${state.targetW}×${state.targetH}px (${fmtBytes(finalBytes.length)}).`, 'success');
+  } catch (err) {
+    console.error(err); hideProcessing();
+    toast(err.message || 'Failed to export image.', 'error');
+  }
+});
+
+function downloadBlob(blob, name) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+// ---------- Theme ----------
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  document.body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.querySelector('.theme-toggle .knob').textContent = isDark ? 'L' : 'D';
+  localStorage.setItem('pp_theme', isDark ? 'light' : 'dark');
+});
+const savedTheme = localStorage.getItem('pp_theme') || 'light';
+document.body.setAttribute('data-theme', savedTheme);
+document.querySelector('.theme-toggle .knob').textContent = savedTheme === 'dark' ? 'D' : 'L';
+
+document.getElementById('newProjectBtn').addEventListener('click', () => {
+  if (!state.imgEl || confirm('Clear the current photo and start over?')) resetAll();
+});
+
+window.addEventListener('beforeunload', e => { if (state.imgEl) { e.preventDefault(); e.returnValue = ''; } });
+</script>
+</body>
+</html>

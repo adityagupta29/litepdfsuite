@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Page Numbers to PDF | Lite PDF Suite</title>
+<meta name="description" content="Add custom page numbers to your PDF online for free. Choose position, font, size, and format — no software to install, 100% private in your browser.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://litepdfsuite.com/add-page-number-pdf.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Add Page Numbers to PDF | Lite PDF Suite">
+<meta property="og:description" content="Add custom page numbers to your PDF online for free. Choose position, font, size, and format — no software to install, 100% private in your browser.">
+<meta property="og:url" content="https://litepdfsuite.com/add-page-number-pdf.html">
+<link rel="icon" type="image/svg+xml" href="favicon/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon/icon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="tools-menu.js"></script>
+<script src="tool-info.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<style>
+  /* ===== Themes ===== */
+  [data-theme="light"] {
+    --bg: #ffffff; --bg-2: #f7f7f8; --card: #ffffff; --card-2: #f2f2f4;
+    --border: rgba(0, 0, 0, 0.08); --border-strong: rgba(0, 0, 0, 0.16);
+    --fg: #333333; --muted: #666666;
+    --accent: #333333; --accent-2: #555555; --accent-3: #2d6a4f;
+    --paper: #ffffff; --shadow: rgba(0,0,0,0.08);
+    --slider-track: #e0e0e0; --slider-active: #333333;
+    --preview-bg: #f0f0f2; /* Distinct background so white page is visible */
+  }
+  [data-theme="dark"] {
+    --bg: #07080a; --bg-2: #0c0d10; --card: #14161a; --card-2: #1c1f24;
+    --border: rgba(255, 255, 255, 0.08); --border-strong: rgba(255, 255, 255, 0.2);
+    --fg: #e8eaed; --muted: #8a8f96;
+    --accent: #ffffff; --accent-2: #cccccc; --accent-3: #4ecca3;
+    --paper: #ffffff; --shadow: rgba(0,0,0,0.4);
+    --slider-track: #2c2f36; --slider-active: #ffffff;
+    --preview-bg: #0f1115;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    background: var(--bg); color: var(--fg);
+    min-height: 100vh; overflow-x: hidden;
+    position: relative; -webkit-font-smoothing: antialiased;
+    transition: background 0.4s, color 0.4s;
+  }
+
+  /* Atmosphere */
+  .atmosphere {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 15% 10%, var(--shadow), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 85% 85%, var(--shadow), transparent 60%);
+    transition: background 0.4s;
+  }
+  .grain {
+    position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.03;
+    background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    mix-blend-mode: overlay;
+  }
+  .blob {
+    position: fixed; border-radius: 50%; filter: blur(80px);
+    pointer-events: none; z-index: 0; opacity: 0.05;
+    animation: blobFloat 18s ease-in-out infinite;
+    transition: background 0.4s;
+  }
+  .blob.b1 { width: 380px; height: 380px; background: var(--accent); top: -100px; left: -80px; }
+  .blob.b2 { width: 320px; height: 320px; background: var(--accent-2); bottom: -100px; right: -60px; animation-delay: -6s; }
+  .blob.b3 { width: 280px; height: 280px; background: var(--accent-3); top: 40%; right: 30%; animation-delay: -12s; opacity: 0.03; }
+  @keyframes blobFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(40px, -30px) scale(1.08); }
+    66% { transform: translate(-30px, 40px) scale(0.95); }
+  }
+
+  .app { position: relative; z-index: 2; min-height: 100vh; display: flex; flex-direction: column; }
+
+  /* Header */
+  header.topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-2); z-index: 10;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+  .logo-mark {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: var(--fg); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-weight: 900; font-size: 20px;
+  }
+  .brand-name { font-family: 'Fraunces', serif; font-weight: 900; font-size: 20px; letter-spacing: -0.02em; }
+  .brand-tag { font-size: 11px; color: var(--muted); margin-top: -2px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .top-actions { display: flex; align-items: center; gap: 16px; }
+  .file-pill {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 14px; border-radius: 999px;
+    background: var(--card-2); border: 1px solid var(--border);
+    font-size: 13px; max-width: 280px;
+  }
+  .file-pill .file-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+  .file-pill .file-icon { color: var(--accent); }
+
+  /* Theme Toggle Switch (Light / Dark Text) */
+  .theme-toggle {
+    width: 120px; height: 34px; border-radius: 17px;
+    background: var(--bg-2); border: 1px solid var(--border);
+    display: flex; align-items: center; padding: 3px;
+    cursor: pointer; position: relative;
+    transition: background 0.3s;
+  }
+  .theme-toggle .knob {
+    width: 54px; height: 26px; border-radius: 14px;
+    background: var(--fg); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 2;
+  }
+  [data-theme="dark"] .theme-toggle .knob {
+    transform: translateX(60px);
+  }
+  .theme-toggle .label {
+    position: absolute; font-size: 11px; font-weight: 600; text-transform: uppercase;
+    color: var(--muted); transition: opacity 0.3s; z-index: 1;
+  }
+  .theme-toggle .label-light { left: 14px; }
+  .theme-toggle .label-dark { right: 14px; }
+  [data-theme="light"] .theme-toggle .label-light { opacity: 0; }
+  [data-theme="dark"] .theme-toggle .label-dark { opacity: 0; }
+
+  .btn-reset {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted); padding: 8px 14px; border-radius: 999px;
+    font-size: 13px; cursor: pointer; transition: all 0.2s;
+    font-family: inherit; display: flex; align-items: center; gap: 6px;
+  }
+  .btn-reset:hover { color: var(--fg); border-color: var(--border-strong); }
+
+  /* Workspace */
+  main.workspace {
+    flex: 1; display: grid; grid-template-columns: 1fr 460px;
+    gap: 22px; padding: 22px 32px 32px;
+    max-width: 1600px; margin: 0 auto; width: 100%;
+  }
+  @media (max-width: 1100px) { main.workspace { grid-template-columns: 1fr; } }
+
+  /* Preview Stage */
+  .preview-stage {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 24px; padding: 24px;
+    display: flex; flex-direction: column;
+    min-height: 640px; position: relative; overflow: hidden;
+  }
+  .stage-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; gap: 12px; flex-wrap: wrap; }
+  .stage-title { font-family: 'Fraunces', serif; font-weight: 600; font-size: 20px; letter-spacing: -0.01em; }
+  .stage-title .accent { color: var(--accent); font-style: italic; }
+  .page-nav {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--bg-2); padding: 5px 10px; border-radius: 999px;
+    border: 1px solid var(--border);
+  }
+  .page-nav button {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: transparent; border: none; color: var(--muted);
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .page-nav button:hover:not(:disabled) { background: var(--card-2); color: var(--accent); }
+  .page-nav button:disabled { opacity: 0.3; cursor: not-allowed; }
+  .page-indicator { font-size: 13px; color: var(--muted); min-width: 70px; text-align: center; font-variant-numeric: tabular-nums; }
+  .page-indicator strong { color: var(--fg); font-weight: 600; }
+
+  .paper-wrap {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    perspective: 1500px; position: relative;
+    background: var(--preview-bg); /* Distinct background so white page is visible */
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 40px 20px;
+    transition: background 0.4s, border-color 0.4s;
+  }
+  .paper-container {
+    position: relative; width: 380px; height: 537px;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .paper {
+    width: 100%; height: 100%; background: var(--paper);
+    border-radius: 4px; position: relative;
+    box-shadow: 0 20px 40px -15px var(--shadow), 0 10px 20px -10px var(--shadow);
+    overflow: hidden;
+    animation: paperFloat 6s ease-in-out infinite;
+  }
+  @keyframes paperFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .paper::after {
+    content: ''; position: absolute;
+    top: 4px; left: 4px; right: -8px; bottom: -8px;
+    background: var(--card-2); border-radius: 4px; z-index: -1;
+    box-shadow: 0 0 0 1px var(--border), 8px 12px 0 0 var(--card-2), 16px 24px 30px var(--shadow);
+  }
+  .paper-content { position: absolute; inset: 50px 40px; display: flex; flex-direction: column; gap: 14px; }
+  .line { height: 8px; background: #e0e0e0; border-radius: 2px; }
+  .line.short { width: 60%; } .line.medium { width: 85%; } .line.long { width: 100%; }
+  .line.title { height: 14px; width: 50%; background: #ccc; margin-bottom: 18px; }
+
+  /* Actual PDF rendered canvas */
+  .pdf-canvas {
+    width: 100%; height: 100%; object-fit: contain;
+    display: block; border-radius: 4px;
+  }
+
+  /* Page number element */
+  .page-num {
+    position: absolute;
+    font-family: var(--pn-font, 'Space Grotesk');
+    font-size: var(--pn-size, 16px);
+    color: var(--pn-color, #333);
+    font-weight: var(--pn-weight, 600);
+    font-style: var(--pn-style, normal);
+    background: var(--pn-bg, transparent);
+    border: var(--pn-border, none);
+    border-radius: var(--pn-radius, 0);
+    padding: var(--pn-padding, 0 8px);
+    line-height: 1; white-space: nowrap;
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 5; display: flex; align-items: center; justify-content: center;
+  }
+  .page-num.animate-in { animation: numDrop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  @keyframes numDrop {
+    0% { transform: translate(var(--tx,-50%), -30px) scale(0.5); opacity: 0; }
+    60% { transform: translate(var(--tx,-50%), 4px) scale(1.1); opacity: 1; }
+    100% { transform: translate(var(--tx,-50%), 0) scale(1); opacity: 1; }
+  }
+
+  /* Safety margin indicator */
+  .margin-indicator {
+    position: absolute;
+    border: 1px dashed rgba(255, 94, 58, 0.6);
+    pointer-events: none; transition: all 0.3s;
+    z-index: 4; border-radius: 2px;
+  }
+
+  /* No file state */
+  .no-file-state {
+    position: absolute; inset: 20px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 40px;
+    background: var(--bg-2);
+    border: 2px dashed var(--border-strong);
+    border-radius: 16px;
+    z-index: 10; transition: opacity 0.4s;
+  }
+  .no-file-state.hidden { opacity: 0; pointer-events: none; }
+  .upload-icon-wrap {
+    width: 80px; height: 80px; border-radius: 20px;
+    background: var(--fg); color: var(--bg);
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 20px;
+    box-shadow: 0 12px 30px var(--shadow);
+    animation: uploadBob 3s ease-in-out infinite;
+    cursor: pointer; position: relative;
+  }
+  .upload-icon-wrap i { font-size: 32px; }
+  @keyframes uploadBob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-8px) rotate(2deg); } }
+  .upload-title { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 600; margin-bottom: 8px; color: var(--fg); }
+  .upload-sub { color: var(--muted); margin-bottom: 20px; max-width: 340px; font-size: 14px; line-height: 1.5; }
+  .upload-btn {
+    padding: 12px 24px; border-radius: 999px;
+    background: var(--accent); color: var(--bg);
+    font-family: inherit; font-weight: 600; font-size: 14px;
+    border: none; cursor: pointer;
+    display: inline-flex; align-items: center; gap: 10px;
+    transition: all 0.2s;
+    box-shadow: 0 8px 20px var(--shadow);
+  }
+  [data-theme="light"] .upload-btn { background: var(--fg); color: var(--bg); }
+  .upload-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px var(--shadow); }
+
+  /* Privacy notice */
+  .privacy-notice {
+    margin-top: 18px; padding: 14px 16px;
+    background: var(--bg-2); border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex; gap: 12px; align-items: flex-start;
+    font-size: 12.5px; line-height: 1.55;
+  }
+  .privacy-notice .icon {
+    width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+    background: var(--card-2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent);
+  }
+  .privacy-notice .text { color: var(--muted); }
+  .privacy-notice .text strong { color: var(--fg); font-weight: 600; }
+  .privacy-notice .text em { color: var(--accent); font-style: normal; font-weight: 500; }
+
+  /* Controls panel */
+  .controls-panel {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 24px; padding: 22px;
+    display: flex; flex-direction: column; gap: 18px;
+    max-height: calc(100vh - 130px); overflow-y: auto;
+    scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent;
+  }
+  .controls-panel::-webkit-scrollbar { width: 6px; }
+  .controls-panel::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+  .panel-section { display: flex; flex-direction: column; gap: 12px; }
+  .section-head {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .section-head .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .section-head .num {
+    width: 20px; height: 20px; border-radius: 6px;
+    background: var(--bg-2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: var(--accent); font-weight: 700;
+  }
+
+  /* Fields */
+  .field { display: flex; flex-direction: column; gap: 6px; position: relative; }
+  .field-row { display: flex; gap: 10px; }
+  .field-label {
+    font-size: 12px; color: var(--muted); font-weight: 500;
+    display: flex; align-items: center; justify-content: space-between; gap: 6px;
+  }
+  .field-label .hint-btn {
+    font-size: 10px; color: var(--muted); opacity: 0.8;
+    cursor: help; text-decoration: underline dotted;
+    background: none; border: none; font-family: inherit; padding: 0;
+  }
+  .field-label .hint-btn:hover { color: var(--accent); opacity: 1; }
+
+  .input, .select {
+    background: var(--bg-2); border: 1px solid var(--border);
+    color: var(--fg); padding: 10px 14px; border-radius: 10px;
+    font-family: inherit; font-size: 14px; transition: all 0.2s; width: 100%;
+  }
+  .input:focus, .select:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--shadow);
+  }
+  .input.with-unit { padding-right: 40px; }
+  .input-wrap { position: relative; flex: 1; }
+  .input-unit {
+    position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--muted); font-size: 12px; pointer-events: none;
+  }
+
+  /* Segmented control */
+  .seg {
+    display: grid; gap: 4px;
+    background: var(--bg-2); padding: 4px; border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+  .seg.cols-2 { grid-template-columns: 1fr 1fr; }
+  .seg.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .seg.cols-5 { grid-template-columns: repeat(5, 1fr); }
+  .seg-item {
+    padding: 9px 8px; border-radius: 8px; text-align: center;
+    font-size: 13px; color: var(--muted); cursor: pointer;
+    transition: all 0.25s; user-select: none;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    border: none; background: transparent; font-family: inherit;
+  }
+  .seg-item:hover { color: var(--fg); }
+  .seg-item.active {
+    background: var(--card); color: var(--fg); font-weight: 600;
+    box-shadow: 0 2px 6px var(--shadow);
+  }
+  .seg-item i { font-size: 11px; }
+
+  /* Color swatches */
+  .color-row { display: flex; gap: 8px; align-items: center; }
+  .swatch {
+    width: 30px; height: 30px; border-radius: 8px;
+    cursor: pointer; transition: all 0.2s;
+    border: 2px solid transparent; position: relative;
+  }
+  .swatch.active { border-color: var(--accent); transform: scale(1.1); }
+  .swatch.active::after {
+    content: ''; position: absolute; inset: -6px;
+    border: 1px solid var(--accent); border-radius: 12px; opacity: 0.4;
+  }
+  .color-picker-wrap {
+    width: 30px; height: 30px; border-radius: 8px;
+    background: var(--bg-2); border: 1px dashed var(--border-strong);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; position: relative; overflow: hidden;
+  }
+  .color-picker-wrap input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .color-picker-wrap i { color: var(--muted); font-size: 12px; }
+
+  /* Range slider - Grounded Track */
+  .range-wrap { display: flex; align-items: center; gap: 12px; }
+  .range {
+    -webkit-appearance: none; appearance: none;
+    flex: 1; height: 6px; 
+    background: var(--slider-track); /* Added visible track */
+    border-radius: 3px;
+    outline: none; cursor: pointer;
+  }
+  .range::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--fg); cursor: pointer;
+    box-shadow: 0 2px 8px var(--shadow);
+    border: 2px solid var(--bg);
+    transition: transform 0.15s;
+  }
+  .range::-webkit-slider-thumb:hover { transform: scale(1.2); }
+  .range::-moz-range-thumb { 
+    width: 18px; height: 18px; border-radius: 50%; 
+    background: var(--fg); cursor: pointer; border: 2px solid var(--bg); 
+  }
+  .range-val { font-size: 13px; color: var(--fg); min-width: 36px; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+
+  /* Toggle */
+  .toggle-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 14px; background: var(--bg-2); border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+  .toggle {
+    width: 40px; height: 22px; border-radius: 11px;
+    background: var(--bg); border: 1px solid var(--border);
+    position: relative; cursor: pointer; transition: all 0.2s;
+  }
+  .toggle::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--muted); transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .toggle.on { background: var(--accent); border-color: var(--accent); }
+  .toggle.on::after { left: 20px; background: var(--bg); }
+
+  /* Generate button */
+  .generate-btn {
+    padding: 16px 24px; border-radius: 14px;
+    background: var(--accent); color: var(--bg);
+    font-family: inherit; font-weight: 700; font-size: 15px;
+    border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    transition: all 0.25s;
+    box-shadow: 0 10px 30px var(--shadow);
+    position: relative; overflow: hidden;
+  }
+  [data-theme="light"] .generate-btn { background: var(--fg); color: var(--bg); }
+  .generate-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%);
+    transform: translateX(-100%); transition: transform 0.6s;
+  }
+  .generate-btn:hover::before { transform: translateX(100%); }
+  .generate-btn:hover { transform: translateY(-2px); box-shadow: 0 14px 36px var(--shadow); }
+  .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .generate-btn .spark { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #fff; opacity: 0; pointer-events: none; }
+
+  /* Hover tooltip */
+  .hover-tip {
+    position: fixed; z-index: 500;
+    background: var(--card); border: 1px solid var(--border-strong);
+    padding: 10px 14px; border-radius: 10px;
+    font-size: 12px; line-height: 1.5; color: var(--fg);
+    max-width: 280px;
+    box-shadow: 0 10px 30px var(--shadow);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .hover-tip.show { opacity: 1; }
+  .hover-tip strong { color: var(--accent); }
+  .hover-tip em { color: var(--accent-3); font-style: normal; }
+  [data-theme="light"] .hover-tip em { color: #2d6a4f; }
+
+  /* Toast */
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
+  .toast {
+    background: var(--card); border: 1px solid var(--border);
+    padding: 12px 18px; border-radius: 12px;
+    display: flex; align-items: center; gap: 12px;
+    min-width: 260px; max-width: 360px;
+    box-shadow: 0 10px 30px var(--shadow);
+    animation: toastIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    font-size: 14px;
+  }
+  .toast.success { border-left: 3px solid #2d6a4f; }
+  .toast.error { border-left: 3px solid #c0392b; }
+  .toast.info { border-left: 3px solid var(--accent); }
+  .toast i { font-size: 16px; }
+  .toast.success i { color: #2d6a4f; }
+  .toast.error i { color: #c0392b; }
+  .toast.info i { color: var(--accent); }
+  @keyframes toastIn { from { transform: translateX(20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  .toast.out { animation: toastOut 0.3s forwards; }
+  @keyframes toastOut { to { transform: translateX(20px); opacity: 0; } }
+
+  /* Processing overlay */
+  .processing {
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+  }
+  .processing.show { opacity: 1; pointer-events: auto; }
+  .proc-paper {
+    width: 80px; height: 100px; background: var(--paper);
+    border-radius: 4px; position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    animation: procStamp 1.4s ease-in-out infinite;
+  }
+  .proc-paper::before { content: ''; position: absolute; inset: 12px; background: repeating-linear-gradient(180deg, #d4cfc2 0 6px, transparent 6px 14px); }
+  .proc-paper::after { content: ''; position: absolute; bottom: 14px; right: 14px; width: 30px; height: 14px; background: var(--accent); border-radius: 2px; animation: procStampInner 1.4s ease-in-out infinite; }
+  @keyframes procStamp { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-10px) rotate(2deg); } }
+  @keyframes procStampInner { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.7; } }
+  .proc-text { margin-top: 24px; font-family: 'Fraunces', serif; font-size: 18px; color: #fff; }
+  .proc-progress { margin-top: 14px; width: 240px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+  .proc-bar { height: 100%; background: var(--accent); width: 0%; transition: width 0.3s; }
+
+  #fileInput { display: none; }
+  .hidden { display: none !important; }
+
+  @media (max-width: 720px) {
+    header.topbar { padding: 14px 18px; }
+    .brand-tag { display: none; }
+    main.workspace { padding: 16px; gap: 16px; }
+    .preview-stage, .controls-panel { padding: 18px; border-radius: 18px; }
+    .paper-container { width: 280px; height: 396px; }
+    .upload-title { font-size: 22px; }
+    .file-pill .file-name { max-width: 100px; }
+    .theme-toggle { width: 90px; }
+    .theme-toggle .knob { width: 40px; }
+    [data-theme="dark"] .theme-toggle .knob { transform: translateX(46px); }
+  }
+  .logo-icon, .logo-mark { background: transparent !important; }
+  .logo-icon::after, .logo-mark::after { display: none !important; }
+  .logo-icon img, .logo-mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
+</style>
+</head>
+<body data-theme="light">
+  <div class="atmosphere"></div>
+  <div class="grain"></div>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+
+  <div class="app">
+    <header class="topbar">
+      <a href="index.html" class="brand">
+        <div class="logo-mark"><img src="favicon/favicon.svg" alt="Lite PDF Suite"></div>
+        <div>
+          <div class="brand-name">Lite PDF Suite</div>
+          <div class="brand-tag">Add Page Numbers To PDF</div>
+        </div>
+      </a>
+      <div class="top-actions">
+      <div class="tm-mount" data-tools-menu></div>
+      <div data-tool-info>
+        <button class="ti-trigger" type="button"><i class="fa-solid fa-circle-info"></i> <span>Tool Info</span></button>
+        <div class="ti-overlay">
+          <div class="ti-modal" role="dialog" aria-modal="true" aria-labelledby="tiTitle">
+            <div class="ti-modal-header">
+              <h2 id="tiTitle">Add Page Numbers Guide</h2>
+              <button class="ti-close" type="button" aria-label="Close">&times;</button>
+            </div>
+            <div class="ti-modal-body">
+              <p>Adding page numbers to a PDF means stamping a number, and optionally extra text, onto every page so a long document is easy to navigate, cite, and keep in order once it is printed or shared. Lite PDF Suite's page numbering tool runs completely inside your browser. You upload a PDF, pick exactly where the numbers should sit, choose a starting number and a format, and the tool writes them into a clean copy of the file. Nothing is sent to a server at any point, so contracts, theses, reports, and other sensitive files stay private on your own device. The tool is built for real control instead of one fixed style, letting you choose position, font, size, a prefix such as Page, a total count such as of 42, and which pages to skip, like a cover sheet or divider. Whether you are preparing a formal submission or a long internal report, consistent numbering makes the document far easier to reference later and looks noticeably more polished than an unnumbered file.</p>
+
+              <h3>Key Features</h3>
+              <p>The numbering tool gives you the kind of control usually found only in paid desktop software, without needing to install anything or learn a complex interface.</p>
+              <ul>
+                <li><strong>Position control:</strong> place numbers in any corner or edge of the page, including centered top or bottom.</li>
+                <li><strong>Custom start number:</strong> begin at 1, or continue a sequence from an existing number such as 101.</li>
+                <li><strong>Flexible format:</strong> show a plain number, or combine it with text like Page 3 of 20.</li>
+                <li><strong>Font and size control:</strong> match the numbering style to the rest of the document.</li>
+                <li><strong>Page skipping:</strong> leave a cover page, divider, or appendix without a number.</li>
+                <li><strong>Works with any page size:</strong> numbering adapts automatically whether the document uses A4, Letter, or a custom size.</li>
+              </ul>
+
+              <h3>How to Use It</h3>
+              <p>Numbering a document takes only a few clicks from start to finish, and every choice can be adjusted before you commit to a final file.</p>
+              <ol>
+                <li>Upload the PDF you want to number.</li>
+                <li>Choose a position on the page for the numbers to appear.</li>
+                <li>Set the starting number and pick a format for the text.</li>
+                <li>Preview the placement directly on the page thumbnails before confirming.</li>
+                <li>Click <strong>Add Page Numbers</strong> and download the finished PDF.</li>
+              </ol>
+              <p>Every page updates instantly in the preview, so you can fine tune the position before you commit to a final download. If something looks off once you see it applied, you can change the settings and regenerate the file as many times as you need.</p>
+
+              <h3>Common Use Cases</h3>
+              <p>Page numbers matter any time a document needs to stay organized once it leaves your screen, whether it will be printed, emailed, or archived for later reference.</p>
+              <ul>
+                <li>Preparing a thesis, dissertation, or academic report for submission.</li>
+                <li>Numbering a legal contract so every page can be referenced during a signing or review.</li>
+                <li>Adding numbers to a printed handout or workbook so pages stay in order.</li>
+                <li>Continuing numbering across multiple volumes of a longer manuscript.</li>
+                <li>Making a scanned document easier to cite in meetings or classrooms.</li>
+                <li>Numbering a printed exam paper or worksheet so students can reference specific questions.</li>
+              </ul>
+
+              <h3>Frequently Asked Questions</h3>
+              <p><strong>Is adding page numbers free on Lite PDF Suite?</strong> Yes, the tool is completely free with no limit on how many documents you number.</p>
+              <p><strong>Does my file get uploaded to a server?</strong> No. Numbering happens entirely on your device, and the original file never leaves your computer.</p>
+              <p><strong>Can I start numbering from a page other than the first one?</strong> Yes, you can skip a cover page or any other page and start the visible numbering wherever you like.</p>
+              <p><strong>Does it work on mobile devices?</strong> Yes, the tool works in any modern mobile browser, though desktop is a little faster for very long documents.</p>
+              <p><strong>Will the page numbers look the same when printed?</strong> Yes, the numbers are written directly into the PDF content, so they print exactly as shown in the preview on any printer.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="theme-toggle" id="themeToggle" title="Toggle theme">
+          <span class="label label-light">Light</span>
+          <span class="label label-dark">Dark</span>
+          <div class="knob">Light</div>
+        </div>
+        <div class="file-pill hidden" id="filePill">
+          <i class="fa-regular fa-file-pdf file-icon"></i>
+          <span class="file-name" id="fileName">document.pdf</span>
+          <span style="color:var(--muted);font-size:12px" id="fileMeta"></span>
+        </div>
+        <button class="btn-reset hidden" id="resetBtn">
+          <i class="fa-solid fa-rotate-left"></i> New
+        </button>
+      </div>
+    </header>
+
+    <main class="workspace">
+      <section class="preview-stage">
+        <div class="stage-header">
+          <div class="stage-title">Live <span class="accent">preview</span></div>
+          <div class="page-nav">
+            <button id="prevPage" aria-label="Previous page"><i class="fa-solid fa-chevron-left"></i></button>
+            <div class="page-indicator">Page <strong id="curPage">1</strong> of <strong id="totalPages">—</strong></div>
+            <button id="nextPage" aria-label="Next page"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
+
+        <div class="paper-wrap">
+          <div class="paper-container" id="paperContainer">
+            <canvas id="pdfCanvas" class="pdf-canvas hidden"></canvas>
+            <div class="paper" id="paperPlaceholder">
+              <div class="paper-content">
+                <div class="line title"></div>
+                <div class="line long"></div>
+                <div class="line long"></div>
+                <div class="line medium"></div>
+                <div class="line long"></div>
+                <div class="line short"></div>
+                <div class="line long"></div>
+                <div class="line medium"></div>
+                <div class="line long"></div>
+                <div class="line short"></div>
+              </div>
+            </div>
+            <div class="margin-indicator hidden" id="marginIndicator"></div>
+            <div class="page-num" id="pageNumEl">1</div>
+          </div>
+
+          <div class="no-file-state" id="noFileState">
+            <div class="upload-icon-wrap" id="uploadIconWrap">
+              <i class="fa-solid fa-cloud-arrow-up"></i>
+            </div>
+            <div class="upload-title">Drop a PDF to begin</div>
+            <div class="upload-sub">Bring any PDF document. We will help you add page numbers exactly where you want them.</div>
+            <button class="upload-btn" id="uploadBtn">
+              <i class="fa-solid fa-folder-open"></i> Choose PDF file
+            </button>
+            <input type="file" id="fileInput" accept="application/pdf">
+          </div>
+        </div>
+
+        <div class="privacy-notice">
+          <div class="icon"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="text">
+            <strong>100% private. Your files never leave your browser.</strong> Lite PDF Suite runs entirely on your device using JavaScript, so your PDF is <em>never uploaded</em> to any server. The trade-off: processing large PDFs on a low-power computer can take a moment. Be patient, your document stays yours.
+          </div>
+        </div>
+      </section>
+
+      <aside class="controls-panel" id="controlsPanel">
+        <div class="panel-section">
+          <div class="section-head">
+            <span class="num">1</span><span class="dot"></span><span>Which pages get numbered</span>
+          </div>
+          <div class="field">
+            <div class="field-label">
+              Start adding numbers from page
+              <button class="hint-btn" data-tip="startPage">why?</button>
+            </div>
+            <div class="field-row">
+              <div class="input-wrap">
+                <input type="number" class="input with-unit" id="startPage" value="1" min="1">
+                <span class="input-unit">of <span id="totalPages2">—</span></span>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">
+              Stop at page (optional)
+              <button class="hint-btn" data-tip="endPage">why?</button>
+            </div>
+            <div class="field-row">
+              <div class="input-wrap">
+                <input type="number" class="input with-unit" id="endPage" value="" min="1" placeholder="last page">
+                <span class="input-unit">empty = end</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="section-head">
+            <span class="num">2</span><span class="dot"></span><span>The numbers themselves</span>
+          </div>
+          <div class="field">
+            <div class="field-label">
+              First number printed
+              <button class="hint-btn" data-tip="startNumber">why?</button>
+            </div>
+            <input type="number" class="input" id="startNumber" value="1" min="0">
+          </div>
+          <div class="field">
+            <div class="field-label">Number style</div>
+            <div class="seg cols-5" id="formatSeg">
+              <button class="seg-item active" data-fmt="num">1</button>
+              <button class="seg-item" data-fmt="numDash">- 1 -</button>
+              <button class="seg-item" data-fmt="pageOf">1 / N</button>
+              <button class="seg-item" data-fmt="roman">i</button>
+              <button class="seg-item" data-fmt="alpha">A</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="section-head">
+            <span class="num">3</span><span class="dot"></span><span>Placement</span>
+          </div>
+          <div class="field">
+            <div class="field-label">Horizontal position</div>
+            <div class="seg cols-3" id="hposSeg">
+              <button class="seg-item" data-hpos="left"><i class="fa-solid fa-align-left"></i> Left</button>
+              <button class="seg-item active" data-hpos="center"><i class="fa-solid fa-align-center"></i> Center</button>
+              <button class="seg-item" data-hpos="right"><i class="fa-solid fa-align-right"></i> Right</button>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Vertical position</div>
+            <div class="seg cols-2" id="vposSeg">
+              <button class="seg-item" data-vpos="top"><i class="fa-solid fa-arrow-up"></i> Top</button>
+              <button class="seg-item active" data-vpos="bottom"><i class="fa-solid fa-arrow-down"></i> Bottom</button>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">
+              Distance from edge
+              <span style="color:var(--fg);font-weight:600" id="marginVal">40 pt</span>
+            </div>
+            <div class="range-wrap">
+              <input type="range" class="range" id="marginRange" min="10" max="120" value="40">
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="section-head">
+            <span class="num">4</span><span class="dot"></span><span>Typography</span>
+          </div>
+          <div class="field">
+            <div class="field-label">Font family</div>
+            <select class="select" id="fontSelect">
+              <option value="Helvetica">Helvetica (clean sans)</option>
+              <option value="Times Roman">Times Roman (classic serif)</option>
+              <option value="Courier">Courier (monospace)</option>
+            </select>
+          </div>
+          <div class="field-row">
+            <div class="field" style="flex:1">
+              <div class="field-label">Size <span style="color:var(--fg);font-weight:600" id="sizeVal">14 pt</span></div>
+              <input type="range" class="range" id="sizeRange" min="8" max="36" value="14">
+            </div>
+            <div class="field" style="width:90px">
+              <div class="field-label">Weight</div>
+              <div class="seg cols-2" id="weightSeg">
+                <button class="seg-item active" data-weight="normal">Reg</button>
+                <button class="seg-item" data-weight="bold">Bold</button>
+              </div>
+            </div>
+            <div class="field" style="width:80px">
+              <div class="field-label">Style</div>
+              <div class="seg cols-2" id="italicSeg">
+                <button class="seg-item active" data-italic="false">Aa</button>
+                <button class="seg-item" data-italic="true" style="font-style:italic">Aa</button>
+              </div>
+            </div>
+          </div>
+          <div class="field">
+            <div class="field-label">Text color</div>
+            <div class="color-row" id="colorRow">
+              <div class="swatch active" data-color="#1a1a1a" style="background:#1a1a1a"></div>
+              <div class="swatch" data-color="#666666" style="background:#666666"></div>
+              <div class="swatch" data-color="#c0392b" style="background:#c0392b"></div>
+              <div class="swatch" data-color="#d4a017" style="background:#d4a017"></div>
+              <div class="swatch" data-color="#1e6091" style="background:#1e6091"></div>
+              <div class="swatch" data-color="#2d6a4f" style="background:#2d6a4f"></div>
+              <label class="color-picker-wrap" title="Custom color">
+                <i class="fa-solid fa-eye-dropper"></i>
+                <input type="color" id="customColor" value="#1a1a1a">
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="section-head">
+            <span class="num">5</span><span class="dot"></span><span>Optional box around number</span>
+          </div>
+          <div class="toggle-row">
+            <span style="font-size:13px">Draw a box or pill behind the number</span>
+            <div class="toggle" id="boxToggle"></div>
+          </div>
+          <div id="boxOptions" class="hidden" style="flex-direction:column; gap:12px">
+            <div class="field">
+              <div class="field-label">Box style</div>
+              <div class="seg cols-3" id="boxStyleSeg">
+                <button class="seg-item active" data-box="solid">Solid</button>
+                <button class="seg-item" data-box="outline">Outline</button>
+                <button class="seg-item" data-box="pill">Pill</button>
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">Box color</div>
+              <div class="color-row" id="boxColorRow">
+                <div class="swatch active" data-color="#ffb627" style="background:#ffb627"></div>
+                <div class="swatch" data-color="#1a1a1a" style="background:#1a1a1a"></div>
+                <div class="swatch" data-color="#c0392b" style="background:#c0392b"></div>
+                <div class="swatch" data-color="#2d6a4f" style="background:#2d6a4f"></div>
+                <div class="swatch" data-color="#1e6091" style="background:#1e6091"></div>
+                <label class="color-picker-wrap" title="Custom box color">
+                  <i class="fa-solid fa-eye-dropper"></i>
+                  <input type="color" id="customBoxColor" value="#ffb627">
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button class="generate-btn" id="generateBtn" disabled>
+          <i class="fa-solid fa-file-arrow-down"></i>
+          Add Page Numbers and Download
+        </button>
+      </aside>
+    </main>
+  </div>
+
+  <div class="hover-tip" id="hoverTip"></div>
+  <div class="toast-container" id="toastContainer"></div>
+
+  <div class="processing" id="processing">
+    <div class="proc-paper"></div>
+    <div class="proc-text" id="procText">Adding page numbers...</div>
+    <div class="proc-progress"><div class="proc-bar" id="procBar"></div></div>
+  </div>
+
+<script>
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+
+  const defaultState = {
+    theme: 'light',
+    pdfFile: null, numPages: 0, currentPage: 1,
+    startPage: 1, endPage: null, startNumber: 1,
+    format: 'num', hpos: 'center', vpos: 'bottom', margin: 40,
+    font: 'Helvetica', fontSize: 14, fontWeight: 'normal', italic: false,
+    color: '#1a1a1a', boxEnabled: false, boxStyle: 'solid', boxColor: '#ffb627',
+  };
+  const state = { ...defaultState };
+  let pdfBytes = null;
+  let pdfDocPdfJs = null;
+
+  const SS_KEY = 'PDFPress_session_v5';
+  function saveSession() {
+    const toSave = { ...state };
+    delete toSave.pdfFile; delete toSave.numPages; delete toSave.currentPage;
+    try { sessionStorage.setItem(SS_KEY, JSON.stringify(toSave)); } catch(e) {}
+  }
+  function loadSession() {
+    try {
+      const raw = sessionStorage.getItem(SS_KEY);
+      if (!raw) return;
+      Object.assign(state, JSON.parse(raw));
+    } catch(e) {}
+  }
+  loadSession();
+
+  const $ = (id) => document.getElementById(id);
+
+  function applyTheme(theme) {
+    document.body.setAttribute('data-theme', theme);
+    const knob = document.querySelector('.theme-toggle .knob');
+    if (theme === 'dark') {
+      knob.textContent = 'Dark';
+    } else {
+      knob.textContent = 'Light';
+    }
+    state.theme = theme;
+    saveSession();
+  }
+  applyTheme(state.theme);
+
+  $('themeToggle').addEventListener('click', () => {
+    applyTheme(state.theme === 'light' ? 'dark' : 'light');
+  });
+
+  function toast(msg, type = 'info', duration = 3200) {
+    const container = $('toastContainer');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    const icons = { success: 'circle-check', error: 'circle-exclamation', info: 'circle-info' };
+    t.innerHTML = `<i class="fa-solid fa-${icons[type] || 'circle-info'}"></i><span>${msg}</span>`;
+    container.appendChild(t);
+    setTimeout(() => { t.classList.add('out'); setTimeout(() => t.remove(), 300); }, duration);
+  }
+
+  const tips = {
+    startPage: '<strong>Why skip pages?</strong> Front matter like covers, title pages, copyright pages and indexes usually do not carry numbers. That is a publishing convention. Starting from page 2 or 3 keeps content numbered cleanly.',
+    endPage: '<strong>Why stop early?</strong> Back matter like indexes, appendices, or blank pages often should not be numbered. Stop numbering before they begin.',
+    startNumber: '<strong>Why start from 11?</strong> If you are merging with an already numbered PDF (say, pages 1 to 10), continuing from 11 keeps the sequence consistent across documents.',
+  };
+  const hoverTip = $('hoverTip');
+  let tipTimer;
+  document.querySelectorAll('.hint-btn').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      hoverTip.innerHTML = tips[el.dataset.tip] || '';
+      hoverTip.classList.add('show');
+      clearTimeout(tipTimer);
+      tipTimer = setTimeout(positionTip, 0, el);
+    });
+    el.addEventListener('mouseleave', () => hoverTip.classList.remove('show'));
+    el.addEventListener('click', () => {
+      hoverTip.innerHTML = tips[el.dataset.tip] || '';
+      hoverTip.classList.add('show');
+      clearTimeout(tipTimer);
+      tipTimer = setTimeout(positionTip, 0, el);
+      setTimeout(() => hoverTip.classList.remove('show'), 4000);
+    });
+  });
+  function positionTip(target) {
+    const rect = target.getBoundingClientRect();
+    const tipRect = hoverTip.getBoundingClientRect();
+    let top = rect.bottom + 10;
+    let left = rect.left - (tipRect.width / 2) + (rect.width / 2);
+    if (left < 10) left = 10;
+    if (left + tipRect.width > window.innerWidth - 10) left = window.innerWidth - tipRect.width - 10;
+    if (top + tipRect.height > window.innerHeight - 10) top = rect.top - tipRect.height - 10;
+    hoverTip.style.top = top + 'px';
+    hoverTip.style.left = left + 'px';
+  }
+
+  function syncUIFromState() {
+    $('startPage').value = state.startPage;
+    $('endPage').value = state.endPage || '';
+    $('startNumber').value = state.startNumber;
+    $('marginRange').value = state.margin;
+    $('marginVal').textContent = `${state.margin} pt`;
+    $('fontSelect').value = state.font;
+    $('sizeRange').value = state.fontSize;
+    $('sizeVal').textContent = `${state.fontSize} pt`;
+    setActive('formatSeg', 'fmt', state.format);
+    setActive('hposSeg', 'hpos', state.hpos);
+    setActive('vposSeg', 'vpos', state.vpos);
+    setActive('weightSeg', 'weight', state.fontWeight);
+    setActive('italicSeg', 'italic', String(state.italic));
+    setActive('boxStyleSeg', 'box', state.boxStyle);
+    setActiveSwatch('colorRow', state.color);
+    setActiveSwatch('boxColorRow', state.boxColor);
+    $('boxToggle').classList.toggle('on', state.boxEnabled);
+    $('boxOptions').classList.toggle('hidden', !state.boxEnabled);
+    $('customColor').value = state.color;
+    $('customBoxColor').value = state.boxColor;
+  }
+  function setActive(segId, dataKey, val) {
+    $(segId).querySelectorAll('.seg-item').forEach(b => b.classList.toggle('active', b.dataset[dataKey] === val));
+  }
+  function setActiveSwatch(rowId, color) {
+    const row = $(rowId);
+    let matched = false;
+    row.querySelectorAll('.swatch').forEach(s => {
+      const isMatch = s.dataset.color.toLowerCase() === color.toLowerCase();
+      s.classList.toggle('active', isMatch);
+      if (isMatch) matched = true;
+    });
+    if (!matched) row.querySelectorAll('.swatch').forEach(s => s.classList.remove('active'));
+  }
+  syncUIFromState();
+
+  const fileInput = $('fileInput');
+  $('uploadBtn').addEventListener('click', () => fileInput.click());
+  $('uploadIconWrap').addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) handleFile(file);
+  });
+
+  const noFileState = $('noFileState');
+  ['dragenter','dragover'].forEach(ev => {
+    document.addEventListener(ev, (e) => {
+      e.preventDefault();
+      noFileState.style.borderColor = 'var(--accent)';
+      noFileState.style.background = 'var(--card-2)';
+    });
+  });
+  ['dragleave','drop'].forEach(ev => {
+    document.addEventListener(ev, (e) => {
+      e.preventDefault();
+      noFileState.style.borderColor = '';
+      noFileState.style.background = '';
+    });
+  });
+  document.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') handleFile(file);
+    else if (file) toast('That does not look like a PDF.', 'error');
+  });
+
+  async function handleFile(file) {
+    if (file.type !== 'application/pdf') { toast('Please choose a PDF file.', 'error'); return; }
+    state.pdfFile = file;
+    $('fileName').textContent = file.name;
+    $('fileMeta').textContent = `· ${(file.size / 1024).toFixed(0)} KB`;
+    $('filePill').classList.remove('hidden');
+    $('resetBtn').classList.remove('hidden');
+
+    try {
+      const buf = await file.arrayBuffer();
+      pdfBytes = buf;
+      const pdfLibDoc = await PDFLib.PDFDocument.load(buf, { ignoreEncryption: true });
+      state.numPages = pdfLibDoc.getPageCount();
+      $('totalPages').textContent = state.numPages;
+      $('totalPages2').textContent = state.numPages;
+      $('startPage').max = state.numPages;
+      $('endPage').max = state.numPages;
+      $('endPage').placeholder = `last page (${state.numPages})`;
+      state.currentPage = 1;
+      $('curPage').textContent = 1;
+
+      const loadingTask = pdfjsLib.getDocument({ data: buf.slice(0) });
+      pdfDocPdfJs = await loadingTask.promise;
+
+      noFileState.classList.add('hidden');
+      $('generateBtn').disabled = false;
+
+      toast(`Loaded ${state.numPages}-page PDF.`, 'success');
+      await renderPdfPage(1);
+      updatePreview(true);
+    } catch (err) {
+      console.error(err);
+      toast('Could not read that PDF. It might be corrupted or password-protected.', 'error');
+    }
+  }
+
+  $('resetBtn').addEventListener('click', () => {
+    state.pdfFile = null; pdfBytes = null; pdfDocPdfJs = null;
+    state.numPages = 0; state.currentPage = 1;
+    fileInput.value = '';
+    noFileState.classList.remove('hidden');
+    $('filePill').classList.add('hidden');
+    $('resetBtn').classList.add('hidden');
+    $('generateBtn').disabled = true;
+    $('totalPages').textContent = '—';
+    $('totalPages2').textContent = '—';
+    $('curPage').textContent = '1';
+    $('pdfCanvas').classList.add('hidden');
+    $('paperPlaceholder').classList.remove('hidden');
+    $('marginIndicator').classList.add('hidden');
+    updatePreview(true);
+  });
+
+  async function renderPdfPage(pageNum) {
+    if (!pdfDocPdfJs) return;
+    try {
+      const page = await pdfDocPdfJs.getPage(pageNum);
+      const canvas = $('pdfCanvas');
+      const ctx = canvas.getContext('2d');
+      const containerW = 380;
+      const containerH = 537;
+      const viewport0 = page.getViewport({ scale: 1 });
+      const scaleW = containerW / viewport0.width;
+      const scaleH = containerH / viewport0.height;
+      const scale = Math.min(scaleW, scaleH) * 2;
+      const viewport = page.getViewport({ scale });
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      canvas.style.width = (viewport.width / 2) + 'px';
+      canvas.style.height = (viewport.height / 2) + 'px';
+      canvas.style.position = 'absolute';
+      canvas.style.left = '50%';
+      canvas.style.top = '50%';
+      canvas.style.transform = 'translate(-50%, -50%)';
+
+      await page.render({ canvasContext: ctx, viewport }).promise;
+      $('paperPlaceholder').classList.add('hidden');
+      canvas.classList.remove('hidden');
+    } catch (err) {
+      console.error('render err', err);
+    }
+  }
+
+  $('prevPage').addEventListener('click', () => {
+    if (state.currentPage > 1) {
+      state.currentPage--;
+      $('curPage').textContent = state.currentPage;
+      if (pdfDocPdfJs) renderPdfPage(state.currentPage);
+      updatePreview(true);
+    }
+  });
+  $('nextPage').addEventListener('click', () => {
+    const max = state.numPages || 999;
+    if (state.currentPage < max) {
+      state.currentPage++;
+      $('curPage').textContent = state.currentPage;
+      if (pdfDocPdfJs) renderPdfPage(state.currentPage);
+      updatePreview(true);
+    }
+  });
+
+  $('startPage').addEventListener('input', (e) => {
+    state.startPage = Math.max(1, parseInt(e.target.value) || 1);
+    saveSession(); updatePreview(true);
+  });
+  $('endPage').addEventListener('input', (e) => {
+    const v = e.target.value;
+    state.endPage = v ? parseInt(v) : null;
+    saveSession(); updatePreview(true);
+  });
+  $('startNumber').addEventListener('input', (e) => {
+    state.startNumber = Math.max(0, parseInt(e.target.value) || 0);
+    saveSession(); updatePreview(true);
+  });
+
+  function wireSeg(id, dataKey, stateKey, transform = (v) => v) {
+    $(id).querySelectorAll('.seg-item').forEach(b => {
+      b.addEventListener('click', () => {
+        $(id).querySelectorAll('.seg-item').forEach(x => x.classList.remove('active'));
+        b.classList.add('active');
+        state[stateKey] = transform(b.dataset[dataKey]);
+        saveSession(); updatePreview(true);
+      });
+    });
+  }
+  wireSeg('formatSeg', 'fmt', 'format');
+  wireSeg('hposSeg', 'hpos', 'hpos');
+  wireSeg('vposSeg', 'vpos', 'vpos');
+  wireSeg('weightSeg', 'weight', 'fontWeight');
+  wireSeg('italicSeg', 'italic', 'italic', v => v === 'true');
+  wireSeg('boxStyleSeg', 'box', 'boxStyle');
+
+  $('fontSelect').addEventListener('change', (e) => {
+    state.font = e.target.value; saveSession(); updatePreview(true);
+  });
+  $('marginRange').addEventListener('input', (e) => {
+    state.margin = parseInt(e.target.value);
+    $('marginVal').textContent = `${state.margin} pt`;
+    saveSession(); updatePreview(false);
+  });
+  $('sizeRange').addEventListener('input', (e) => {
+    state.fontSize = parseInt(e.target.value);
+    $('sizeVal').textContent = `${state.fontSize} pt`;
+    saveSession(); updatePreview(false);
+  });
+
+  function wireColorRow(rowId, key, customInputId) {
+    const row = $(rowId);
+    row.querySelectorAll('.swatch').forEach(s => {
+      s.addEventListener('click', () => {
+        row.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
+        s.classList.add('active');
+        state[key] = s.dataset.color;
+        $(customInputId).value = s.dataset.color;
+        saveSession(); updatePreview(false);
+      });
+    });
+    $(customInputId).addEventListener('input', (e) => {
+      state[key] = e.target.value;
+      row.querySelectorAll('.swatch').forEach(x => x.classList.remove('active'));
+      saveSession(); updatePreview(false);
+    });
+  }
+  wireColorRow('colorRow', 'color', 'customColor');
+  wireColorRow('boxColorRow', 'boxColor', 'customBoxColor');
+
+  const boxToggle = $('boxToggle');
+  boxToggle.addEventListener('click', () => {
+    state.boxEnabled = !state.boxEnabled;
+    boxToggle.classList.toggle('on', state.boxEnabled);
+    $('boxOptions').classList.toggle('hidden', !state.boxEnabled);
+    saveSession(); updatePreview(true);
+  });
+
+  function toRoman(num) {
+    if (num < 1) return '';
+    const map = [[1000,'m'],[900,'cm'],[500,'d'],[400,'cd'],[100,'c'],[90,'xc'],[50,'l'],[40,'xl'],[10,'x'],[9,'ix'],[5,'v'],[4,'iv'],[1,'i']];
+    let r = '';
+    for (const [v,s] of map) { while (num >= v) { r += s; num -= v; } }
+    return r;
+  }
+  function formatNumber(n, total) {
+    switch (state.format) {
+      case 'num': return String(n);
+      case 'numDash': return `- ${n} -`;
+      case 'pageOf': return `${n} / ${total || '?'}`;
+      case 'roman': return toRoman(n);
+      case 'alpha': return n <= 26 ? String.fromCharCode(64 + n) : `A${n - 26}`;
+      default: return String(n);
+    }
+  }
+  function displayNumberForPage(pageIndex) {
+    if (state.startPage && pageIndex < state.startPage) return null;
+    if (state.endPage && pageIndex > state.endPage) return null;
+    const offset = pageIndex - state.startPage;
+    return state.startNumber + offset;
+  }
+
+  function updatePreview(animate = false) {
+    const pageIdx = state.currentPage;
+    const num = displayNumberForPage(pageIdx);
+    const pageNumEl = $('pageNumEl');
+
+    if (num === null) {
+      pageNumEl.style.opacity = '0';
+      $('marginIndicator').classList.add('hidden');
+    } else {
+      pageNumEl.style.opacity = '1';
+      pageNumEl.textContent = formatNumber(num, state.numPages);
+      $('marginIndicator').classList.remove('hidden');
+    }
+
+    const containerW = 380;
+    const containerH = 537;
+    const mPx = (state.margin / 595) * containerW;
+    const mPy = (state.margin / 842) * containerH;
+    let left, right, top, bottom;
+    if (state.hpos === 'left') { left = mPx; right = 'auto'; }
+    else if (state.hpos === 'right') { right = mPx; left = 'auto'; }
+    else { left = '50%'; right = 'auto'; }
+    if (state.vpos === 'top') { top = mPy; bottom = 'auto'; }
+    else { bottom = mPy; top = 'auto'; }
+
+    pageNumEl.style.left = left === 'auto' ? 'auto' : (typeof left === 'number' ? left + 'px' : left);
+    pageNumEl.style.right = right === 'auto' ? 'auto' : (typeof right === 'number' ? right + 'px' : right);
+    pageNumEl.style.top = top === 'auto' ? 'auto' : (typeof top === 'number' ? top + 'px' : top);
+    pageNumEl.style.bottom = bottom === 'auto' ? 'auto' : (typeof bottom === 'number' ? bottom + 'px' : bottom);
+
+    let tx = state.hpos === 'center' ? '-50%' : '0';
+    pageNumEl.style.setProperty('--tx', tx);
+    pageNumEl.style.transform = `translateX(${tx})`;
+
+    const fontMap = {
+      'Helvetica': "'Space Grotesk', sans-serif",
+      'Times Roman': "'Fraunces', serif",
+      'Courier': "'Courier New', monospace"
+    };
+    pageNumEl.style.setProperty('--pn-font', fontMap[state.font] || fontMap['Helvetica']);
+    pageNumEl.style.setProperty('--pn-size', `${state.fontSize}px`);
+    pageNumEl.style.setProperty('--pn-color', state.color);
+    pageNumEl.style.setProperty('--pn-weight', state.fontWeight === 'bold' ? '700' : '400');
+    pageNumEl.style.setProperty('--pn-style', state.italic ? 'italic' : 'normal');
+
+    if (state.boxEnabled) {
+      const pad = Math.max(6, state.fontSize * 0.5);
+      pageNumEl.style.setProperty('--pn-padding', `${pad * 0.6}px ${pad}px`);
+      if (state.boxStyle === 'solid') {
+        pageNumEl.style.setProperty('--pn-bg', state.boxColor);
+        pageNumEl.style.setProperty('--pn-border', 'none');
+        pageNumEl.style.setProperty('--pn-radius', '4px');
+      } else if (state.boxStyle === 'outline') {
+        pageNumEl.style.setProperty('--pn-bg', 'transparent');
+        pageNumEl.style.setProperty('--pn-border', `1.5px solid ${state.boxColor}`);
+        pageNumEl.style.setProperty('--pn-radius', '4px');
+      } else if (state.boxStyle === 'pill') {
+        pageNumEl.style.setProperty('--pn-bg', state.boxColor);
+        pageNumEl.style.setProperty('--pn-border', 'none');
+        pageNumEl.style.setProperty('--pn-radius', '999px');
+      }
+    } else {
+      pageNumEl.style.setProperty('--pn-bg', 'transparent');
+      pageNumEl.style.setProperty('--pn-border', 'none');
+      pageNumEl.style.setProperty('--pn-radius', '0');
+      pageNumEl.style.setProperty('--pn-padding', '0 4px');
+    }
+
+    const mi = $('marginIndicator');
+    mi.style.left = mPx + 'px';
+    mi.style.right = mPx + 'px';
+    mi.style.top = mPy + 'px';
+    mi.style.bottom = mPy + 'px';
+
+    if (animate) {
+      pageNumEl.classList.remove('animate-in');
+      void pageNumEl.offsetWidth;
+      pageNumEl.classList.add('animate-in');
+    }
+  }
+
+  $('generateBtn').addEventListener('click', async () => {
+    if (!pdfBytes) return;
+    $('processing').classList.add('show');
+    $('procBar').style.width = '0%';
+    $('procText').textContent = 'Reading PDF...';
+
+    try {
+      await new Promise(r => setTimeout(r, 200));
+      $('procBar').style.width = '15%';
+
+      const pdfDoc = await PDFLib.PDFDocument.load(pdfBytes, { ignoreEncryption: true });
+      const pages = pdfDoc.getPages();
+      const total = pages.length;
+
+      const fontMap = {
+        'Helvetica': state.italic ? (state.fontWeight === 'bold' ? PDFLib.StandardFonts.HelveticaBoldOblique : PDFLib.StandardFonts.HelveticaOblique) : (state.fontWeight === 'bold' ? PDFLib.StandardFonts.HelveticaBold : PDFLib.StandardFonts.Helvetica),
+        'Times Roman': state.italic ? (state.fontWeight === 'bold' ? PDFLib.StandardFonts.TimesRomanBoldItalic : PDFLib.StandardFonts.TimesRomanItalic) : (state.fontWeight === 'bold' ? PDFLib.StandardFonts.TimesRomanBold : PDFLib.StandardFonts.TimesRoman),
+        'Courier': state.italic ? (state.fontWeight === 'bold' ? PDFLib.StandardFonts.CourierBoldOblique : PDFLib.StandardFonts.CourierOblique) : (state.fontWeight === 'bold' ? PDFLib.StandardFonts.CourierBold : PDFLib.StandardFonts.Courier),
+      };
+      const font = await pdfDoc.embedFont(fontMap[state.font]);
+
+      let processed = 0;
+      for (let i = 0; i < total; i++) {
+        const page = pages[i];
+        const pageIndex = i + 1;
+        const num = displayNumberForPage(pageIndex);
+        if (num === null) { processed++; continue; }
+
+        const text = formatNumber(num, total);
+        const { width: pageW, height: pageH } = page.getSize();
+        const fontSize = state.fontSize;
+        const textWidth = font.widthOfTextAtSize(text, fontSize);
+        const textHeight = font.heightAtSize(fontSize);
+
+        let x, y;
+        const m = state.margin;
+        if (state.hpos === 'left') x = m;
+        else if (state.hpos === 'right') x = pageW - m - textWidth;
+        else x = (pageW - textWidth) / 2;
+
+        if (state.vpos === 'top') y = pageH - m - textHeight;
+        else y = m;
+
+        if (state.boxEnabled) {
+          const padX = Math.max(6, fontSize * 0.5);
+          const padY = Math.max(3, fontSize * 0.3);
+          const boxX = x - padX;
+          const boxY = y - padY;
+          const boxW = textWidth + padX * 2;
+          const boxH = textHeight + padY * 2;
+          const boxColor = hexToRgb(state.boxColor);
+
+          if (state.boxStyle === 'solid' || state.boxStyle === 'pill') {
+            page.drawRectangle({
+              x: boxX, y: boxY, width: boxW, height: boxH,
+              color: PDFLib.rgb(boxColor.r, boxColor.g, boxColor.b),
+              borderWidth: 0,
+            });
+          } else if (state.boxStyle === 'outline') {
+            page.drawRectangle({
+              x: boxX, y: boxY, width: boxW, height: boxH,
+              borderColor: PDFLib.rgb(boxColor.r, boxColor.g, boxColor.b),
+              borderWidth: 1.5,
+              color: PDFLib.rgb(1, 1, 1),
+              opacity: 0,
+            });
+          }
+        }
+
+        const textColor = hexToRgb(state.color);
+        page.drawText(text, {
+          x, y, size: fontSize, font,
+          color: PDFLib.rgb(textColor.r, textColor.g, textColor.b),
+        });
+
+        processed++;
+        if (i % 3 === 0) {
+          $('procBar').style.width = `${15 + (processed / total) * 75}%`;
+          await new Promise(r => setTimeout(r, 0));
+        }
+      }
+
+      $('procBar').style.width = '95%';
+      $('procText').textContent = 'Saving file...';
+      const out = await pdfDoc.save();
+      $('procBar').style.width = '100%';
+
+      const blob = new Blob([out], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const baseName = state.pdfFile.name.replace(/\.pdf$/i, '');
+      a.href = url;
+      a.download = `${baseName}-numbered.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      await new Promise(r => setTimeout(r, 400));
+      $('processing').classList.remove('show');
+      toast(`Done! Numbered ${processed} pages.`, 'success');
+    } catch (err) {
+      console.error(err);
+      $('processing').classList.remove('show');
+      toast('Something went wrong while processing the PDF.', 'error');
+    }
+  });
+
+  function hexToRgb(hex) {
+    const h = hex.replace('#', '');
+    return {
+      r: parseInt(h.substring(0,2), 16) / 255,
+      g: parseInt(h.substring(2,4), 16) / 255,
+      b: parseInt(h.substring(4,6), 16) / 255,
+    };
+  }
+
+  updatePreview(true);
+
+  document.addEventListener('keydown', (e) => {
+    if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT') return;
+    if (e.key === 'ArrowLeft') $('prevPage').click();
+    if (e.key === 'ArrowRight') $('nextPage').click();
+  });
+
+  window.addEventListener('beforeunload', (e) => {
+    if (state.pdfFile) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+</script>
+</body>
+</html>
