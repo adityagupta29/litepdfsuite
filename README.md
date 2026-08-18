@@ -2,7 +2,7 @@
 
 **A free, private, browser-based PDF toolkit. No uploads, no accounts, no watermarks.**
 
-🔗 **Live site: [adityagupta29.github.io/litepdfsuite](https://adityagupta29.github.io/litepdfsuite/)**
+🔗 **Live site: [litepdfsuite.com](https://litepdfsuite.com/)**
 
 ## Why this exists
 
