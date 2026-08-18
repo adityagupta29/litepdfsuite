@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZVWF5YDV1K"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-ZVWF5YDV1K');
+</script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy | Lite PDF Suite</title>
+<meta name="description" content="Lite PDF Suite's privacy policy. Every PDF tool runs entirely in your browser, your files are never uploaded to a server, and nothing you process is collected or stored.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://litepdfsuite.com/privacy-policy.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Privacy Policy | Lite PDF Suite">
+<meta property="og:description" content="Every PDF tool runs entirely in your browser. Your files are never uploaded to a server.">
+<meta property="og:url" content="https://litepdfsuite.com/privacy-policy.html">
+
+<link rel="icon" type="image/svg+xml" href="favicon/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon/icon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon/icon-180.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="tools-menu.js"></script>
+
+<style>
+  :root {
+    --bg: #ffffff; --bg-2: #f8fafc; --card: #ffffff; --card-2: #f1f5f9;
+    --border: rgba(15, 23, 42, 0.08); --border-strong: rgba(15, 23, 42, 0.16);
+    --fg: #0f172a; --muted: #64748b;
+    --accent: #2563eb; --accent-2: #1d4ed8; --accent-3: #3b82f6;
+    --shadow: rgba(37, 99, 235, 0.1); --dark-shadow: rgba(15, 23, 42, 0.12);
+  }
+  [data-theme="dark"] {
+    --bg: #07080a; --bg-2: #0c0d10; --card: #14161a; --card-2: #1c1f24;
+    --border: rgba(255, 255, 255, 0.08); --border-strong: rgba(255, 255, 255, 0.2);
+    --fg: #f8fafc; --muted: #94a3b8;
+    --accent: #3b82f6; --accent-2: #60a5fa; --accent-3: #2563eb;
+    --shadow: rgba(59, 130, 246, 0.2); --dark-shadow: rgba(0, 0, 0, 0.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+  body {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    background: var(--bg); color: var(--fg);
+    line-height: 1.6; overflow-x: hidden;
+    transition: background 0.4s, color 0.4s;
+  }
+  a { color: inherit; text-decoration: none; }
+  .font-display { font-family: 'Fraunces', serif; }
+
+  /* Navbar (shared pattern with index.html) */
+  header.navbar {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(12px); background: rgba(255,255,255,0.7);
+    border-bottom: 1px solid var(--border);
+  }
+  [data-theme="dark"] header.navbar { background: rgba(7,8,10,0.7); }
+  .nav-container { max-width: 1200px; margin: 0 auto; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 40px; height: 40px; border-radius: 10px; background: var(--fg); color: var(--bg);
+    display: flex; align-items: center; justify-content: center; margin-bottom: 5px;
+    font-family: 'Fraunces', serif; font-weight: 900; font-size: 22px;
+  }
+  [data-theme="dark"] .logo-icon { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
+  .logo-text { font-family: 'Fraunces', serif; font-weight: 900; font-size: 22px; letter-spacing: -0.02em; line-height: 1.2; }
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-link { font-size: 14px; font-weight: 500; color: var(--muted); transition: color 0.2s; }
+  .nav-link:hover { color: var(--fg); }
+
+  .theme-toggle-nav {
+    width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--card); color: var(--fg); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 14px;
+    transition: all 0.2s;
+  }
+  .theme-toggle-nav:hover { border-color: var(--accent); color: var(--accent); }
+
+  .nav-toggle {
+    display: none; width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--card); color: var(--fg); cursor: pointer; font-size: 16px;
+    align-items: center; justify-content: center;
+  }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .nav-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90;
+    opacity: 0; visibility: hidden; transition: opacity 0.25s ease, visibility 0.25s;
+  }
+  .nav-backdrop.nav-open { opacity: 1; visibility: visible; }
+
+  /* Legal content */
+  .legal-page { max-width: 780px; margin: 0 auto; padding: 64px 24px 100px; }
+  .legal-page h1 { font-family: 'Fraunces', serif; font-weight: 900; font-size: clamp(2rem, 5vw, 2.75rem); letter-spacing: -0.02em; margin-bottom: 10px; }
+  .legal-page .updated { color: var(--muted); font-size: 0.9rem; margin-bottom: 36px; }
+  .legal-page .intro { font-size: 1.1rem; color: var(--muted); margin-bottom: 40px; }
+  .legal-page h2 { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.4rem; margin: 40px 0 14px; letter-spacing: -0.01em; }
+  .legal-page p { color: var(--fg); margin-bottom: 16px; }
+  .legal-page ul { margin: 0 0 16px; padding-left: 22px; }
+  .legal-page li { margin-bottom: 8px; color: var(--fg); }
+  .legal-page a.inline-link { color: var(--accent); text-decoration: underline; }
+  .legal-page .note {
+    background: var(--card-2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 20px; margin: 24px 0; font-size: 0.95rem; display: flex; gap: 12px; align-items: flex-start;
+  }
+  .legal-page .note i { color: var(--accent-3); margin-top: 3px; }
+
+  /* Footer (shared pattern with index.html) */
+  footer { background: var(--bg-2); border-top: 1px solid var(--border); padding: 40px 24px; text-align: center; }
+  .footer-content { max-width: 1200px; margin: 0 auto; }
+  .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 20px; flex-wrap: wrap; }
+  .footer-links a { color: var(--muted); font-size: 13px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--fg); }
+  .copyright { color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 768px) {
+    .nav-toggle { display: flex; }
+    .nav-links {
+      position: fixed; top: 0; right: 0; bottom: 0; width: min(300px, 82vw); height: 100vh;
+      background: var(--bg); border-left: 1px solid var(--border);
+      flex-direction: column; align-items: flex-start; gap: 6px;
+      padding: 90px 28px 28px; transform: translateX(100%);
+      transition: transform 0.3s ease; z-index: 150;
+      box-shadow: -16px 0 40px rgba(0,0,0,0.2);
+    }
+    .nav-links.nav-open { transform: translateX(0); }
+    .nav-link { font-size: 16px; padding: 10px 0; width: 100%; }
+    .logo { gap: 8px; }
+  }
+  .logo-icon, [data-theme="dark"] .logo-icon { background: transparent !important; margin-bottom: 0; }
+  .logo-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
+</style>
+</head>
+<body data-theme="light">
+
+<header class="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="logo">
+      <div class="logo-icon"><img src="favicon/favicon.svg" alt="Lite PDF Suite"></div>
+      <div class="logo-text">Lite PDF Suite</div>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <div class="tm-mount" data-tools-menu></div>
+      <a href="index.html#features" class="nav-link">Features</a>
+      <a href="index.html#faq" class="nav-link">FAQ</a>
+    </nav>
+    <div class="nav-right">
+      <button class="theme-toggle-nav" id="themeToggle" title="Toggle theme">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+      <button class="nav-toggle" id="navToggle" title="Menu" aria-label="Open menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </div>
+</header>
+<div class="nav-backdrop" id="navBackdrop"></div>
+
+<main class="legal-page">
+  <h1>Privacy Policy</h1>
+  <div class="updated">Last updated: August 2026</div>
+  <p class="intro">The short version: Lite PDF Suite never sees your files. Every tool runs as JavaScript inside your own browser, so there is nothing for us to collect, store, or lose, because your document never leaves your device in the first place.</p>
+
+  <h2>How the tools actually work</h2>
+  <p>When you open a PDF in any tool on this site, the file is read directly by your browser using client-side libraries such as pdf.js and pdf-lib. Merging, splitting, compressing, converting, watermarking, e-signing, and password protection all happen locally on your own computer or phone. At no point is the file sent to a server we control, because there is no such server in the processing path at all.</p>
+  <p>You can verify this yourself: open your browser's network tab while using any tool and watch that your document is never part of an outgoing request.</p>
+
+  <h2>What we don't collect</h2>
+  <ul>
+    <li>We don't ask you to create an account, so we have no name, email, or password of yours to store.</li>
+    <li>We don't see the content of any PDF, image, or document you process, and it's never sent to us or to Google Analytics.</li>
+    <li>We don't run advertising trackers, and we don't sell or share data with data brokers.</li>
+  </ul>
+
+  <h2>Analytics</h2>
+  <p>This site uses Google Analytics to understand overall traffic, such as which tools are used most and roughly how many people visit, so we know what's worth improving. Google Analytics uses cookies and collects information like your approximate location (city/country level, from IP address), device and browser type, and which pages you visit. It does not have access to, and never receives, the content of any file you process with a tool.</p>
+  <p>You can opt out of Google Analytics tracking using a browser extension such as the <a class="inline-link" href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener">Google Analytics Opt-out Browser Add-on</a>, or by blocking third-party cookies and scripts in your browser's privacy settings. See <a class="inline-link" href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google's Privacy Policy</a> for how Google itself handles this data.</p>
+
+  <h2>What is stored, and where</h2>
+  <p>A small amount of information is saved directly in your browser's own local storage, not on any server:</p>
+  <ul>
+    <li><strong>Theme preference</strong> (light or dark mode), so the site remembers your choice on your next visit.</li>
+    <li><strong>In-progress work</strong> on a couple of tools, such as page arrangement in Merge & Rearrange, so a page refresh doesn't lose your layout. The actual PDF file content is not part of this, only arrangement metadata, which is why you're asked to re-upload files after a browser restart.</li>
+  </ul>
+  <p>All of this lives only on your own device. It is never transmitted anywhere, and you can clear it at any time through your browser's site settings.</p>
+
+  <div class="note">
+    <i class="fa-solid fa-circle-info"></i>
+    <div>Lite PDF Suite is a static website with no backend server of its own. Everything above describes the site's own code; it doesn't change what a browser, operating system, or network generally does on any website you visit.</div>
+  </div>
+
+  <h2>Hosting and third-party requests</h2>
+  <p>This site is hosted as a static site. Simply loading any page means your browser makes standard web requests to the hosting provider, which may log basic technical information (such as IP address and browser type) the way any web server does. We don't have access to build a profile from these logs, and they exist purely as part of normal web hosting infrastructure.</p>
+  <p>Pages also load a small number of third-party resources needed for the design to work: Google Fonts (for typefaces) and Font Awesome via a CDN (for icons). Loading these means your browser makes a request to those providers, which may see basic request metadata like your IP address, the same as loading a font or icon from any other website. None of these are used to track you across the web by us, and no PDF content is ever included in these requests.</p>
+
+  <h2>Children's privacy</h2>
+  <p>This site is not directed at children and does not knowingly collect personal information from anyone, regardless of age, since it does not collect personal information at all.</p>
+
+  <h2>Changes to this policy</h2>
+  <p>If this policy changes, the update will be posted on this page with a new "last updated" date. Continued use of the site after a change means you accept the revised policy.</p>
+
+  <h2>Contact</h2>
+  <p>Lite PDF Suite is an open-source project. Questions or concerns can be raised through <a class="inline-link" href="https://github.com/adityagupta29/litepdfsuite/issues" target="_blank" rel="noopener">GitHub Issues</a> on the project's repository.</p>
+</main>
+
+<footer>
+  <div class="footer-content">
+    <div class="logo" style="justify-content: center; margin-bottom: 24px;">
+      <div class="logo-icon"><img src="favicon/favicon.svg" alt="Lite PDF Suite"></div>
+      <div class="logo-text">Lite PDF Suite</div>
+    </div>
+    <div class="footer-links">
+      <a href="index.html#tools">Tools</a>
+      <a href="index.html#features">Features</a>
+      <a href="index.html#faq">FAQ</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms-of-service.html">Terms of Service</a>
+    </div>
+    <div class="copyright">© 2026 Lite PDF Suite. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  const themeToggle = document.getElementById('themeToggle');
+  const body = document.body;
+  const savedTheme = localStorage.getItem('pp_theme') || 'light';
+  body.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+
+  themeToggle.addEventListener('click', () => {
+    const isDark = body.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('pp_theme', newTheme);
+    updateThemeIcon(newTheme);
+  });
+
+  function updateThemeIcon(theme) {
+    themeToggle.innerHTML = theme === 'dark'
+      ? '<i class="fa-solid fa-sun"></i>'
+      : '<i class="fa-solid fa-moon"></i>';
+  }
+
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  const navBackdrop = document.getElementById('navBackdrop');
+  function closeNav() {
+    navLinks.classList.remove('nav-open');
+    navBackdrop.classList.remove('nav-open');
+  }
+  navToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('nav-open');
+    navBackdrop.classList.toggle('nav-open');
+  });
+  navBackdrop.addEventListener('click', closeNav);
+  navLinks.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', closeNav));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeNav(); });
+</script>
+</body>
+</html>

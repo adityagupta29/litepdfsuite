@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-ZVWF5YDV1K"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-ZVWF5YDV1K');
+</script>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terms of Service | Lite PDF Suite</title>
+<meta name="description" content="The terms of service for Lite PDF Suite, a free, open-source, browser-based PDF toolkit. Read what using the site means, and what it doesn't promise.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://litepdfsuite.com/terms-of-service.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Terms of Service | Lite PDF Suite">
+<meta property="og:description" content="The terms of service for Lite PDF Suite, a free, open-source, browser-based PDF toolkit.">
+<meta property="og:url" content="https://litepdfsuite.com/terms-of-service.html">
+
+<link rel="icon" type="image/svg+xml" href="favicon/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon/icon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon/icon-16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon/icon-180.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="tools-menu.js"></script>
+
+<style>
+  :root {
+    --bg: #ffffff; --bg-2: #f8fafc; --card: #ffffff; --card-2: #f1f5f9;
+    --border: rgba(15, 23, 42, 0.08); --border-strong: rgba(15, 23, 42, 0.16);
+    --fg: #0f172a; --muted: #64748b;
+    --accent: #2563eb; --accent-2: #1d4ed8; --accent-3: #3b82f6;
+    --shadow: rgba(37, 99, 235, 0.1); --dark-shadow: rgba(15, 23, 42, 0.12);
+  }
+  [data-theme="dark"] {
+    --bg: #07080a; --bg-2: #0c0d10; --card: #14161a; --card-2: #1c1f24;
+    --border: rgba(255, 255, 255, 0.08); --border-strong: rgba(255, 255, 255, 0.2);
+    --fg: #f8fafc; --muted: #94a3b8;
+    --accent: #3b82f6; --accent-2: #60a5fa; --accent-3: #2563eb;
+    --shadow: rgba(59, 130, 246, 0.2); --dark-shadow: rgba(0, 0, 0, 0.5);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+  body {
+    font-family: 'Space Grotesk', system-ui, sans-serif;
+    background: var(--bg); color: var(--fg);
+    line-height: 1.6; overflow-x: hidden;
+    transition: background 0.4s, color 0.4s;
+  }
+  a { color: inherit; text-decoration: none; }
+  .font-display { font-family: 'Fraunces', serif; }
+
+  /* Navbar (shared pattern with index.html) */
+  header.navbar {
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(12px); background: rgba(255,255,255,0.7);
+    border-bottom: 1px solid var(--border);
+  }
+  [data-theme="dark"] header.navbar { background: rgba(7,8,10,0.7); }
+  .nav-container { max-width: 1200px; margin: 0 auto; padding: 18px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .logo { display: flex; align-items: center; gap: 12px; }
+  .logo-icon {
+    width: 40px; height: 40px; border-radius: 10px; background: var(--fg); color: var(--bg);
+    display: flex; align-items: center; justify-content: center; margin-bottom: 5px;
+    font-family: 'Fraunces', serif; font-weight: 900; font-size: 22px;
+  }
+  [data-theme="dark"] .logo-icon { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
+  .logo-text { font-family: 'Fraunces', serif; font-weight: 900; font-size: 22px; letter-spacing: -0.02em; line-height: 1.2; }
+  .nav-links { display: flex; gap: 32px; align-items: center; }
+  .nav-link { font-size: 14px; font-weight: 500; color: var(--muted); transition: color 0.2s; }
+  .nav-link:hover { color: var(--fg); }
+
+  .theme-toggle-nav {
+    width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--card); color: var(--fg); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 14px;
+    transition: all 0.2s;
+  }
+  .theme-toggle-nav:hover { border-color: var(--accent); color: var(--accent); }
+
+  .nav-toggle {
+    display: none; width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--card); color: var(--fg); cursor: pointer; font-size: 16px;
+    align-items: center; justify-content: center;
+  }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .nav-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90;
+    opacity: 0; visibility: hidden; transition: opacity 0.25s ease, visibility 0.25s;
+  }
+  .nav-backdrop.nav-open { opacity: 1; visibility: visible; }
+
+  /* Legal content */
+  .legal-page { max-width: 780px; margin: 0 auto; padding: 64px 24px 100px; }
+  .legal-page h1 { font-family: 'Fraunces', serif; font-weight: 900; font-size: clamp(2rem, 5vw, 2.75rem); letter-spacing: -0.02em; margin-bottom: 10px; }
+  .legal-page .updated { color: var(--muted); font-size: 0.9rem; margin-bottom: 36px; }
+  .legal-page .intro { font-size: 1.1rem; color: var(--muted); margin-bottom: 40px; }
+  .legal-page h2 { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.4rem; margin: 40px 0 14px; letter-spacing: -0.01em; }
+  .legal-page p { color: var(--fg); margin-bottom: 16px; }
+  .legal-page ul { margin: 0 0 16px; padding-left: 22px; }
+  .legal-page li { margin-bottom: 8px; color: var(--fg); }
+  .legal-page a.inline-link { color: var(--accent); text-decoration: underline; }
+  .legal-page .note {
+    background: var(--card-2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 20px; margin: 24px 0; font-size: 0.95rem; display: flex; gap: 12px; align-items: flex-start;
+  }
+  .legal-page .note i { color: var(--accent-3); margin-top: 3px; }
+
+  /* Footer (shared pattern with index.html) */
+  footer { background: var(--bg-2); border-top: 1px solid var(--border); padding: 40px 24px; text-align: center; }
+  .footer-content { max-width: 1200px; margin: 0 auto; }
+  .footer-links { display: flex; justify-content: center; gap: 24px; margin-bottom: 20px; flex-wrap: wrap; }
+  .footer-links a { color: var(--muted); font-size: 13px; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--fg); }
+  .copyright { color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 768px) {
+    .nav-toggle { display: flex; }
+    .nav-links {
+      position: fixed; top: 0; right: 0; bottom: 0; width: min(300px, 82vw); height: 100vh;
+      background: var(--bg); border-left: 1px solid var(--border);
+      flex-direction: column; align-items: flex-start; gap: 6px;
+      padding: 90px 28px 28px; transform: translateX(100%);
+      transition: transform 0.3s ease; z-index: 150;
+      box-shadow: -16px 0 40px rgba(0,0,0,0.2);
+    }
+    .nav-links.nav-open { transform: translateX(0); }
+    .nav-link { font-size: 16px; padding: 10px 0; width: 100%; }
+    .logo { gap: 8px; }
+  }
+  .logo-icon, [data-theme="dark"] .logo-icon { background: transparent !important; margin-bottom: 0; }
+  .logo-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
+</style>
+</head>
+<body data-theme="light">
+
+<header class="navbar">
+  <div class="nav-container">
+    <a href="index.html" class="logo">
+      <div class="logo-icon"><img src="favicon/favicon.svg" alt="Lite PDF Suite"></div>
+      <div class="logo-text">Lite PDF Suite</div>
+    </a>
+    <nav class="nav-links" id="navLinks">
+      <div class="tm-mount" data-tools-menu></div>
+      <a href="index.html#features" class="nav-link">Features</a>
+      <a href="index.html#faq" class="nav-link">FAQ</a>
+    </nav>
+    <div class="nav-right">
+      <button class="theme-toggle-nav" id="themeToggle" title="Toggle theme">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+      <button class="nav-toggle" id="navToggle" title="Menu" aria-label="Open menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </div>
+</header>
+<div class="nav-backdrop" id="navBackdrop"></div>
+
+<main class="legal-page">
+  <h1>Terms of Service</h1>
+  <div class="updated">Last updated: August 2026</div>
+  <p class="intro">Lite PDF Suite is a free, open-source set of PDF tools that runs in your browser. Using the site means you agree to the terms below, which are kept short and plain on purpose.</p>
+
+  <h2>Using the service</h2>
+  <p>Lite PDF Suite is provided free of charge, with no account, sign-up, or payment required for any tool. There is no usage cap, and the tools may be used for personal, educational, or commercial work.</p>
+  <p>You are responsible for the files you process and for how you use the output. Don't use the tools to create, alter, or distribute content that is illegal, infringes someone else's rights, or is used to forge, misrepresent, or falsify a document you're not entitled to modify, such as adding a signature or seal you don't have the right to use.</p>
+
+  <h2>No warranty</h2>
+  <p>The site is provided "as is," without warranty of any kind. While every tool is built and tested carefully, we don't guarantee that any tool will be error-free, uninterrupted, or perfectly suited to a specific purpose. Always keep a copy of your original file before processing it, since we don't retain any copy for you to recover from.</p>
+
+  <h2>Limitation of liability</h2>
+  <p>To the fullest extent permitted by law, Lite PDF Suite and its contributors aren't liable for any damages, losses, or issues arising from the use of, or inability to use, this site or its tools, including but not limited to data loss, incorrect output, or missed deadlines. You use the tools at your own risk.</p>
+
+  <h2>Availability</h2>
+  <p>This is a free, independently maintained project. We aim to keep it available and working, but we don't guarantee uninterrupted uptime, and tools may occasionally be updated, changed, or temporarily unavailable without prior notice.</p>
+
+  <h2>Open source and license</h2>
+  <p>Lite PDF Suite's source code is public and released under the <a class="inline-link" href="https://github.com/adityagupta29/litepdfsuite/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>. You're free to use, fork, and build on it under the terms of that license. The tools also rely on several open-source libraries, including pdf-lib, pdf.js, JSZip, tesseract.js, and qpdf-wasm, each under their own respective licenses.</p>
+
+  <div class="note">
+    <i class="fa-solid fa-shield-halved"></i>
+    <div>None of this changes the core privacy guarantee of the site: your files are processed locally in your browser and are never uploaded anywhere. See the <a class="inline-link" href="privacy-policy.html">Privacy Policy</a> for details.</div>
+  </div>
+
+  <h2>Changes to these terms</h2>
+  <p>These terms may be updated from time to time. Changes will be posted on this page with a new "last updated" date. Continuing to use the site after a change means you accept the revised terms.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about these terms can be raised through <a class="inline-link" href="https://github.com/adityagupta29/litepdfsuite/issues" target="_blank" rel="noopener">GitHub Issues</a> on the project's repository.</p>
+</main>
+
+<footer>
+  <div class="footer-content">
+    <div class="logo" style="justify-content: center; margin-bottom: 24px;">
+      <div class="logo-icon"><img src="favicon/favicon.svg" alt="Lite PDF Suite"></div>
+      <div class="logo-text">Lite PDF Suite</div>
+    </div>
+    <div class="footer-links">
+      <a href="index.html#tools">Tools</a>
+      <a href="index.html#features">Features</a>
+      <a href="index.html#faq">FAQ</a>
+      <a href="privacy-policy.html">Privacy Policy</a>
+      <a href="terms-of-service.html">Terms of Service</a>
+    </div>
+    <div class="copyright">© 2026 Lite PDF Suite. All rights reserved.</div>
+  </div>
+</footer>
+
+<script>
+  const themeToggle = document.getElementById('themeToggle');
+  const body = document.body;
+  const savedTheme = localStorage.getItem('pp_theme') || 'light';
+  body.setAttribute('data-theme', savedTheme);
+  updateThemeIcon(savedTheme);
+
+  themeToggle.addEventListener('click', () => {
+    const isDark = body.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('pp_theme', newTheme);
+    updateThemeIcon(newTheme);
+  });
+
+  function updateThemeIcon(theme) {
+    themeToggle.innerHTML = theme === 'dark'
+      ? '<i class="fa-solid fa-sun"></i>'
+      : '<i class="fa-solid fa-moon"></i>';
+  }
+
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  const navBackdrop = document.getElementById('navBackdrop');
+  function closeNav() {
+    navLinks.classList.remove('nav-open');
+    navBackdrop.classList.remove('nav-open');
+  }
+  navToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('nav-open');
+    navBackdrop.classList.toggle('nav-open');
+  });
+  navBackdrop.addEventListener('click', closeNav);
+  navLinks.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', closeNav));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeNav(); });
+</script>
+</body>
+</html>
