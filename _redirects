@@ -1,0 +1,21 @@
+# Clean URLs: serve the .html file at both the full path and the
+# extensionless path (200 = rewrite, not a redirect, so the URL bar
+# stays on whichever one the visitor used and both keep working).
+/add-page-number-pdf    /add-page-number-pdf.html    200
+/merge-rearrange-pdf    /merge-rearrange-pdf.html    200
+/pdf-editor             /pdf-editor.html              200
+/pdf-converter          /pdf-converter.html           200
+/split-pdf              /split-pdf.html               200
+/rotate-pdf             /rotate-pdf.html              200
+/compress-pdf           /compress-pdf.html            200
+/photo-resizer          /photo-resizer.html           200
+/watermark-pdf          /watermark-pdf.html           200
+/extract-pdf            /extract-pdf.html             200
+/esign-pdf              /esign-pdf.html               200
+/crop-pdf               /crop-pdf.html                200
+/compare-pdf            /compare-pdf.html             200
+/grayscale-pdf          /grayscale-pdf.html           200
+/ocr-pdf                /ocr-pdf.html                 200
+/protect-pdf            /protect-pdf.html             200
+/privacy-policy         /privacy-policy.html          200
+/terms-of-service       /terms-of-service.html        200
