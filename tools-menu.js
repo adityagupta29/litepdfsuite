@@ -6,22 +6,22 @@
 */
 (function () {
   const TOOLS = [
-    { href: 'add-page-number-pdf.html', icon: 'fa-hashtag', color: 't1', name: 'Add Page Numbers', desc: 'Visually add custom page numbers — position, font, size, and format.' },
-    { href: 'merge-rearrange-pdf.html', icon: 'fa-layer-group', color: 't2', name: 'Merge & Rearrange', desc: 'Upload multiple PDFs and visually rearrange pages by drag-and-drop.' },
-    { href: 'pdf-editor.html', icon: 'fa-pen-to-square', color: 't3', name: 'PDF Editor', desc: 'Add text, images, shapes, highlights, and freehand annotations.' },
-    { href: 'pdf-converter.html', icon: 'fa-right-left', color: 't4', name: 'PDF Converter', desc: 'Convert PDFs to Word, Excel, PowerPoint, images, and back.' },
-    { href: 'split-pdf.html', icon: 'fa-scissors', color: 't5', name: 'Split PDF', desc: 'Extract pages, split into ranges, or break into individual pages.' },
-    { href: 'rotate-pdf.html', icon: 'fa-rotate', color: 't6', name: 'Rotate PDF', desc: 'Fix sideways or upside-down scans, page by page or the whole file.' },
-    { href: 'compress-pdf.html', icon: 'fa-compress', color: 't7', name: 'Compress PDF', desc: 'Shrink large PDFs to a quality preset or an exact target size in KB.' },
-    { href: 'photo-resizer.html', icon: 'fa-id-card', color: 't8', name: 'Photo & Signature Resizer', desc: 'Crop and resize to exact exam-form specs and file-size caps.' },
-    { href: 'watermark-pdf.html', icon: 'fa-stamp', color: 't9', name: 'Watermark PDF', desc: 'Stamp a text or image watermark with full placement control.' },
-    { href: 'extract-pdf.html', icon: 'fa-file-export', color: 't10', name: 'Extract Text & Images', desc: 'Pull plain text as .txt, or grab every embedded image as PNGs.' },
-    { href: 'esign-pdf.html', icon: 'fa-signature', color: 't11', name: 'e-Sign PDF', desc: 'Draw, type, or upload your signature and place it on the page.' },
-    { href: 'crop-pdf.html', icon: 'fa-crop-simple', color: 't12', name: 'Crop PDF', desc: 'Drag a crop box to trim scanner borders or unwanted margins.' },
-    { href: 'compare-pdf.html', icon: 'fa-code-compare', color: 't13', name: 'Compare PDFs', desc: 'Spot exactly what changed between two versions, line by line.' },
-    { href: 'grayscale-pdf.html', icon: 'fa-droplet-slash', color: 't14', name: 'Grayscale PDF', desc: 'Convert a color PDF to true black & white to cut printing costs.' },
-    { href: 'ocr-pdf.html', icon: 'fa-glasses', color: 't15', name: 'OCR PDF', desc: 'Make scanned PDFs searchable and copyable, or extract the text.' },
-    { href: 'protect-pdf.html', icon: 'fa-lock', color: 't16', name: 'Protect & Unlock PDF', desc: 'Add real AES password protection, or remove a known password.' },
+    { href: 'add-page-number-pdf', icon: 'fa-hashtag', color: 't1', name: 'Add Page Numbers', desc: 'Visually add custom page numbers — position, font, size, and format.' },
+    { href: 'merge-rearrange-pdf', icon: 'fa-layer-group', color: 't2', name: 'Merge & Rearrange', desc: 'Upload multiple PDFs and visually rearrange pages by drag-and-drop.' },
+    { href: 'pdf-editor', icon: 'fa-pen-to-square', color: 't3', name: 'PDF Editor', desc: 'Add text, images, shapes, highlights, and freehand annotations.' },
+    { href: 'pdf-converter', icon: 'fa-right-left', color: 't4', name: 'PDF Converter', desc: 'Convert PDFs to Word, Excel, PowerPoint, images, and back.' },
+    { href: 'split-pdf', icon: 'fa-scissors', color: 't5', name: 'Split PDF', desc: 'Extract pages, split into ranges, or break into individual pages.' },
+    { href: 'rotate-pdf', icon: 'fa-rotate', color: 't6', name: 'Rotate PDF', desc: 'Fix sideways or upside-down scans, page by page or the whole file.' },
+    { href: 'compress-pdf', icon: 'fa-compress', color: 't7', name: 'Compress PDF', desc: 'Shrink large PDFs to a quality preset or an exact target size in KB.' },
+    { href: 'photo-resizer', icon: 'fa-id-card', color: 't8', name: 'Photo & Signature Resizer', desc: 'Crop and resize to exact exam-form specs and file-size caps.' },
+    { href: 'watermark-pdf', icon: 'fa-stamp', color: 't9', name: 'Watermark PDF', desc: 'Stamp a text or image watermark with full placement control.' },
+    { href: 'extract-pdf', icon: 'fa-file-export', color: 't10', name: 'Extract Text & Images', desc: 'Pull plain text as .txt, or grab every embedded image as PNGs.' },
+    { href: 'esign-pdf', icon: 'fa-signature', color: 't11', name: 'e-Sign PDF', desc: 'Draw, type, or upload your signature and place it on the page.' },
+    { href: 'crop-pdf', icon: 'fa-crop-simple', color: 't12', name: 'Crop PDF', desc: 'Drag a crop box to trim scanner borders or unwanted margins.' },
+    { href: 'compare-pdf', icon: 'fa-code-compare', color: 't13', name: 'Compare PDFs', desc: 'Spot exactly what changed between two versions, line by line.' },
+    { href: 'grayscale-pdf', icon: 'fa-droplet-slash', color: 't14', name: 'Grayscale PDF', desc: 'Convert a color PDF to true black & white to cut printing costs.' },
+    { href: 'ocr-pdf', icon: 'fa-glasses', color: 't15', name: 'OCR PDF', desc: 'Make scanned PDFs searchable and copyable, or extract the text.' },
+    { href: 'protect-pdf', icon: 'fa-lock', color: 't16', name: 'Protect & Unlock PDF', desc: 'Add real AES password protection, or remove a known password.' },
   ];
 
   const GRADIENTS = {
@@ -119,7 +119,7 @@
 
   function buildMenuHTML() {
     const onHome = /(^|\/)(index\.html)?$/.test(location.pathname);
-    const homeHref = onHome ? '#tools' : 'index.html#tools';
+    const homeHref = onHome ? '#tools' : '/#tools';
     const items = TOOLS.map((t) => `
       <a href="${t.href}" class="tm-item">
         <span class="tm-icon ${t.color}"><i class="fa-solid ${t.icon}"></i></span>

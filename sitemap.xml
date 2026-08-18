@@ -6,83 +6,93 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://litepdfsuite.com/add-page-number-pdf.html</loc>
+    <loc>https://litepdfsuite.com/add-page-number-pdf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://litepdfsuite.com/merge-rearrange-pdf.html</loc>
+    <loc>https://litepdfsuite.com/merge-rearrange-pdf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://litepdfsuite.com/pdf-editor.html</loc>
+    <loc>https://litepdfsuite.com/pdf-editor</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://litepdfsuite.com/pdf-converter.html</loc>
+    <loc>https://litepdfsuite.com/pdf-converter</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://litepdfsuite.com/split-pdf.html</loc>
+    <loc>https://litepdfsuite.com/split-pdf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://litepdfsuite.com/rotate-pdf.html</loc>
+    <loc>https://litepdfsuite.com/rotate-pdf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://litepdfsuite.com/compress-pdf.html</loc>
+    <loc>https://litepdfsuite.com/compress-pdf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://litepdfsuite.com/photo-resizer.html</loc>
+    <loc>https://litepdfsuite.com/photo-resizer</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://litepdfsuite.com/watermark-pdf.html</loc>
+    <loc>https://litepdfsuite.com/watermark-pdf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://litepdfsuite.com/extract-pdf.html</loc>
+    <loc>https://litepdfsuite.com/extract-pdf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://litepdfsuite.com/esign-pdf.html</loc>
+    <loc>https://litepdfsuite.com/esign-pdf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://litepdfsuite.com/crop-pdf.html</loc>
+    <loc>https://litepdfsuite.com/crop-pdf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://litepdfsuite.com/compare-pdf.html</loc>
+    <loc>https://litepdfsuite.com/compare-pdf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://litepdfsuite.com/grayscale-pdf.html</loc>
+    <loc>https://litepdfsuite.com/grayscale-pdf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://litepdfsuite.com/ocr-pdf.html</loc>
+    <loc>https://litepdfsuite.com/ocr-pdf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://litepdfsuite.com/protect-pdf.html</loc>
+    <loc>https://litepdfsuite.com/protect-pdf</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://litepdfsuite.com/privacy-policy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://litepdfsuite.com/terms-of-service</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
 </urlset>
