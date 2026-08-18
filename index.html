@@ -139,7 +139,7 @@
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
   body {
     font-family: 'Space Grotesk', system-ui, sans-serif;
     background: var(--bg); color: var(--fg);
@@ -192,6 +192,21 @@
     transition: all 0.2s;
   }
   .theme-toggle-nav:hover { border-color: var(--accent); color: var(--accent); }
+
+  .nav-toggle {
+    display: none; width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border);
+    background: var(--card); color: var(--fg); cursor: pointer; font-size: 16px;
+    align-items: center; justify-content: center;
+  }
+  .nav-right { display: flex; align-items: center; gap: 10px; }
+  .nav-backdrop {
+    /* Must stay below header.navbar's z-index (100): .nav-links lives inside
+       the header, so its own higher z-index only ranks it within the header's
+       stacking context, not against siblings of header like this backdrop. */
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 90;
+    opacity: 0; visibility: hidden; transition: opacity 0.25s ease, visibility 0.25s;
+  }
+  .nav-backdrop.nav-open { opacity: 1; visibility: visible; }
 
   /* Hero */
   .hero {
@@ -350,9 +365,24 @@
   .d13 { animation-delay: 1.3s; } .d14 { animation-delay: 1.4s; } .d15 { animation-delay: 1.5s; } .d16 { animation-delay: 1.6s; }
 
   @media (max-width: 768px) {
-    .nav-links { display: none; }
+    .nav-toggle { display: flex; }
+    .nav-links {
+      position: fixed; top: 0; right: 0; bottom: 0; width: min(300px, 82vw); height: 100vh;
+      background: var(--bg); border-left: 1px solid var(--border);
+      flex-direction: column; align-items: flex-start; gap: 6px;
+      padding: 90px 28px 28px; transform: translateX(100%);
+      transition: transform 0.3s ease; z-index: 150;
+      box-shadow: -16px 0 40px rgba(0,0,0,0.2);
+    }
+    .nav-links.nav-open { transform: translateX(0); }
+    .nav-link { font-size: 16px; padding: 10px 0; width: 100%; }
+    .nav-links .tm-mount { width: 100%; }
+    .nav-links .tm-dropdown { width: 100%; }
+    .nav-links .tm-trigger { width: 100%; justify-content: space-between; }
     .hero { padding: 60px 24px 40px; }
     .tools-section, .faq-section { padding: 60px 24px; }
+    .logo-tag { display: none; }
+    .logo { gap: 8px; }
   }
   .logo-icon, .logo-mark { background: transparent !important; }
   .logo-icon::after, .logo-mark::after { display: none !important; }
@@ -374,16 +404,22 @@
         <div class="logo-tag">Fast, Secure & Professional PDF Tools</div>
       </div>
     </a>
-    <nav class="nav-links">
+    <nav class="nav-links" id="navLinks">
       <div class="tm-mount" data-tools-menu></div>
       <a href="#features" class="nav-link">Features</a>
       <a href="#faq" class="nav-link">FAQ</a>
     </nav>
-    <button class="theme-toggle-nav" id="themeToggle" title="Toggle theme">
-      <i class="fa-solid fa-moon"></i>
-    </button>
+    <div class="nav-right">
+      <button class="theme-toggle-nav" id="themeToggle" title="Toggle theme">
+        <i class="fa-solid fa-moon"></i>
+      </button>
+      <button class="nav-toggle" id="navToggle" title="Menu" aria-label="Open menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
   </div>
 </header>
+<div class="nav-backdrop" id="navBackdrop"></div>
 
 <section class="hero">
   <h1 class="reveal d1">High-quality <span class="gradient-text">PDF Tools</span><br>Simple but powerful to use.</h1>
@@ -715,6 +751,22 @@
       ? '<i class="fa-solid fa-sun"></i>' 
       : '<i class="fa-solid fa-moon"></i>';
   }
+
+  // Mobile Nav Toggle
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  const navBackdrop = document.getElementById('navBackdrop');
+  function closeNav() {
+    navLinks.classList.remove('nav-open');
+    navBackdrop.classList.remove('nav-open');
+  }
+  navToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('nav-open');
+    navBackdrop.classList.toggle('nav-open');
+  });
+  navBackdrop.addEventListener('click', closeNav);
+  navLinks.querySelectorAll('.nav-link').forEach(a => a.addEventListener('click', closeNav));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeNav(); });
 
   // FAQ Accordion
   document.querySelectorAll('.faq-item').forEach(item => {

@@ -1,0 +1,207 @@
+/*
+  Lite PDF Suite — shared mobile/tablet layout rules for tool pages.
+  Loaded alongside each page's own inline <style>; only takes effect at
+  tablet/phone widths so the desktop layout is untouched.
+
+  Two patterns are supported, picked per page by which attribute the
+  sidebar/controls element carries:
+
+  - [data-mobile-panel]  (most tool pages) The controls panel is what
+    people actually spend their time with on a phone, so it becomes the
+    dominant, full-width, in-flow panel and the preview/canvas shrinks to
+    a small strip above it. No JS involved, both are always visible.
+
+  - [data-mobile-drawer] (pdf-editor.html only, where the canvas itself is
+    what you tap and draw on) The panel instead becomes a slide-in drawer,
+    opened via a floating button injected by mobile-nav.js, so the canvas
+    can have the full screen until the panel is actually needed.
+*/
+
+@media (max-width: 900px) {
+  /* !important throughout this header block: mobile.css loads before each
+     page's own <style>, so plain (non-important) rules here lose ties on
+     shared selectors like header.topbar to that page's unconditional,
+     always-on desktop rule for the same property, since source order
+     breaks the tie when specificity is equal. */
+  header.topbar { padding: 8px 12px !important; gap: 6px !important; flex-wrap: nowrap !important; }
+  .brand { flex-shrink: 1 !important; min-width: 0; overflow: hidden; gap: 8px !important; }
+  .brand-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brand-tag { display: none !important; }
+  .top-actions { gap: 5px !important; flex-shrink: 0; flex-wrap: nowrap !important; }
+
+  /* Icon-only collapsing only applies to header buttons. Scoped to
+     .top-actions specifically (rather than every .btn site-wide) so
+     text-only buttons elsewhere, like a modal's "Continue", never end up
+     blank just because they share the .btn class. */
+  .top-actions .btn, .tm-trigger, .ti-trigger {
+    font-size: 0 !important;
+    padding: 9px !important;
+    gap: 0 !important;
+    min-width: 38px;
+  }
+  .top-actions .btn i, .tm-trigger i, .ti-trigger i { font-size: 14px !important; }
+
+  .file-pill { max-width: 120px !important; }
+  .file-pill .file-name { max-width: 70px !important; }
+
+  .stage-header, .canvas-header { flex-wrap: wrap !important; row-gap: 8px !important; }
+
+  /* The Light/Dark text pill is one of the widest things in the header
+     and is what forces it to wrap to two lines on narrow phones, so
+     collapse it to a single sun/moon icon button instead. The click
+     handler is bound to the whole element, so behavior is unaffected. */
+  .theme-toggle {
+    width: 36px !important; height: 36px !important; border-radius: 50% !important; padding: 0 !important;
+    background: #ffffff !important; border: 1px solid var(--border) !important;
+  }
+  [data-theme="dark"] .theme-toggle { background: #1c1f24 !important; }
+  .theme-toggle .label { display: none !important; }
+  .theme-toggle .knob {
+    position: static !important; transform: none !important;
+    width: 100% !important; height: 100% !important; font-size: 0 !important;
+    display: flex !important; align-items: center; justify-content: center;
+    background: transparent !important; color: #333333 !important;
+  }
+  [data-theme="dark"] .theme-toggle .knob { color: #fbbf24 !important; }
+  .theme-toggle .knob::before {
+    font-family: "Font Awesome 6 Free"; font-weight: 900; font-size: 14px; content: "\f186"; /* moon: switch to dark */
+  }
+  [data-theme="dark"] .theme-toggle .knob::before { content: "\f185"; /* sun: switch to light */ }
+
+  /* Stack the workspace: a small, internally-scrollable preview strip on
+     top, with the controls panel filling the rest of the screen below. */
+  main.workspace:has([data-mobile-panel]) {
+    flex-direction: column !important;
+    overflow-y: auto !important;
+  }
+  main.workspace:has([data-mobile-panel]) > .canvas-area {
+    flex: 0 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 38vh !important;
+    min-height: 220px !important;
+    max-height: 360px !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    border-bottom: 1px solid var(--border);
+  }
+  /* Only the empty-state grows to fill leftover space (and is what gets
+     centered in it); everything else, header row included, keeps its own
+     natural size. That way an empty preview never has more content-height
+     than the box itself, so there's nothing to scroll until there's
+     actually a page or a grid of thumbnails to show. */
+  main.workspace:has([data-mobile-panel]) > .canvas-area > *:not(.empty-state) {
+    flex-shrink: 0;
+  }
+  main.workspace:has([data-mobile-panel]) .page-grid {
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Drag handle between the preview strip and the controls panel, so the
+     preview can be made taller than the default if it's cramped. */
+  .mp-resize-handle {
+    flex: 0 0 auto; height: 18px; display: flex; align-items: center; justify-content: center;
+    cursor: ns-resize; touch-action: none; background: var(--bg-2); border-bottom: 1px solid var(--border);
+  }
+  .mp-resize-handle span {
+    width: 40px; height: 4px; border-radius: 2px; background: var(--border-strong);
+  }
+  .mp-resize-handle:hover span, .mp-resize-handle.active span { background: var(--accent); }
+
+  /* Zoom control injected by mobile-nav.js into the thumbnail-grid pages
+     (split, rotate, compress, grayscale, ocr) so many pages/files can be
+     browsed comfortably in the short preview strip. */
+  .mz-zoom { display: flex; align-items: center; gap: 6px; }
+  .mz-btn {
+    width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--border);
+    background: var(--card); color: var(--fg); display: flex; align-items: center;
+    justify-content: center; font-size: 11px; cursor: pointer; flex-shrink: 0;
+  }
+  .mz-zoom input[type="range"] { width: 64px; height: 4px; }
+  [data-mobile-panel] {
+    position: static !important;
+    width: 100% !important;
+    max-width: 100%;
+    height: auto !important;
+    flex: 1 1 auto;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border-left: none !important;
+    transform: none !important;
+  }
+  [data-mobile-panel] .sidebar-scroll { flex: none !important; overflow: visible !important; }
+
+  /* The "no file yet" placeholder relies on the parent being tall and
+     either absolutely positioned or margin-nudged to end up centered;
+     neither holds in the short mobile strip. Make it fill the strip's
+     height itself and center its own content, independent of whatever
+     layout mode (flex/block) the page's own .canvas-area happens to use. */
+  main.workspace:has([data-mobile-panel]) .empty-state {
+    position: static !important; inset: auto !important;
+    width: 100%; height: auto !important; min-height: 0;
+    flex: 1 1 auto;
+    padding: 18px 16px; justify-content: center;
+    margin: 0 !important;
+  }
+  main.workspace:has([data-mobile-panel]) .empty-icon,
+  main.workspace:has([data-mobile-panel]) .upload-icon-wrap {
+    width: 44px !important; height: 44px !important; font-size: 18px !important; margin-bottom: 8px !important;
+  }
+  main.workspace:has([data-mobile-panel]) .empty-title,
+  main.workspace:has([data-mobile-panel]) .upload-title {
+    font-size: 16px !important; margin-bottom: 4px !important;
+  }
+  main.workspace:has([data-mobile-panel]) .empty-sub,
+  main.workspace:has([data-mobile-panel]) .upload-sub {
+    font-size: 12px !important;
+  }
+
+  /* Any element marked as a mobile drawer instead slides in from the
+     right, clear of the normal document flow. */
+  [data-mobile-drawer] {
+    position: fixed !important;
+    top: 0 !important; right: 0 !important; bottom: 0 !important; left: auto !important;
+    width: min(340px, 86vw) !important;
+    max-width: 86vw;
+    height: 100% !important;
+    z-index: 200;
+    transform: translateX(100%);
+    transition: transform 0.28s ease;
+    box-shadow: -12px 0 40px rgba(0,0,0,0.25);
+  }
+  [data-mobile-drawer].mp-open { transform: translateX(0); }
+
+  .mp-backdrop {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    z-index: 190; opacity: 0; visibility: hidden; transition: opacity 0.25s ease, visibility 0.25s;
+  }
+  .mp-backdrop.mp-open { opacity: 1; visibility: visible; }
+
+  .mp-fab {
+    position: fixed; right: 18px; bottom: 18px; z-index: 150;
+    width: 54px; height: 54px; border-radius: 50%;
+    background: var(--accent); color: #fff; border: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 19px; box-shadow: 0 10px 26px rgba(0,0,0,0.35); cursor: pointer;
+  }
+  .mp-fab.mp-hidden { display: none; }
+
+  .mp-close {
+    position: absolute; top: 12px; right: 12px; width: 34px; height: 34px;
+    border-radius: 50%; border: 1px solid var(--border); background: var(--card);
+    color: var(--fg); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 5; font-size: 14px;
+  }
+}
+
+@media (min-width: 901px) {
+  .mp-fab, .mp-backdrop, .mp-close, .mz-zoom { display: none !important; }
+}
+
+@media (max-width: 560px) {
+  .brand-name { font-size: 16px !important; }
+  .logo-mark { width: 32px !important; height: 32px !important; font-size: 15px !important; }
+  [data-mobile-drawer] { width: 100% !important; max-width: 100%; }
+}

@@ -52,7 +52,10 @@
       }
       .tm-trigger:hover { border-color: var(--accent); color: var(--accent); }
       .tm-caret { font-size: 10px; transition: transform 0.2s ease; }
-      .tm-dropdown:hover .tm-caret { transform: rotate(180deg); }
+      .tm-dropdown.tm-open .tm-caret { transform: rotate(180deg); }
+      @media (hover: hover) and (pointer: fine) and (min-width: 901px) {
+        .tm-dropdown:hover .tm-caret { transform: rotate(180deg); }
+      }
       .tm-menu {
         position: absolute; top: calc(100% + 12px); left: 0;
         width: max-content; max-width: 92vw;
@@ -66,8 +69,22 @@
       }
       [data-theme="dark"] .tm-menu { box-shadow: 0 24px 60px rgba(0,0,0,0.55); }
       .tm-menu::before { content: ''; position: absolute; top: -12px; left: 0; right: 0; height: 12px; }
-      .tm-dropdown:hover .tm-menu {
+      .tm-dropdown.tm-open .tm-menu {
         opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0);
+      }
+      /* Hover-to-open only above the same breakpoint the rest of the
+         mobile layout uses, and only for devices with real hover (mouse).
+         The width check matters because a mouse-driven browser window
+         narrowed for testing still reports true hover support, so
+         (hover:hover) alone doesn't catch "testing at a phone-sized
+         window on a desktop." Touch devices fire a synthetic hover on tap
+         that ends the instant the finger lifts, closing the menu before a
+         second tap can land on an item inside it, so both cases rely on
+         the click-toggle handler instead. */
+      @media (hover: hover) and (pointer: fine) and (min-width: 901px) {
+        .tm-dropdown:hover .tm-menu {
+          opacity: 1; visibility: visible; pointer-events: auto; transform: translateY(0);
+        }
       }
       .tm-grid {
         display: grid; grid-auto-flow: column; grid-template-rows: repeat(6, auto);
@@ -86,7 +103,16 @@
       .tm-label { font-size: 15px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
       .tm-sub { font-size: 12px; font-weight: 400; line-height: 1.4; color: var(--muted); }
       ${gradientCSS}
-      @media (max-width: 768px) { .tm-dropdown { display: none; } }
+      @media (max-width: 900px) {
+        .tm-menu {
+          position: fixed !important; left: 12px !important; right: 12px !important; top: auto !important; bottom: 12px !important;
+          width: auto; max-width: none; max-height: 72vh; overflow-y: auto;
+        }
+        .tm-grid {
+          grid-auto-flow: row; grid-template-rows: none; grid-auto-columns: unset;
+          grid-template-columns: 1fr; row-gap: 4px; column-gap: 0;
+        }
+      }
     `;
     document.head.appendChild(style);
   }
@@ -122,6 +148,10 @@
     menu.style.left = (desiredLeft - dRect.left) + 'px';
   }
 
+  function closeAllMenus() {
+    document.querySelectorAll('.tm-dropdown.tm-open').forEach((d) => d.classList.remove('tm-open'));
+  }
+
   function init() {
     const mounts = document.querySelectorAll('[data-tools-menu]');
     if (!mounts.length) return;
@@ -130,7 +160,26 @@
     mounts.forEach((mount) => {
       mount.innerHTML = html;
       const dropdown = mount.querySelector('.tm-dropdown');
-      if (dropdown) dropdown.addEventListener('mouseenter', () => positionMenu(dropdown));
+      const trigger = dropdown && dropdown.querySelector('.tm-trigger');
+      if (!dropdown || !trigger) return;
+      dropdown.addEventListener('mouseenter', () => positionMenu(dropdown));
+      // Hover opens the menu on desktop, but touch devices never fire
+      // hover, so clicking/tapping the trigger toggles it directly too.
+      trigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        const isOpen = dropdown.classList.contains('tm-open');
+        closeAllMenus();
+        if (!isOpen) {
+          positionMenu(dropdown);
+          dropdown.classList.add('tm-open');
+        }
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.tm-dropdown')) closeAllMenus();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeAllMenus();
     });
   }
 

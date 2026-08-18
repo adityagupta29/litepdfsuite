@@ -19,8 +19,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&family=Space+Grotesk:wght@400;500;600;700&family=Dancing+Script:wght@500;700&family=Pacifico&family=Sacramento&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="mobile.css">
 <script src="tools-menu.js"></script>
 <script src="tool-info.js"></script>
+<script src="mobile-nav.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
 <style>
@@ -101,7 +103,12 @@
   [data-theme="dark"] .theme-toggle .label-dark { opacity: 0; }
 
   main.workspace { flex: 1; display: flex; overflow: hidden; position: relative; }
-  .canvas-area { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 24px 32px; position: relative; display: flex; flex-direction: column; align-items: center; }
+  .canvas-area { flex: 1; overflow: auto; padding: 24px 32px; position: relative; display: flex; flex-direction: column; align-items: center; }
+  /* Centering via align-items clips the far side of content that's wider
+     than the container with no way to scroll to it, so once zoomed in
+     past what fits, switch to left-aligned so the full page stays
+     reachable by scrolling. */
+  .canvas-area.zoomed { align-items: flex-start; }
 
   .page-nav { display: none; align-items: center; gap: 14px; margin-bottom: 16px; }
   .page-nav.active { display: flex; }
@@ -109,7 +116,24 @@
   .page-nav button:disabled { opacity: 0.3; cursor: not-allowed; }
   .page-nav span { font-size: 13px; color: var(--muted); }
 
-  .preview-container { position: relative; background: #fff; box-shadow: 0 20px 50px var(--shadow); border-radius: 4px; touch-action: none; }
+  .zoom-control {
+    display: none; align-items: center; gap: 8px; background: var(--bg); padding: 5px 10px;
+    border-radius: 999px; border: 1px solid var(--border); margin-bottom: 16px;
+  }
+  .zoom-control.active { display: flex; }
+  .zoom-control button {
+    width: 26px; height: 26px; border-radius: 50%; border: none; background: transparent;
+    color: var(--muted); cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 11px; transition: all 0.2s;
+  }
+  .zoom-control button:hover { background: var(--card-2); color: var(--accent); }
+  .zoom-control #zoomResetBtn { width: auto; padding: 0 8px; font-size: 11px; font-weight: 600; border-radius: 999px; }
+  .zoom-val { font-size: 12px; color: var(--muted); min-width: 38px; text-align: center; font-variant-numeric: tabular-nums; }
+
+  .preview-container {
+    position: relative; background: #fff; box-shadow: 0 20px 50px var(--shadow); border-radius: 4px;
+    touch-action: none; transform-origin: top center; transition: transform 0.15s ease; flex-shrink: 0;
+  }
   .preview-container canvas { display: block; }
 
   .sig-overlay { position: absolute; cursor: move; border: 2px dashed var(--accent); }
@@ -301,6 +325,12 @@
         <span id="pageNavLabel">Page 1 of 1</span>
         <button id="nextPageBtn"><i class="fa-solid fa-chevron-right"></i></button>
       </div>
+      <div class="zoom-control" id="zoomControl">
+        <button id="zoomOutBtn" aria-label="Zoom out"><i class="fa-solid fa-minus"></i></button>
+        <span class="zoom-val" id="zoomVal">100%</span>
+        <button id="zoomInBtn" aria-label="Zoom in"><i class="fa-solid fa-plus"></i></button>
+        <button id="zoomResetBtn" title="Reset zoom">Fit</button>
+      </div>
       <div class="empty-state" id="emptyState">
         <div class="empty-icon"><i class="fa-solid fa-signature"></i></div>
         <div class="empty-title">No PDF loaded</div>
@@ -311,7 +341,7 @@
       </div>
     </div>
 
-    <aside class="sidebar">
+    <aside class="sidebar" data-mobile-panel>
       <div class="sidebar-section">
         <div class="sidebar-title"><i class="fa-solid fa-cloud-arrow-up"></i> Upload PDF</div>
         <div class="upload-zone" id="uploadZone">
@@ -391,7 +421,19 @@ let state = {
   pagePtsW: 612, pagePtsH: 792, previewScale: 1,
   sigDataUrl: null, sigAspect: 0.4,
   overlay: null, // { x, y, w, h } in CSS px, top-left origin, relative to previewContainer
+  zoom: 1,
 };
+
+function applyZoom() {
+  document.getElementById('previewContainer').style.transform = `scale(${state.zoom})`;
+  document.getElementById('canvasArea').classList.toggle('zoomed', state.zoom > 1);
+  const val = document.getElementById('zoomVal');
+  if (val) val.textContent = Math.round(state.zoom * 100) + '%';
+}
+function setZoom(z) {
+  state.zoom = Math.min(2.5, Math.max(0.4, z));
+  applyZoom();
+}
 
 function toast(msg, type = 'info', duration = 3000) {
   const c = document.getElementById('toastContainer');
@@ -427,6 +469,8 @@ async function handleFile(file) {
     document.getElementById('emptyState').style.display = 'none';
     document.getElementById('previewContainer').style.display = 'block';
     document.getElementById('pageNav').classList.toggle('active', pdfDoc.numPages > 1);
+    document.getElementById('zoomControl').classList.add('active');
+    setZoom(1);
     toast(`Loaded "${file.name}" (${pdfDoc.numPages} pages)`, 'success');
     await renderPage();
   } catch (err) {
@@ -437,12 +481,14 @@ async function handleFile(file) {
 
 document.getElementById('removeFileBtn').addEventListener('click', resetAll);
 function resetAll() {
-  state = { file: null, arrayBuffer: null, pdfDoc: null, numPages: 0, currentPage: 1, pagePtsW: 612, pagePtsH: 792, previewScale: 1, sigDataUrl: null, sigAspect: 0.4, overlay: null };
+  state = { file: null, arrayBuffer: null, pdfDoc: null, numPages: 0, currentPage: 1, pagePtsW: 612, pagePtsH: 792, previewScale: 1, sigDataUrl: null, sigAspect: 0.4, overlay: null, zoom: 1 };
   document.getElementById('fileInfoWrap').style.display = 'none';
   document.getElementById('fileInput').value = '';
   document.getElementById('emptyState').style.display = 'flex';
   document.getElementById('previewContainer').style.display = 'none';
+  document.getElementById('previewContainer').style.transform = '';
   document.getElementById('pageNav').classList.remove('active');
+  document.getElementById('zoomControl').classList.remove('active');
   document.getElementById('downloadBtn').disabled = true;
   removeOverlayEl();
 }
@@ -470,6 +516,10 @@ async function renderPage() {
 
 document.getElementById('prevPageBtn').addEventListener('click', async () => { if (state.currentPage > 1) { state.currentPage--; await renderPage(); } });
 document.getElementById('nextPageBtn').addEventListener('click', async () => { if (state.currentPage < state.numPages) { state.currentPage++; await renderPage(); } });
+
+document.getElementById('zoomInBtn').addEventListener('click', () => setZoom(state.zoom + 0.2));
+document.getElementById('zoomOutBtn').addEventListener('click', () => setZoom(state.zoom - 0.2));
+document.getElementById('zoomResetBtn').addEventListener('click', () => setZoom(1));
 
 // ---------- Signature source tabs ----------
 document.querySelectorAll('.sig-tab').forEach(tab => tab.addEventListener('click', () => {
@@ -632,7 +682,11 @@ function renderOverlay() {
     const startOv = { ...state.overlay };
     el.setPointerCapture(e.pointerId);
     function onMove(ev) {
-      const dx = ev.clientX - startX, dy = ev.clientY - startY;
+      // Pointer deltas are in real screen px; the container's own layout
+      // box (clientWidth/Height, and the overlay's x/y/w/h) stay in
+      // unscaled local px regardless of zoom, since CSS transform doesn't
+      // affect them, so the delta has to be un-scaled to match.
+      const dx = (ev.clientX - startX) / state.zoom, dy = (ev.clientY - startY) / state.zoom;
       const cw = container.clientWidth, ch = container.clientHeight;
       state.overlay.x = Math.min(cw - state.overlay.w, Math.max(0, startOv.x + dx));
       state.overlay.y = Math.min(ch - state.overlay.h, Math.max(0, startOv.y + dy));
@@ -649,7 +703,7 @@ function renderOverlay() {
     const startOv = { ...state.overlay };
     el.setPointerCapture(e.pointerId);
     function onMove(ev) {
-      const dx = ev.clientX - startX;
+      const dx = (ev.clientX - startX) / state.zoom;
       const container = document.getElementById('previewContainer');
       let newW = Math.max(30, startOv.w + dx);
       newW = Math.min(newW, container.clientWidth - startOv.x);

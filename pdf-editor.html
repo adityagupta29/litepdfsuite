@@ -19,8 +19,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,400&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="mobile.css">
 <script src="tools-menu.js"></script>
 <script src="tool-info.js"></script>
+<script src="mobile-nav.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@pdf-lib/fontkit@1.1.1/dist/fontkit.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
@@ -274,8 +276,22 @@
   #fileInput, #imageInput { display: none; }
 
   @media (max-width: 900px) {
-    aside.sidebar { position: fixed; right: 0; top: 57px; bottom: 0; z-index: 40; box-shadow: -10px 0 30px rgba(0,0,0,0.2); }
-    .brand-tag { display: none; }
+    /* The tool palette stays visible (it's used constantly), but moves to
+       a horizontal, scrollable bar pinned under the canvas instead of a
+       left column, since there's no room for a 62px-wide sidebar. The
+       properties panel is used less often, so it becomes the slide-in
+       drawer handled generically by mobile.css / mobile-nav.js. */
+    .toolbar {
+      width: 100%; height: 56px; flex-direction: row; align-items: center;
+      justify-content: flex-start; padding: 6px 10px; gap: 6px;
+      overflow-x: auto; overflow-y: hidden;
+      border-right: none; border-top: 1px solid var(--border);
+      position: fixed; left: 0; right: 0; bottom: 0; top: auto; z-index: 60;
+    }
+    .tool-btn { flex-shrink: 0; }
+    .tool-divider { width: 1px; height: 24px; margin: 0 4px; flex-shrink: 0; }
+    .page-stage-wrap { padding-bottom: 74px; }
+    .mp-fab { bottom: 82px; }
   }
   .logo-icon, .logo-mark { background: transparent !important; }
   .logo-icon::after, .logo-mark::after { display: none !important; }
@@ -415,7 +431,7 @@
       </div>
     </div>
 
-    <aside class="sidebar">
+    <aside class="sidebar" data-mobile-drawer>
       <div class="section-head"><span class="dot"></span><span>Properties</span></div>
       <div id="propsBody"></div>
     </aside>
