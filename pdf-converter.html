@@ -99,6 +99,7 @@
   [data-theme="dark"] .logo-mark { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
   .brand-name { font-family: 'Fraunces', serif; font-weight: 900; font-size: 20px; }
   .brand-tag { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: -2px; }
+  .brand-tag { margin: -2px 0 0; font-weight: 500; line-height: 1.3; }
   .top-actions { display: flex; align-items: center; gap: 10px; }
   .btn {
     padding: 9px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
@@ -285,6 +286,70 @@
   .logo-icon::after, .logo-mark::after { display: none !important; }
   .logo-icon img, .logo-mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "PDF Converter - Lite PDF Suite",
+  "applicationCategory": "Utility",
+  "operatingSystem": "Any (runs in a web browser)",
+  "url": "https://litepdfsuite.com/pdf-converter",
+  "description": "Convert PDF to Word, Excel, PowerPoint, or images — and images back to PDF — free, online, and entirely in your browser.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is the converter free to use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, converting files on Lite PDF Suite is free with no hidden limits."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Are my files uploaded to a server during conversion?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, conversion runs locally inside your browser, so files are never transmitted anywhere."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will formatting stay accurate after conversion?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The tool works hard to preserve layout, fonts, and tables, though very complex designs may need minor manual fixes afterward."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I convert more than one file at a time?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, batch conversion lets you process several files without repeating the steps for each one."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it work for scanned PDFs, not just typed ones?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, though a scanned page will convert as an image unless it has already been made searchable through OCR."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body data-theme="light">
 
@@ -294,7 +359,7 @@
       <div class="logo-mark"><img src="favicon/favicon.svg" alt="Lite PDF Suite"></div>
       <div>
         <div class="brand-name">Lite PDF Suite</div>
-        <div class="brand-tag">PDF Converter</div>
+        <h1 class="brand-tag">PDF Converter</h1>
       </div>
     </a>
     <div class="top-actions">

@@ -87,6 +87,7 @@
   [data-theme="dark"] .logo-mark { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; }
   .brand-name { font-family: 'Fraunces', serif; font-weight: 900; font-size: 20px; }
   .brand-tag { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: -2px; }
+  .brand-tag { margin: -2px 0 0; font-weight: 500; line-height: 1.3; }
   .top-actions { display: flex; align-items: center; gap: 10px; }
   .btn {
     padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
@@ -307,6 +308,70 @@
   .logo-icon::after, .logo-mark::after { display: none !important; }
   .logo-icon img, .logo-mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "PDF Editor - Lite PDF Suite",
+  "applicationCategory": "Utility",
+  "operatingSystem": "Any (runs in a web browser)",
+  "url": "https://litepdfsuite.com/pdf-editor",
+  "description": "Free online PDF editor. Add text, images, shapes, highlights, and freehand annotations directly to your PDF in the browser — no sign-up required.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is the PDF editor free to use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, all editing tools on Lite PDF Suite are free with no watermark added to your file."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does my document get uploaded anywhere?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, editing happens entirely in your browser, and the file never leaves your device."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I undo a mistake?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, full undo and redo support lets you step back through every change you have made."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will the text I add be editable later in other software?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The text is flattened into the page like a printed annotation, so treat it as final once exported."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I edit more than one page in the same session?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, you can move freely between pages and apply as many changes as needed before downloading."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body data-theme="light">
 
@@ -316,7 +381,7 @@
       <div class="logo-mark"><img src="favicon/favicon.svg" alt="Lite PDF Suite"></div>
       <div>
         <div class="brand-name">Lite PDF Suite</div>
-        <div class="brand-tag">PDF Editor</div>
+        <h1 class="brand-tag">PDF Editor</h1>
       </div>
     </a>
     <div class="top-actions">

@@ -83,6 +83,7 @@
   }
   .brand-name { font-family: 'Fraunces', serif; font-weight: 900; font-size: 20px; }
   .brand-tag { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: -2px; }
+  .brand-tag { margin: -2px 0 0; font-weight: 500; line-height: 1.3; }
   .top-actions { display: flex; align-items: center; gap: 16px; }
   .btn {
     padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
@@ -197,6 +198,70 @@
   .logo-icon::after, .logo-mark::after { display: none !important; }
   .logo-icon img, .logo-mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Protect & Unlock PDF - Lite PDF Suite",
+  "applicationCategory": "Utility",
+  "operatingSystem": "Any (runs in a web browser)",
+  "url": "https://litepdfsuite.com/protect-pdf",
+  "description": "Password-protect or unlock a PDF online for free with real AES encryption, powered by the QPDF engine running entirely in your browser.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is adding or removing a password free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, both protecting and unlocking PDFs on Lite PDF Suite are completely free."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is my password ever stored or sent anywhere?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, the password is used only during local processing and is never saved or transmitted."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What encryption standard is used?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The tool applies real AES encryption, the same standard used by professional PDF security software."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I unlock a file if I do not know the password?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, unlocking requires the correct existing password, since the tool does not attempt to bypass security."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will a protected file still open in other PDF readers?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, any standard PDF reader will prompt for the password since the encryption follows the normal PDF format."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body data-theme="light">
 
@@ -206,7 +271,7 @@
       <div class="logo-mark"><img src="favicon/favicon.svg" alt="Lite PDF Suite"></div>
       <div>
         <div class="brand-name">Lite PDF Suite</div>
-        <div class="brand-tag">Protect &amp; Unlock PDF</div>
+        <h1 class="brand-tag">Protect &amp; Unlock PDF</h1>
       </div>
     </a>
     <div class="top-actions">

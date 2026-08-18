@@ -26,7 +26,14 @@
   header.topbar { padding: 8px 12px !important; gap: 6px !important; flex-wrap: nowrap !important; }
   .brand { flex-shrink: 1 !important; min-width: 0; overflow: hidden; gap: 8px !important; }
   .brand-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .brand-tag { display: none !important; }
+  /* Visually hidden rather than display:none: this is now the page's H1
+     (the tool name), so it should stay in the accessibility tree and
+     crawlable even where there's no room to show it on a small screen. */
+  .brand-tag {
+    position: absolute !important; width: 1px !important; height: 1px !important;
+    padding: 0 !important; margin: -1px !important; overflow: hidden !important;
+    clip: rect(0,0,0,0) !important; white-space: nowrap !important; border: 0 !important;
+  }
   .top-actions { gap: 5px !important; flex-shrink: 0; flex-wrap: nowrap !important; }
 
   /* Icon-only collapsing only applies to header buttons. Scoped to

@@ -83,6 +83,7 @@
   }
   .brand-name { font-family: 'Fraunces', serif; font-weight: 900; font-size: 20px; }
   .brand-tag { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: -2px; }
+  .brand-tag { margin: -2px 0 0; font-weight: 500; line-height: 1.3; }
   .top-actions { display: flex; align-items: center; gap: 16px; }
   .btn {
     padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
@@ -215,6 +216,70 @@
   .logo-icon::after, .logo-mark::after { display: none !important; }
   .logo-icon img, .logo-mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Grayscale PDF - Lite PDF Suite",
+  "applicationCategory": "Utility",
+  "operatingSystem": "Any (runs in a web browser)",
+  "url": "https://litepdfsuite.com/grayscale-pdf",
+  "description": "Convert a color PDF to black and white online for free — reduce printing costs and prep documents for clean photocopying.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is grayscale conversion free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, converting a PDF to grayscale on Lite PDF Suite is completely free."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Will grayscale reduce the file size too?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Often yes, since color image data is simplified, though the main purpose is appearance rather than compression."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is my document uploaded to a server?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, the entire conversion happens locally inside your browser."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I convert it back to color afterward?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, grayscale conversion permanently removes color data from the exported file, so keep your original if you may need color again."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does grayscale affect how sharp the text looks?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, text remains just as sharp since grayscale only changes color values, not resolution."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body data-theme="light">
 
@@ -224,7 +289,7 @@
       <div class="logo-mark"><img src="favicon/favicon.svg" alt="Lite PDF Suite"></div>
       <div>
         <div class="brand-name">Lite PDF Suite</div>
-        <div class="brand-tag">Grayscale PDF</div>
+        <h1 class="brand-tag">Grayscale PDF</h1>
       </div>
     </a>
     <div class="top-actions">

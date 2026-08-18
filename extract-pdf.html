@@ -83,6 +83,7 @@
   }
   .brand-name { font-family: 'Fraunces', serif; font-weight: 900; font-size: 20px; }
   .brand-tag { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: -2px; }
+  .brand-tag { margin: -2px 0 0; font-weight: 500; line-height: 1.3; }
   .top-actions { display: flex; align-items: center; gap: 16px; }
   .btn {
     padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
@@ -225,6 +226,70 @@
   .logo-icon::after, .logo-mark::after { display: none !important; }
   .logo-icon img, .logo-mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Extract Text & Images - Lite PDF Suite",
+  "applicationCategory": "Utility",
+  "operatingSystem": "Any (runs in a web browser)",
+  "url": "https://litepdfsuite.com/extract-pdf",
+  "description": "Extract text and images from a PDF online for free. Pull plain text as .txt or save every embedded photo as a PNG.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is extraction free to use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, extracting text and images on Lite PDF Suite is completely free."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does my file get uploaded anywhere?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, extraction happens entirely inside your browser on your own device."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What format are extracted images saved in?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Every image is saved as a PNG file at its original embedded resolution."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I extract from only some pages instead of the whole file?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, you can choose specific pages if you do not need the entire document."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it work on scanned PDFs that are really just images?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Text extraction needs a searchable PDF, so a purely scanned file may need OCR first before text can be pulled out."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body data-theme="light">
 
@@ -234,7 +299,7 @@
       <div class="logo-mark"><img src="favicon/favicon.svg" alt="Lite PDF Suite"></div>
       <div>
         <div class="brand-name">Lite PDF Suite</div>
-        <div class="brand-tag">Extract Text & Images</div>
+        <h1 class="brand-tag">Extract Text & Images</h1>
       </div>
     </a>
     <div class="top-actions">

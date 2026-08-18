@@ -83,6 +83,7 @@
   }
   .brand-name { font-family: 'Fraunces', serif; font-weight: 900; font-size: 20px; }
   .brand-tag { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: -2px; }
+  .brand-tag { margin: -2px 0 0; font-weight: 500; line-height: 1.3; }
   .top-actions { display: flex; align-items: center; gap: 16px; }
   .btn {
     padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
@@ -210,6 +211,70 @@
   .logo-icon::after, .logo-mark::after { display: none !important; }
   .logo-icon img, .logo-mark img { width: 100%; height: 100%; object-fit: contain; display: block; }
 </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "Crop PDF - Lite PDF Suite",
+  "applicationCategory": "Utility",
+  "operatingSystem": "Any (runs in a web browser)",
+  "url": "https://litepdfsuite.com/crop-pdf",
+  "description": "Crop a PDF online for free. Trim scanner borders or unwanted margins from one page or the whole document.",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is cropping a PDF free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, the crop tool on Lite PDF Suite is completely free to use."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I crop only some pages instead of the whole file?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, each page can be cropped individually if a batch of scans is not perfectly consistent."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does cropping reduce the quality of the page?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, cropping only removes the selected area and does not recompress the remaining content."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is my file uploaded anywhere during cropping?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "No, the entire process happens locally inside your browser."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I undo a crop if I remove too much?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, you can reset the crop box and adjust it again before downloading the final file."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <body data-theme="light">
 
@@ -219,7 +284,7 @@
       <div class="logo-mark"><img src="favicon/favicon.svg" alt="Lite PDF Suite"></div>
       <div>
         <div class="brand-name">Lite PDF Suite</div>
-        <div class="brand-tag">Crop PDF</div>
+        <h1 class="brand-tag">Crop PDF</h1>
       </div>
     </a>
     <div class="top-actions">
